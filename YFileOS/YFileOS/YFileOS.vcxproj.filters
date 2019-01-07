@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{61fea190-f0f8-4723-97f5-22747abe3438}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Disk">
+      <UniqueIdentifier>{29e2e3b1-a366-4d92-8098-562a6dc53fae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\File">
+      <UniqueIdentifier>{a6f38596-b3be-45f2-bdc1-b4b7a50108bf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="y_disk.h">
+      <Filter>Core\Disk</Filter>
+    </ClInclude>
+    <ClInclude Include="y_file.h">
+      <Filter>Core\File</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="y_disk.cpp">
+      <Filter>Core\Disk</Filter>
+    </ClCompile>
+    <ClCompile Include="y_file.cpp">
+      <Filter>Core\File</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
