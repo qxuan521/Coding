@@ -1,13 +1,16 @@
 #pragma once
 #include "y_ifile.h"
-using namespace std;
 
+
+//brief
+//文件类 表示普通数据文件、文件夹文件
 enum YFileType
 {
 	Y_File,
 	Y_Folder,
 	Y_SymLnk
 };
+
 class YFile : public YIFile
 {
 
@@ -21,7 +24,7 @@ public:
 	virtual const std::uint32_t		getChildrenCount();
 	virtual std::vector<YFile*>&	getChildren();
 	virtual const std::string&		getName();
-
+	virtual const std::string&		getShowName();
 	//写接口
 	void	setFileData(int8_t* data,uint32_t size);
 	void	setModifyDate(const std::string& modifyDate);
@@ -45,7 +48,6 @@ private:
 	std::string					m_szModifyDate;
 	const YFileType				m_eFileType;
 	std::uint32_t				m_nFileDataSize;
-
 	std::vector<YFile*>		    m_rChildrenArr;
 };
 

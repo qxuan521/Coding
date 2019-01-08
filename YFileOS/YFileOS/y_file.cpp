@@ -47,6 +47,11 @@ const std::string & YFile::getName()
 	return m_szName;
 }
 
+const std::string & YFile::getShowName()
+{
+	return getName();
+}
+
 void YFile::setFileData(int8_t * data, uint32_t size)
 {
 	if (nullptr == data || 0 <= size)
