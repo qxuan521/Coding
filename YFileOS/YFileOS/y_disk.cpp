@@ -9,6 +9,7 @@ YDisk::YDisk()
 
 YDisk::~YDisk()
 {
+	destroyAllFileNode();
 }
 
 YErrorCode YDisk::addNode(YIFile * parent, YIFile * newNode)
@@ -65,7 +66,11 @@ YErrorCode YDisk::createFolderFile(YIFile *& newFileNode)
 
 YErrorCode YDisk::formatDisk()
 {
-	return YErrorCode();
+	if (Y_OPERAT_FAILD == destroyAllFileNode())
+		return Y_OPERAT_FAILD;
+	m_DataRoot = new YFile(Y_Folder);
+	m_DataRoot->setName("root");
+	return Y_OPERAT_SUCCEED;
 }
 
 YErrorCode YDisk::destroyFileNode(YIFile *& beDestroyFile)
@@ -78,7 +83,10 @@ YErrorCode YDisk::destroyFileNode(YIFile *& beDestroyFile)
 
 YErrorCode YDisk::destroyAllFileNode()
 {
-	return YErrorCode();
+	destroyHelper(m_DataRoot);
+	if (nullptr != m_DataRoot)
+		return Y_OPERAT_FAILD;
+	return Y_OPERAT_SUCCEED;
 }
 
 YIFile* YDisk::queryFileNode(const std::string & szPath)
@@ -109,4 +117,23 @@ YFile * YDisk::queryFileHelper(YFile * pParent, std::vector<std::string>& rNameA
 		}
 	}
 	return nullptr;
+}
+
+void YDisk::destroyHelper(YFile *& pFile)
+{
+	if (nullptr == pFile)
+		return;
+	if (pFile->IsRealFolder())
+	{
+		std::vector<YFile*> rChildren = pFile->getChildren();
+		if (!rChildren.empty());
+		{
+			for (size_t index = 0; index < rChildren.size(); ++index)
+			{
+				destroyHelper(rChildren[index]);
+			}
+		}
+	}
+	delete pFile;
+	pFile = nullptr;
 }

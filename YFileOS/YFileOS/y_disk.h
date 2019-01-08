@@ -29,6 +29,7 @@ public:
 private:
 	YErrorCode  destroyAllFileNode();
 	YFile*		queryFileHelper(YFile* pParent, std::vector<std::string>& rNameArr, size_t nPathindex);
+	void		destroyHelper(YFile*& pFile);
 private:
 	YFile*		m_DataRoot;
 };
