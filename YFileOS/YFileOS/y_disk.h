@@ -15,7 +15,7 @@ public:
 	YErrorCode  takeNode(YIFile* parent, YIFile* beTokenNode);
 
 	YErrorCode  createDataFile(YIFile*& newFileNode);
-	YErrorCode  createSymlnkFile(YIFile*& newFileNode);
+	YErrorCode  createSymlnkFile(YIFile*& newFileNode, YIFile* pDstFile);
 	YErrorCode  createFolderFile(YIFile*& newFileNode);
 
 
