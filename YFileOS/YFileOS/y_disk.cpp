@@ -63,9 +63,17 @@ YErrorCode YDisk::createFolderFile(YIFile *& newFileNode)
 	return Y_OPERAT_SUCCEED;
 }
 
-YErrorCode YDisk::destroyFileNode(YIFile *& beDestroyFile)
+YErrorCode YDisk::formatDisk()
 {
 	return YErrorCode();
+}
+
+YErrorCode YDisk::destroyFileNode(YIFile *& beDestroyFile)
+{
+	if (nullptr == beDestroyFile)
+		return YERROR_POINTER_NULL;
+	delete beDestroyFile;
+	return Y_OPERAT_SUCCEED;
 }
 
 YErrorCode YDisk::destroyAllFileNode()

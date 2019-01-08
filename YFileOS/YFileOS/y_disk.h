@@ -18,16 +18,16 @@ public:
 	YErrorCode  createSymlnkFile(YIFile*& newFileNode, YIFile* pDstFile);
 	YErrorCode  createFolderFile(YIFile*& newFileNode);
 
-
+	YErrorCode	formatDisk();
 	YErrorCode  destroyFileNode(YIFile*& beDestroyFile);
 
-	YErrorCode  destroyAllFileNode();
 
 	YIFile*		queryFileNode(const std::string& szPath);
 
 	YErrorCode  clear();
 
 private:
+	YErrorCode  destroyAllFileNode();
 	YFile*		queryFileHelper(YFile* pParent, std::vector<std::string>& rNameArr, size_t nPathindex);
 private:
 	YFile*		m_DataRoot;
