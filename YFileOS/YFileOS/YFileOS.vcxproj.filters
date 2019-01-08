@@ -11,7 +11,10 @@
     <Filter Include="Core\Disk">
       <UniqueIdentifier>{29e2e3b1-a366-4d92-8098-562a6dc53fae}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\File">
+    <Filter Include="Core\global">
+      <UniqueIdentifier>{c31a197e-0fad-4631-80a7-34e2ebb6aeeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Disk\File">
       <UniqueIdentifier>{a6f38596-b3be-45f2-bdc1-b4b7a50108bf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -20,7 +23,22 @@
       <Filter>Core\Disk</Filter>
     </ClInclude>
     <ClInclude Include="y_file.h">
-      <Filter>Core\File</Filter>
+      <Filter>Core\Disk\File</Filter>
+    </ClInclude>
+    <ClInclude Include="y_ifile.h">
+      <Filter>Core\global</Filter>
+    </ClInclude>
+    <ClInclude Include="y_symlnk_file.h">
+      <Filter>Core\Disk\File</Filter>
+    </ClInclude>
+    <ClInclude Include="y_file_stream.h">
+      <Filter>Core\Disk</Filter>
+    </ClInclude>
+    <ClInclude Include="y_error_code.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="y_tool.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -28,7 +46,19 @@
       <Filter>Core\Disk</Filter>
     </ClCompile>
     <ClCompile Include="y_file.cpp">
-      <Filter>Core\File</Filter>
+      <Filter>Core\Disk\File</Filter>
+    </ClCompile>
+    <ClCompile Include="y_ifile.cpp">
+      <Filter>Core\global</Filter>
+    </ClCompile>
+    <ClCompile Include="y_symlnk_file.cpp">
+      <Filter>Core\Disk\File</Filter>
+    </ClCompile>
+    <ClCompile Include="y_file_stream.cpp">
+      <Filter>Core\Disk</Filter>
+    </ClCompile>
+    <ClCompile Include="y_tool.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

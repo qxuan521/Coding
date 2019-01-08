@@ -116,11 +116,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="y_disk.h" />
+    <ClInclude Include="y_error_code.h" />
     <ClInclude Include="y_file.h" />
+    <ClInclude Include="y_file_stream.h" />
+    <ClInclude Include="y_ifile.h" />
+    <ClInclude Include="y_symlnk_file.h" />
+    <ClInclude Include="y_tool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="y_disk.cpp" />
     <ClCompile Include="y_file.cpp" />
+    <ClCompile Include="y_file_stream.cpp" />
+    <ClCompile Include="y_ifile.cpp" />
+    <ClCompile Include="y_symlnk_file.cpp" />
+    <ClCompile Include="y_tool.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
