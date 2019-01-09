@@ -38,12 +38,12 @@ ErrorCode DataDisk::AddFileRealDisk2DataDisk(std::string Src, std::string Dst)
 	if (m_FileMap.empty())
 		return ERROR_DATA_DISK_UNKNOW;
 	std::string DstParent =GetParentPath(Dst);
-	if (!m_FileMap.count(DstParent))
+	if (!IsPathExsit(DstParent))
 		return ERROR_DST_PATH_CODE;
 	FileInfo* ParentNode = m_FileMap[DstParent];
 	if (NULL == ParentNode)
 		return ERROR_DATA_DISK_UNKNOW;
-	if (m_FileMap.count(Dst))
+	if (IsPathExsit(Dst))
 		return ERROR_THE_NAME_EXIST_CODE;
 	//构建一个新的文对象
 	std::fstream rFile(Src,std::ios::binary | std::ios::in);
@@ -59,7 +59,7 @@ ErrorCode DataDisk::AddFileRealDisk2DataDisk(std::string Src, std::string Dst)
 	time_t timep;
 	time(&timep);
 	char stTmp[TIME_MAX];
-	stTmp[24] = '\0'; 
+	stTmp[24] = '\0';
 	tm TempTime;
 	gmtime_s(&TempTime, &timep);
 	asctime_s(stTmp, &TempTime);
@@ -76,7 +76,7 @@ ErrorCode DataDisk::AddFileDataDisk2RealDisk(std::string Src, std::string Dst)
 {
 	if (m_FileMap.empty())
 		return ERROR_DATA_DISK_UNKNOW;
-	if (!m_FileMap.count(Src))
+	if (!IsPathExsit(Src))
 		return ERROR_SRC_PATH_CODE;
 	FileInfo* SrcNode = m_FileMap[Src];
 	if (NULL == SrcNode)
@@ -84,7 +84,7 @@ ErrorCode DataDisk::AddFileDataDisk2RealDisk(std::string Src, std::string Dst)
 	//构建一个新的文对象
 	std::fstream rFile(Dst, std::ios::binary | std::ios::out | std::ios::trunc);
 	if (!rFile.is_open())
-		return ERROR_SRC_PATH_CODE; 
+		return ERROR_SRC_PATH_CODE;
 	char* DataBuffer = SrcNode->GetFileData();
 	if (NULL != DataBuffer)
 		rFile.write(DataBuffer, SrcNode->GetFileSize());
@@ -97,14 +97,14 @@ ErrorCode DataDisk::AddFileDataDisk2DataDisk(std::string Src, std::string Dst)
 	if (m_FileMap.empty())
 		return ERROR_DATA_DISK_UNKNOW;
 	std::string DstParent = GetParentPath(Dst);
-	if (!m_FileMap.count(DstParent))
+	if (!IsPathExsit(DstParent))
 		return ERROR_DST_PATH_CODE;
 	FileInfo* ParentNode = m_FileMap[DstParent];
 	if (NULL == ParentNode)
 		return ERROR_DATA_DISK_UNKNOW;
 	if (ParentNode->CheckSameNameWithChildren(Dst))
 		return ERROR_THE_NAME_EXIST_CODE;
-	if (!m_FileMap.count(Src))
+	if (!IsPathExsit(Src))
 		return ERROR_SRC_PATH_CODE;
 	FileInfo* SrcNode = m_FileMap[Src];
 	FileInfo* NewNode = NULL;
@@ -127,7 +127,7 @@ ErrorCode DataDisk::AddFileDataDisk2DataDisk(std::string Src, std::string Dst)
 	time(&timep);
 	tm TempTime;
 	char stTmp[TIME_MAX];
-	stTmp[24] = '\0'; 
+	stTmp[24] = '\0';
 	gmtime_s(&TempTime, &timep);
 	asctime_s(stTmp, &TempTime);
 	NewNode->SetCreateDate(stTmp);
@@ -141,7 +141,7 @@ ErrorCode DataDisk::AddNewNode(FileInfo* NewNode, FileInfo* ParentNode)
 {
 	if (NULL == NewNode || NULL == ParentNode|| m_FileMap.empty())
 		return ERROR_DATA_DISK_UNKNOW;
-	if (!m_FileMap.count(ParentNode->GetFilePath()))
+	if (!IsPathExsit(ParentNode->GetFilePath()))
 		return ERROR_DST_PATH_CODE;
 	if (LINK_FILE == NewNode->GetRealType())
 	{
@@ -207,7 +207,7 @@ ErrorCode DataDisk::ChangeParent(std::string& Src, std::string& NewPath)
 				DstSame->GetChildrenList()[index]->SetParent(SrcCopy);
 			}
 		}
-		
+
 		m_FileMap[NewPath] = SrcCopy;
 		if (FOLDER_FILE == SrcNode->GetRealType())
 		{
@@ -322,7 +322,8 @@ ErrorCode DataDisk::SetWorkingPath(std::string & Path)
 
 bool DataDisk::IsPathExsit(const std::string & Path)
 {
-	return m_FileMap.count(Path) != 0;
+ 	FileInfo* findNode = GetFileInfo(Path);
+	return nullptr != findNode;
 }
 
 FileInfo* DataDisk::GetFileInfo(const std::string & Path)
@@ -423,11 +424,11 @@ ErrorCode DataDisk::LoadData(const std::string & Path)
 			std::string NewNodePath(PathBufferPtr);
 			if(NewNodePath.empty())
 				continue;
-			if (!m_FileMap.empty() && m_FileMap.count(NewNodePath))
+			if (IsPathExsit(NewNodePath))
 			{
 				continue;
 			}
-			if (m_FileMap.empty() || !m_FileMap.count(GetParentPath(NewNodePath)))
+			if (!IsPathExsit(GetParentPath(NewNodePath)))
 				return ERROR_DATA_DISK_UNKNOW;
 			FileInfo* ParentNode = m_FileMap[GetParentPath(NewNodePath)];
 			if (NULL == ParentNode)
@@ -457,7 +458,7 @@ ErrorCode DataDisk::LoadData(const std::string & Path)
 	while (!LinkFileQueue.empty())
 	{
 		LinkFileData& tempData = LinkFileQueue.front();
-		if (!m_FileMap.empty() && m_FileMap.count(tempData.RealPath))
+		if (IsPathExsit(tempData.RealPath))
 		{
 			LinkFileQueue.pop();
 			continue;
@@ -524,7 +525,7 @@ ErrorCode DataDisk::SaveData(const std::string & Path)
 			Write.PathSize = TempFileInfo->GetRealPath().size();
 			Write.FileSize = TempFileInfo->GetFileSize();
 			WriteDateInfo(TempFileInfo->GetCreateDate(), TempFileInfo->GetModifyDate(), Write);
-			rFile.write((char*)&Write, sizeof(Write)); 
+			rFile.write((char*)&Write, sizeof(Write));
 			rFile.write(TempFileInfo->GetRealPath().c_str(), Write.PathSize);
 			rFile.write(TempFileInfo->GetFileData(), Write.FileSize);
 		}
@@ -585,7 +586,7 @@ bool DataDisk::FormatDisk()
 			}
 		}
 		m_FileMap.clear();
-	
+
 		return true;
 	}
 	return false;

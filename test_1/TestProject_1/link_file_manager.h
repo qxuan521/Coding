@@ -4,8 +4,8 @@
 #include "link_file_info.h"
 class FileInfo;
 
-typedef std::map<FileInfo*, std::vector<FileInfo*>> Src2LinkMap;
-class LinkFileManager 
+typedef std::map<FileInfo*, std::vector<FileInfo*> > Src2LinkMap;
+class LinkFileManager
 {
 public:
 	LinkFileManager();

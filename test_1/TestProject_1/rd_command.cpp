@@ -138,12 +138,12 @@ ErrorCode RdCommand::DelOneLevel(std::string Str)
 				continue;
 			if (LINK_FILE == tempChildren[index]->GetRealType())
 				Children.push_back(tempChildren[index]);
-			else if (FOLDER_FILE == Children[index]->GetRealType())
-				if (Children[index]->GetChildrenSize())
+			else if (FOLDER_FILE == tempChildren[index]->GetRealType())
+				if (tempChildren[index]->GetChildrenSize())
 					return ERROR_FOLDER_NOT_NULL;
 				else
 				{
-					Children.push_back(tempChildren[index]);
+					Children.push_back(Children[index]);
 				}
 
 		}

@@ -25,7 +25,7 @@ ErrorCode RenCommand::Run()
 	bool InRule = regex_match(m_ArgList[2], reg);
 	if (!InRule)
 		return ERROR_NEW_NAME;
-	if (SrcFile->GetFilePath() == m_ArgList[2])
+	if (SrcFile->GetFileName() == m_ArgList[2])
 	{
 		return SUCCESS_CODE;
 	}

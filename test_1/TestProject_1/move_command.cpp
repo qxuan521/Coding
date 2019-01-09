@@ -6,7 +6,7 @@
 #include "data_disk.h"
 #include "file_info.h"
 MoveCommand::MoveCommand(std::vector<std::string>& ArgList)
-	: Command(ArgList, 3)
+	: Command(ArgList, 2)
 {
 	m_TypeArg.insert("/y");
 }
@@ -22,8 +22,10 @@ ErrorCode MoveCommand::Run()
 
 	if (SUCCESS_CODE != AbsError)
 		return AbsError;
-	if (m_ArgList.size() < 3)
+	if (m_ArgList.size() < 2)
 		return ERROR_ARG_COUNT_CODE;
+	if (m_ArgList.size() == 2)
+		m_ArgList.push_back(m_CurWorkPath);
 	std::string SrcStr, DstStr;
 	bool IsCoverSameFile = false;
 	if ("/y" == m_ArgList[1])
@@ -136,14 +138,17 @@ ErrorCode MoveCommand::MoveSrcFolder(std::string& SrcStr, std::string& DstStr, b
 			if (NULL != DstNode && FOLDER_FILE != DstNode->GetType())
 				return ERROR_DST_PATH_CODE;
 		}
-		if (!SameCheck(SrcStr, DstStr, IsCoverSameFile))
+		std::string NamePath = DstNode->GetRealPath();
+		NamePath.append("/");
+		NamePath.append(g_DataDiskPtr->GetName(SrcStr));
+		if (!SameCheck(SrcStr, NamePath, IsCoverSameFile))
 		{
 			return ERROR_USER_STOP_CODE;
 		}
 		m_SrcPathList.push_back(SrcStr);
-		m_DstPathList.push_back(DstStr);
+		m_DstPathList.push_back(NamePath);
 		MoveDstChild ChildrenNode;
-		ChildrenNode.DstParent = DstStr;
+		ChildrenNode.DstParent = NamePath;
 		ChildrenNode.SrcChildList = SrcNode->GetChildrenList(); 
 		WaitMoveQueue.push(ChildrenNode);
 	}

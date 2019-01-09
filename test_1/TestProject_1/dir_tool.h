@@ -130,8 +130,8 @@ struct FolderDirSearcher : public DirSeacher
 			{//lujingbucunzai
 				continue;
 			}
-			if (!CurFileNode->GetChildrenSize())
-				continue;
+// 			if (!CurFileNode->GetChildrenSize())
+// 				continue;
 			std::vector<FileInfo*>& Children = CurFileNode->GetChildrenList();
 			DirSearchResult Result;
 			Result.FilePtr = CurFileNode;
@@ -156,6 +156,7 @@ struct AllFolderDirSearcher : public DirSeacher
 		SearchResult.clear();
 		std::set<FileInfo*> Waiting4Search;
 		std::queue<FileInfo*>	SearchQueue;
+		std::vector<FileInfo*>	ResultQueue;
 		for (int index = 0; index < (int)PathArr.size(); ++index)
 		{
 			FileInfo* CurNode = g_DataDiskPtr->GetFileInfo(PathArr[index]);
@@ -175,12 +176,13 @@ struct AllFolderDirSearcher : public DirSeacher
 				continue;
 			}
 			std::vector<FileInfo*>& Children = SearchNode->GetChildrenList();
-			if (Children.empty())
+			if (FOLDER_FILE != SearchNode->GetType())
 			{
 				SearchQueue.pop();
 				continue;
 			}
 			Waiting4Search.insert(SearchNode);
+			ResultQueue.push_back(SearchNode);
 			for (int index = 0; index < (int)Children.size(); ++index)
 			{
 				if (NULL != Children[index] && FOLDER_FILE == Children[index]->GetType())
@@ -188,11 +190,11 @@ struct AllFolderDirSearcher : public DirSeacher
 			}
 			SearchQueue.pop();
 		}
-		if (Waiting4Search.empty())
+		if (ResultQueue.empty())
 			return ERROR_SRC_PATH_CODE;
-		std::set<FileInfo*>::iterator itor = Waiting4Search.begin();
+		std::vector<FileInfo*>::iterator itor = ResultQueue.begin();
 		int index = 0;
-		for (; itor != Waiting4Search.end(); ++itor)
+		for (; itor != ResultQueue.end(); ++itor)
 		{
 			DirSearchResult Result;
 			Result.FilePtr = *itor;

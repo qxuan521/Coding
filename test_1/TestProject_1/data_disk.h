@@ -47,7 +47,7 @@ private:
 	FileMap				m_FileMap;
 	FileInfo*			m_CurWorkingNode;
 	LinkFileManager*	m_LinkFileManager;
-	
+
 };
 
 extern std::unique_ptr<DataDisk> g_DataDiskPtr;

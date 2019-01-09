@@ -28,6 +28,10 @@ ErrorCode MdCommand::Run()
 		return ERROR_THE_NAME_EXIST_CODE;
 	ToAbsolutePath();
 	m_PathArr.push_back(m_ArgList[MD_COMMAND_PATH_ARG_INDEX]);
+	if (std::string::npos != m_ArgList[MD_COMMAND_PATH_ARG_INDEX].find('*'))
+	{
+		return ERROR_SRC_PATH_CODE;
+	}
 	std::string ParentStr = g_DataDiskPtr->GetParentPath(m_ArgList[MD_COMMAND_PATH_ARG_INDEX]);
 	while (std::string::npos != ParentStr.find_last_of("/") && !g_DataDiskPtr->IsPathExsit(ParentStr))
 	{
@@ -49,7 +53,6 @@ ErrorCode MdCommand::Run()
 		if (SUCCESS_CODE == g_DataDiskPtr->AddNewNode(NewNode, TempStartFileInfo))
 			std::cout << NewNode->GetFilePath() << " Create Successed"<<std::endl;
 		TempStartFileInfo = NewNode;
-		
 	}
 	return SUCCESS_CODE;
 }
