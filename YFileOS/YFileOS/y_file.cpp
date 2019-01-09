@@ -8,6 +8,7 @@ YFile::YFile(YFileType rFileType)
 	, m_eFileType(rFileType)
 	, m_nFileDataSize(0)
 	, m_szModifyDate("")
+	, m_pParent(nullptr)
 {
 }
 
@@ -52,6 +53,11 @@ const std::string & YFile::getShowName()
 	return getName();
 }
 
+YFile * YFile::getParent()
+{
+	return m_pParent;
+}
+
 void YFile::setFileData(int8_t * data, uint32_t size)
 {
 	if (nullptr == data || 0 <= size)
@@ -94,6 +100,11 @@ void YFile::setName(const std::string & name)
 	if (name.empty())
 		return;
 	m_szName = name;
+}
+
+void YFile::setParent(YFile * pParent)
+{
+	m_pParent = pParent;
 }
 
 bool YFile::IsFile()

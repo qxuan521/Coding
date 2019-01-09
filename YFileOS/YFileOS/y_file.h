@@ -17,7 +17,7 @@ class YFile : public YIFile
 public:
 	YFile(YFileType rFileType = Y_File );
 	virtual ~YFile();
-	//读接口
+	//父类 读接口 实现
 	virtual const std::int8_t*		getFileData();
 	virtual const std::uint32_t		getFileSize();
 	virtual const std::string&		getModifyDate();
@@ -25,13 +25,19 @@ public:
 	virtual std::vector<YFile*>&	getChildren();
 	virtual const std::string&		getName();
 	virtual const std::string&		getShowName();
+	//读接口
+	YFile*	getParent();
+
+
 	//写接口
 	void	setFileData(int8_t* data,uint32_t size);
 	void	setModifyDate(const std::string& modifyDate);
 	void	addChild(YFile* child);
 	void	delChild(YFile* child);
 	void	setName(const std::string& name);
+	void	setParent(YFile* pParent);
 
+	
 
 	//验证文件类型..Real为实际类型，Isxxx接口有可能是符号链接文件指向一个文件夹
 	virtual bool IsFile();
@@ -49,5 +55,6 @@ private:
 	const YFileType				m_eFileType;
 	std::uint32_t				m_nFileDataSize;
 	std::vector<YFile*>		    m_rChildrenArr;
+	YFile*						m_pParent;
 };
 
