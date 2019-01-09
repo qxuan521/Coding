@@ -246,7 +246,7 @@ ErrorCode DataDisk::ModifyName(FileInfo* SrcNode, std::string & NewName)
 	std::string NewPath = GetParentPath(SrcNode->GetRealPath());
 	NewPath.append("/");
 	NewPath.append(NewName);
-	if (!m_FileMap.empty() && m_FileMap.count(NewName))
+	if (IsPathExsit(NewPath))
 		return ERROR_THE_NAME_EXIST_CODE;
 	FileMap::iterator iter = m_FileMap.find(OldPath);
 	if (iter == m_FileMap.end())

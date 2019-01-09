@@ -1,6 +1,7 @@
 #include <regex>
 #include "ren_command.h"
 #include "data_disk.h"
+#include "file_info.h"
 RenCommand::RenCommand(std::vector<std::string>& ArgList)
 	: Command(ArgList, 3)
 {
@@ -24,7 +25,14 @@ ErrorCode RenCommand::Run()
 	bool InRule = regex_match(m_ArgList[2], reg);
 	if (!InRule)
 		return ERROR_NEW_NAME;
-	return g_DataDiskPtr->ModifyName(SrcFile,m_ArgList[2]);
+	if (SrcFile->GetFilePath() == m_ArgList[2])
+	{
+		return SUCCESS_CODE;
+	}
+	else
+	{
+		return g_DataDiskPtr->ModifyName(SrcFile, m_ArgList[2]);
+	}
 }
 
 ErrorCode RenCommand::ToAbsolutePath()
