@@ -332,7 +332,7 @@ FileInfo* DataDisk::GetFileInfo(const std::string & Path)
 	if (strArr.empty())
 		return nullptr;
 	FileInfo* Result = m_RootNode;
-	for (int index = 0;index < strArr.size();++index)
+	for (size_t index = 0;index < strArr.size();++index)
 	{
 		if(0 == index)
 			continue;
