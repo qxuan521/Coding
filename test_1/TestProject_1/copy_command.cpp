@@ -21,6 +21,8 @@ ErrorCode CopyCommand::Run()
 		return ERROR_ARG_COUNT_CODE;
 	std::string SrcStr = m_ArgList[1];
 	std::string DstStr = m_ArgList[2];
+	if (SrcStr == DstStr)
+		return ERROR_SRC_PATH_CODE;
 	ErrorCode ResolvePathResult = ResolvePath();
 	if (SUCCESS_CODE != ResolvePathResult)
 		return ResolvePathResult;
