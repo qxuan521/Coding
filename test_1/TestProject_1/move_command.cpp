@@ -127,20 +127,24 @@ ErrorCode MoveCommand::MoveSrcFolder(std::string& SrcStr, std::string& DstStr, b
 	else
 	{
 		DstNode = g_DataDiskPtr->GetFileInfo(DstStr);
+		std::string NamePath; 
 		if (NULL == DstNode)
 		{
 			DstNode = g_DataDiskPtr->GetFileInfo(g_DataDiskPtr->GetParentPath(DstStr));
 			if (NULL == DstNode || FOLDER_FILE != DstNode->GetType())
 				return ERROR_DST_PATH_CODE;
+			NamePath = DstNode->GetRealPath();
+			NamePath.append("/");
+			NamePath.append(g_DataDiskPtr->GetName(DstStr));
 		}
 		else
 		{
 			if (NULL != DstNode && FOLDER_FILE != DstNode->GetType())
 				return ERROR_DST_PATH_CODE;
+			NamePath = DstNode->GetRealPath();
+			NamePath.append("/");
+			NamePath.append(g_DataDiskPtr->GetName(SrcStr));
 		}
-		std::string NamePath = DstNode->GetRealPath();
-		NamePath.append("/");
-		NamePath.append(g_DataDiskPtr->GetName(SrcStr));
 		if (!SameCheck(SrcStr, NamePath, IsCoverSameFile))
 		{
 			return ERROR_USER_STOP_CODE;

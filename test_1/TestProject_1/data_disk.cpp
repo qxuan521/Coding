@@ -17,10 +17,10 @@ struct LinkFileData
 };
 
 DataDisk::DataDisk()
-	: m_RootNode(new FileInfo(std::string("root"), NULL, FOLDER_FILE))
+	: m_RootNode(new FileInfo(std::string("root:"), NULL, FOLDER_FILE))
 	, m_LinkFileManager(new LinkFileManager)
 {
-	std::pair<std::string, FileInfo*> FileMapPair("root", m_RootNode);
+	std::pair<std::string, FileInfo*> FileMapPair("root:", m_RootNode);
 	m_CurWorkingNode = m_RootNode;
 	m_FileMap.insert(FileMapPair);
 }
@@ -323,7 +323,7 @@ ErrorCode DataDisk::SetWorkingPath(std::string & Path)
 bool DataDisk::IsPathExsit(const std::string & Path)
 {
  	FileInfo* findNode = GetFileInfo(Path);
-	return nullptr == findNode;
+	return nullptr != findNode;
 }
 
 FileInfo* DataDisk::GetFileInfo(const std::string & Path)
@@ -373,7 +373,7 @@ ErrorCode DataDisk::LoadData(const std::string & Path)
 	{
 		FormatDisk();
 		m_FileMap.clear();
-		std::pair<std::string, FileInfo*> FileMapPair("root", m_RootNode);
+		std::pair<std::string, FileInfo*> FileMapPair("root:", m_RootNode);
 		m_FileMap.insert(FileMapPair);
 	}
 	if (!rFile.is_open())
@@ -430,7 +430,7 @@ ErrorCode DataDisk::LoadData(const std::string & Path)
 			}
 			if (!IsPathExsit(GetParentPath(NewNodePath)))
 				return ERROR_DATA_DISK_UNKNOW;
-			FileInfo* ParentNode = m_FileMap[GetParentPath(NewNodePath)];
+			FileInfo* ParentNode = GetFileInfo(GetParentPath(NewNodePath));
 			if (NULL == ParentNode)
 				return ERROR_DATA_DISK_UNKNOW;
 			FileInfo* NewFile = new FileInfo(NewNodePath, ParentNode, (FileType)ReadStructure.FileType);

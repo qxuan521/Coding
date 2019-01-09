@@ -29,7 +29,7 @@ ErrorCode Loadcommand::Run()
 
 bool Loadcommand::SecondAsk()
 {
-	FileInfo* RootFile = g_DataDiskPtr->GetFileInfo("root");
+	FileInfo* RootFile = g_DataDiskPtr->GetFileInfo("root:");
 	if (NULL == RootFile)
 		return false;
 	if (0 < RootFile->GetChildrenSize())
@@ -62,7 +62,7 @@ bool Loadcommand::SecondAsk()
 
 ErrorCode Loadcommand::ResolveRealPath(std::string & ResultPath)
 {
-	FileInfo* RootFile = g_DataDiskPtr->GetFileInfo("root");
+	FileInfo* RootFile = g_DataDiskPtr->GetFileInfo("root:");
 	if (NULL == RootFile)
 		return ERROR_DATA_DISK_UNKNOW;
 	int PathWildCardIndex = m_ArgList[1].find_first_of('*');

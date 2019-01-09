@@ -42,16 +42,16 @@ ErrorCode Command::ToAbsolutePath()
 		std::string AbsString = m_CurWorkPath;
 		for (int LoopCount = 0; LoopCount < (int)tempStrArr.size();++LoopCount)
 		{
-			if (0 == LoopCount && "root" == tempStrArr[LoopCount])
+			if (0 == LoopCount && "root:" == tempStrArr[LoopCount])
 			{
-				AbsString = "root";
+				AbsString = "root:";
 				continue;
 			}
 			if (tempStrArr[LoopCount].empty())
 				continue;
 			if (".." == tempStrArr[LoopCount])
 			{
-				if ("root" ==AbsString)
+				if ("root:" ==AbsString)
 					return ERROR_SRC_PATH_CODE;
 				AbsString =AbsString.substr(0, AbsString.find_last_of('/'));
 			}

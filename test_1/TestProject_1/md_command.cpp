@@ -1,3 +1,4 @@
+#include <regex>
 #include <iostream>
 #include "md_command.h"
 #include "data_disk.h"
@@ -21,17 +22,19 @@ ErrorCode MdCommand::Run()
 	m_PathArr.clear();
 	if (m_ArgList.size() != 2)
 		return ERROR_ARG_COUNT_CODE;
+	ToAbsolutePath();
 	std::string FilePath = m_ArgList[MD_COMMAND_PATH_ARG_INDEX];
 	if (FilePath.empty())
 		return ERROR_DST_PATH_CODE;
+	if (std::string::npos != m_ArgList[MD_COMMAND_PATH_ARG_INDEX].find_last_of("*") ||
+		(std::string::npos != m_ArgList[MD_COMMAND_PATH_ARG_INDEX].find_last_of(":") &&
+			4 != m_ArgList[MD_COMMAND_PATH_ARG_INDEX].find_last_of(":")))
+	{
+		return ERROR_NEW_NAME;
+	}
 	if (g_DataDiskPtr->IsPathExsit(FilePath))
 		return ERROR_THE_NAME_EXIST_CODE;
-	ToAbsolutePath();
 	m_PathArr.push_back(m_ArgList[MD_COMMAND_PATH_ARG_INDEX]);
-	if (std::string::npos != m_ArgList[MD_COMMAND_PATH_ARG_INDEX].find('*'))
-	{
-		return ERROR_SRC_PATH_CODE;
-	}
 	std::string ParentStr = g_DataDiskPtr->GetParentPath(m_ArgList[MD_COMMAND_PATH_ARG_INDEX]);
 	while (std::string::npos != ParentStr.find_last_of("/") && !g_DataDiskPtr->IsPathExsit(ParentStr))
 	{
