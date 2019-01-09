@@ -323,7 +323,7 @@ ErrorCode DataDisk::SetWorkingPath(std::string & Path)
 bool DataDisk::IsPathExsit(const std::string & Path)
 {
  	FileInfo* findNode = GetFileInfo(Path);
-	return nullptr != findNode;
+	return nullptr == findNode;
 }
 
 FileInfo* DataDisk::GetFileInfo(const std::string & Path)
@@ -340,7 +340,7 @@ FileInfo* DataDisk::GetFileInfo(const std::string & Path)
 			break;
 		std::vector<FileInfo*>& ChildrenArr = Result->GetChildrenList();
 		FileInfo* tempNode = nullptr;
-		for (int loopCount = 0; loopCount < ChildrenArr.size();++loopCount)
+		for (size_t loopCount = 0; loopCount < ChildrenArr.size();++loopCount)
 		{
 			if(nullptr == ChildrenArr[loopCount])
 				continue;
