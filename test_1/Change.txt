@@ -8,6 +8,12 @@
 
 7，更改文件信息类实现方式
 8，通配符实现。
+9,字符串处理配 或路径信息处理类
+https://blog.csdn.net/wangkechuang/article/details/7745376
+https://blog.csdn.net/phenixhwang/article/details/83428421
+https://blog.csdn.net/u011391040/article/details/41212273
+反过来验证 ：
+找到目录后 验证是不是符合通配符要求格式....
 
 
 
