@@ -26,6 +26,10 @@ ErrorCode MdCommand::Run()
 	std::string FilePath = m_ArgList[MD_COMMAND_PATH_ARG_INDEX];
 	if (FilePath.empty())
 		return ERROR_DST_PATH_CODE;
+	std::regex regPoint("[.]*");
+	bool InRulePoit = regex_match(g_DataDiskPtr->GetName( m_ArgList[1]), regPoint);
+	if (InRulePoit)
+		return ERROR_NEW_NAME;
 	if (std::string::npos != m_ArgList[MD_COMMAND_PATH_ARG_INDEX].find_last_of("*") ||
 		(std::string::npos != m_ArgList[MD_COMMAND_PATH_ARG_INDEX].find_last_of(":") &&
 			4 != m_ArgList[MD_COMMAND_PATH_ARG_INDEX].find_last_of(":")))

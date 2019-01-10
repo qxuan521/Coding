@@ -21,6 +21,18 @@ ErrorCode RenCommand::Run()
 	FileInfo* SrcFile= g_DataDiskPtr->GetFileInfo(m_ArgList[1]);
 	if (NULL == SrcFile)
 		return ERROR_SRC_PATH_CODE;
+	if (SrcFile->GetRealType() == FOLDER_FILE)
+	{
+		if (m_ArgList[2] == ".." ||
+			m_ArgList[2] == ".")
+		{
+			return ERROR_NEW_NAME;
+		}
+	}
+	std::regex regPoint("[.]*");
+	bool InRulePoit = regex_match(m_ArgList[2], regPoint);
+	if (InRulePoit)
+		return ERROR_NEW_NAME;
 	std::regex reg("[A-Za-z0-9_\\.]*");
 	bool InRule = regex_match(m_ArgList[2], reg);
 	if (!InRule)
@@ -48,9 +60,9 @@ ErrorCode RenCommand::ToAbsolutePath()
 	std::string AbsString = m_CurWorkPath;
 	for (int LoopCount = 0; LoopCount < (int)tempStrArr.size(); ++LoopCount)
 	{
-		if (0 == LoopCount && "root" == tempStrArr[LoopCount])
+		if (0 == LoopCount && "root:" == tempStrArr[LoopCount])
 		{
-			AbsString = "root";
+			AbsString = "root:";
 			continue;
 		}
 		if (tempStrArr[LoopCount].empty())

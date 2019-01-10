@@ -573,7 +573,10 @@ bool DataDisk::FormatDisk()
 		{
 			FileInfo*& TempNode = iter->second;
 			if (m_RootNode == TempNode)
+			{
+				++iter;
 				continue;
+			}
 			if (NULL == TempNode)
 			{
 				++iter;

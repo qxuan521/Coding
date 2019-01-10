@@ -143,7 +143,7 @@ ErrorCode RdCommand::DelOneLevel(std::string Str)
 					return ERROR_FOLDER_NOT_NULL;
 				else
 				{
-					Children.push_back(Children[index]);
+					Children.push_back(tempChildren[index]);
 				}
 
 		}
