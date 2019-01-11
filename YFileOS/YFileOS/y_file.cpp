@@ -30,7 +30,7 @@ const std::uint32_t YFile::getFileSize()
 
 const std::string & YFile::getModifyDate()
 {
-	return m_szModifyDate
+	return m_szModifyDate;
 }
 
 const std::uint32_t YFile::getChildrenCount()

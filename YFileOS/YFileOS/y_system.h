@@ -10,10 +10,3 @@ private:
 
 };
 
-YSystem::YSystem()
-{
-}
-
-YSystem::~YSystem()
-{
-}

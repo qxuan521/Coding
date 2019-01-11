@@ -3,31 +3,29 @@
 #include <string>
 #include <vector>
 class YFile;
-class YIFile;
-
 class YDisk
 {
 public:
 	YDisk();
 	~YDisk();
 
-	YErrorCode	addNode(YIFile* parent, YIFile* newNode);
-	YErrorCode  takeNode(YIFile* parent, YIFile* beTokenNode);
+	YErrorCode	addNode(YFile* parent, YFile* newNode);
+	YErrorCode  takeNode(YFile* parent, YFile* beTokenNode);
 	YErrorCode	formatDisk();
-	YErrorCode  destroyFileNode(YIFile*& beDestroyFile);
-	YIFile*		queryFileNode(const std::string& szPath);
+	YErrorCode  destroyFileNode(YFile*& beDestroYFile);
+	YFile*		queryFileNode(const std::string& szPath);
 	YErrorCode  clear();
 
 
 
-	YErrorCode	renameFile(YIFile* pFileNode,const std::string& szName);
-	YErrorCode  createDataFile(YIFile*& newFileNode, const std::string& szName);
-	YErrorCode  createSymlnkFile(YIFile*& newFileNode, YIFile* pDstFile, const std::string& szName);
-	YErrorCode  createFolderFile(YIFile*& newFileNode, const std::string& szName);
-	YErrorCode	getFileFullPath(YIFile* pFile, std::string& fullPath);
+	YErrorCode	renameFile(YFile* pFileNode,const std::string& szName);
+	YErrorCode  createDataFile(YFile*& newFileNode, const std::string& szName);
+	YErrorCode  createSymlnkFile(YFile*& newFileNode, YFile* pDstFile, const std::string& szName);
+	YErrorCode  createFolderFile(YFile*& newFileNode, const std::string& szName);
+	YErrorCode	getFileFullPath(YFile* pFile, std::string& fullPath);
 
-
-	std::string& getRootName();
+	//Verify
+	bool		isRootName(const std::string& szName);
 private:
 	YErrorCode  destroyAllFileNode();
 	YFile*		queryFileHelper(YFile* pParent, std::vector<std::string>& rNameArr, size_t nPathindex);
@@ -35,7 +33,7 @@ private:
 	void		fullPathHelper(YFile* pFile, std::string& subPath);
 	std::string	getDate();
 private:
-	YFile*		m_DataRoot;
+	std::vector<YFile*>		m_rRootArr;
 };
 
 extern std::unique_ptr<YDisk> g_pDiskPtr;
