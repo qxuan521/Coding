@@ -1,4 +1,4 @@
-1，预路径处理方式
+1，路径预处理方式
 2，工作路径存贮方式。
 3，在磁盘类和命令类中间 平衡 命令类 和  磁盘类逻辑
 
@@ -12,8 +12,19 @@
 https://blog.csdn.net/wangkechuang/article/details/7745376
 https://blog.csdn.net/phenixhwang/article/details/83428421
 https://blog.csdn.net/u011391040/article/details/41212273
+http://deerchao.net/tutorials/regex/regex-1.htm
 反过来验证 ：
 找到目录后 验证是不是符合通配符要求格式....
+
+
+！！！！！
+1.通配符匹配可以用正则的方式
+2.由于要实现多盘符方案
+可以给磁盘设计设置名字获得名字接口。
+仍然是一个磁盘对象下只有一个磁盘。
+通过操作类实例多个磁盘对象来实现创建多个磁盘的问题
+
+
 
 
 
@@ -125,4 +136,13 @@ string path
  之后获得到虚拟磁盘程序的源码，并将其拷贝到libVirtualDisk文件夹下（如果该文件夹下面有其他文件，则删除这些文件，只保留CMakeLists.txt文件。如果源代码中包含的头文件不是相对路径，则需要平级目录，否则需要多级目录，但VirtualDisk.h文件必须在libVirtualDisk文件夹下），如下图
 
  之后双击Install.bat，会自动的运行程序进行测试。
+、
 
+
+1.买键盘
+2.换手机
+3.加一个显示器
+4.攒钱
+5.买一双乔丹
+6.看10本书
+7.去健身
