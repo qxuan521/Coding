@@ -17,6 +17,12 @@
     <Filter Include="Core\Disk\File">
       <UniqueIdentifier>{a6f38596-b3be-45f2-bdc1-b4b7a50108bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\file_operator">
+      <UniqueIdentifier>{dfa925ce-f24d-4796-8c3b-d8f01047ff4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\file_operator\command">
+      <UniqueIdentifier>{96b92f06-bf5e-4fd8-a66b-cdb3de8157a4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="y_disk.h">
@@ -31,14 +37,26 @@
     <ClInclude Include="y_symlnk_file.h">
       <Filter>Core\Disk\File</Filter>
     </ClInclude>
-    <ClInclude Include="y_file_stream.h">
-      <Filter>Core\Disk</Filter>
-    </ClInclude>
     <ClInclude Include="y_error_code.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="y_tool.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="y_disk_operator.h">
+      <Filter>Core\Disk</Filter>
+    </ClInclude>
+    <ClInclude Include="y_system.h">
+      <Filter>Core\file_operator</Filter>
+    </ClInclude>
+    <ClInclude Include="y_command_factory.h">
+      <Filter>Core\file_operator</Filter>
+    </ClInclude>
+    <ClInclude Include="y_command.h">
+      <Filter>Core\file_operator\command</Filter>
+    </ClInclude>
+    <ClInclude Include="y_touch_command.h">
+      <Filter>Core\file_operator\command</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -54,11 +72,23 @@
     <ClCompile Include="y_symlnk_file.cpp">
       <Filter>Core\Disk\File</Filter>
     </ClCompile>
-    <ClCompile Include="y_file_stream.cpp">
-      <Filter>Core\Disk</Filter>
-    </ClCompile>
     <ClCompile Include="y_tool.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="y_disk_operator.cpp">
+      <Filter>Core\Disk</Filter>
+    </ClCompile>
+    <ClCompile Include="y_system.cpp">
+      <Filter>Core\file_operator</Filter>
+    </ClCompile>
+    <ClCompile Include="y_command_factory.cpp">
+      <Filter>Core\file_operator</Filter>
+    </ClCompile>
+    <ClCompile Include="y_command.cpp">
+      <Filter>Core\file_operator\command</Filter>
+    </ClCompile>
+    <ClCompile Include="y_touch_command.cpp">
+      <Filter>Core\file_operator\command</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

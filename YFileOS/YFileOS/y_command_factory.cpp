@@ -34,7 +34,10 @@ std::shared_ptr<YCommand> YCommandFactory::queryCommandPtr(std::string & szComma
 		for (size_t index = 0; index < m_rCommandPool.size(); ++index)
 		{
 			if (m_rCommandPool[index]->isThisCommand(szCommandName))
+			{
+				m_rCommandPool[index]->resetCommand();
 				return m_rCommandPool[index];
+			}
 		}
 	}
 	return NULL;

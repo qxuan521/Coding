@@ -33,6 +33,7 @@ YErrorCode YCommand::toAbsolutePath()
 		{
 			if (!m_rTypeArg.empty() && m_rTypeArg.count(m_rArgList[index]))
 			{
+				m_rTypeArg[m_rArgList[index]] = true;
 				continue;
 			}
 			else
@@ -76,5 +77,19 @@ YErrorCode YCommand::toAbsolutePath()
 bool YCommand::isThisCommand(std::string & szCommandStr)
 {
 	return std::regex_match(szCommandStr,m_rRegex);
+}
+
+void YCommand::resetCommand()
+{
+	m_rArgList.clear();
+	resetTypeArg();
+}
+
+void YCommand::resetTypeArg()
+{
+	for (auto iter = m_rTypeArg.begin(); iter != m_rTypeArg.end(); ++iter)
+	{
+		iter->second = false;
+	}
 }
 
