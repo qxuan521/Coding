@@ -9,6 +9,8 @@ YFile::YFile(YFileType rFileType)
 	, m_nFileDataSize(0)
 	, m_szModifyDate("")
 	, m_pParent(nullptr)
+	, m_nChildFileCount(0)
+	, m_nChildFolderCount(0)
 {
 }
 
@@ -48,7 +50,7 @@ const std::string & YFile::getName()
 	return m_szName;
 }
 
-const std::string & YFile::getShowName()
+const std::string  YFile::getShowName()
 {
 	return getName();
 }
@@ -61,6 +63,16 @@ YFile * YFile::getUseParent()
 YIFile * YFile::getParent()
 {
 	return m_pParent;
+}
+
+const std::uint32_t YFile::getChildrenFolderCount()
+{
+	return m_nChildFolderCount;
+}
+
+const std::uint32_t YFile::getChildrenFileCount()
+{
+	return m_nChildFileCount;
 }
 
 void YFile::setFileData(int8_t * data, uint32_t size)
@@ -81,6 +93,14 @@ void YFile::addChild(YFile * child)
 	if (nullptr == child)
 		return;
 	m_rChildrenArr.push_back(child);
+	if (child->IsRealFolder())
+	{
+		++m_nChildFolderCount;
+	}
+	else
+	{
+		++m_nChildFileCount;
+	}
 }
 
 void YFile::delChild(YFile * child)
@@ -91,7 +111,15 @@ void YFile::delChild(YFile * child)
 	{
 		if (child == *rIter)
 		{
-			m_rChildrenArr.erase(rIter);
+			if ((*rIter)->IsRealFolder())
+			{
+				++m_nChildFolderCount;
+			}
+			else
+			{
+				++m_nChildFileCount;
+			}
+			rIter = m_rChildrenArr.erase(rIter);
 		}
 		else
 		{ 

@@ -5,8 +5,8 @@ class YCommand;
 enum CommandType
 {
 	COMMAND_TOUCH,
+	COMMAND_DIR,
 	COMMAND_MKDISK,
-	COMMAND_DIR ,
 	COMMAND_MD ,
 	COMMAND_RD ,
 	COMMAND_CD ,

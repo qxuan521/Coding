@@ -1,11 +1,9 @@
 #include "y_console.h"
-
+#include "y_system.h"
 
 int main()
 {
-	YConsole rConsole;
-	while (true)
-	{
-		rConsole.outPutCurPath();
-	}
+	YSystem rSystem;
+	rSystem.runingLoop();
+	return 0;
 }

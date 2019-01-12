@@ -43,7 +43,7 @@ std::vector<YFile*>& YSymlnkFile::getChildren()
 	return m_pDstFile->getChildren();
 }
 
-const std::string & YSymlnkFile::getShowName()
+const std::string  YSymlnkFile::getShowName()
 {
 	std::string szDstFullPath;
 	if (nullptr != m_pDstFile)

@@ -14,7 +14,7 @@ public:
 	virtual const std::uint32_t		getFileSize();
 	virtual const std::uint32_t		getChildrenCount();
 	virtual std::vector<YFile*>&	getChildren();
-	virtual const std::string&		getShowName();
+	virtual const std::string		getShowName();
 private:
 	YFile*			m_pDstFile;
 	std::string		m_szShowName;

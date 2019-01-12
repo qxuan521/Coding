@@ -27,7 +27,7 @@ YErrorCode YCommand::toAbsolutePath(const std::vector<std::string>& rOrgrinalArg
 	if ((int)rOrgrinalArgList.size() < m_nMustSize)
 		return YERROR_COMMAND_ARG_NUM_ERROR;
 	bool IsCheckTypeArg = false;
-	for (int index = 0; index < (int)rOrgrinalArgList.size(); ++index)
+	for (size_t index = 0; index < (int)rOrgrinalArgList.size(); ++index)
 	{
 		if (!IsCheckTypeArg && index < m_rTypeArg.size())
 		{
@@ -94,5 +94,63 @@ void YCommand::resetTypeArg()
 	{
 		iter->second = false;
 	}
+}
+
+bool YCommand::pathValidation(const std::string & szPath)
+{
+	if (szPath.empty())
+		return false;
+	if (isRealPath(szPath))
+		return true;
+	std::vector<std::string> rPathSplitResult = splitStrByCharacter(szPath, '/');
+	if (rPathSplitResult.empty())
+	{
+		return false;
+	}
+	std::regex rBaseRegex("[\\w+\\._\\?\\* ]+");
+	std::regex rStartRegex("^[\\w\\._*?]+");
+	std::regex rEndRegex("$[\\w\\._*?]+");
+	std::regex rPointRegex("[\\.]*");
+	for (size_t index = 1; index < rPathSplitResult.size(); ++index)
+	{
+		bool bMatchResult = std::regex_match(rPathSplitResult[index], rBaseRegex);
+		bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rStartRegex);
+		bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rEndRegex);
+		bMatchResult = bMatchResult && !std::regex_match(rPathSplitResult[index], rPointRegex);
+		if (!bMatchResult)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+bool YCommand::noWildCardPathValidation(const std::string & szPath)
+{
+	if (szPath.empty())
+		return false;
+	if (isRealPath(szPath))
+		return true;
+	std::vector<std::string> rPathSplitResult = splitStrByCharacter(szPath, '/');
+	if (rPathSplitResult.empty())
+	{
+		return false;
+	}
+	std::regex rBaseRegex("[\\w+\\._ ]+");
+	std::regex rStartRegex("^[\\w\\._]+");
+	std::regex rEndRegex("$[\\w\\._]+");
+	std::regex rPointRegex("[\\.]*");
+	for (size_t index = 1; index < rPathSplitResult.size(); ++index)
+	{
+		bool bMatchResult = std::regex_match(rPathSplitResult[index], rBaseRegex);
+		bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rStartRegex);
+		bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rEndRegex);
+		bMatchResult = bMatchResult && !std::regex_match(rPathSplitResult[index], rPointRegex);
+		if (!bMatchResult)
+		{
+			return false;
+		}
+	}
+	return true;
 }
 

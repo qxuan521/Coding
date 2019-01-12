@@ -15,7 +15,7 @@ public:
 	YErrorCode  destroyFileNode(YFile*& beDestroYFile);
 	YFile*		queryFileNode(const std::string& szPath);
 	YErrorCode  clear();
-
+	YErrorCode	createRootNode(const std::string& szRootName);
 
 
 	YErrorCode	renameFile(YFile* pFileNode,const std::string& szName);
@@ -36,5 +36,3 @@ private:
 private:
 	std::vector<YFile*>		m_rRootArr;
 };
-
-extern std::unique_ptr<YDisk> g_pDiskPtr;

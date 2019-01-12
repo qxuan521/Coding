@@ -1,11 +1,12 @@
 #include "y_command_factory.h"
 #include "y_touch_command.h"
+#include "y_dir_command.h"
 YCommandFactory::YCommandFactory()
 {
 	m_rCommandPool.resize(COMMAND_MAX);
 	m_rCommandPool[COMMAND_TOUCH] = std::make_shared<YTouchCommand>("touch");
-	m_rCommandPool[COMMAND_MKDISK];
-// 	m_rCommandPool[COMMAND_DIR] = "dir";
+	//m_rCommandPool[COMMAND_MKDISK];
+ 	m_rCommandPool[COMMAND_DIR] = std::make_shared<YDirCommand>("dir");
 // 	m_rCommandPool[COMMAND_MD] = "md";
 // 	m_rCommandPool[COMMAND_RD] = "rd";
 // 	m_rCommandPool[COMMAND_CD] = "cd";

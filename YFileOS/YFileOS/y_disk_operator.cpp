@@ -1,4 +1,3 @@
-#include <set>
 #include "y_disk_operator.h"
 #include "y_disk.h"
 #include "y_tool.h"
@@ -9,7 +8,7 @@ YDiskOperator* g_pDiskOperator = new YDiskOperator;
 YDiskOperator::YDiskOperator()
 	: m_pDisk(new YDisk)
 {
-	m_szCurWorkingPath = "c:/";
+	m_szCurWorkingPath = "c:";
 }
 
 YDiskOperator::~YDiskOperator()
@@ -123,11 +122,11 @@ std::regex YDiskOperator::makeRegexByPath(const std::string & szPath)
 	{
 		if ('*' == szPath[index])
 		{
-			szRegexStr.append("[\\w_\.]*");
+			szRegexStr.append("[\\w_\\.]*");
 		}
 		else if ('?' == szPath[index])
 		{
-			szRegexStr.append("[\\w_\.]");
+			szRegexStr.append("[\\w_\\.]");
 		}
 		else
 		{

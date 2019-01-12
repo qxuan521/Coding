@@ -2,6 +2,7 @@
 #include <vector>
 #include <regex>
 #include <functional>
+#include <set>
 #include "y_error_code.h"
 class YDisk;
 class YIFile;

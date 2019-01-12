@@ -5,6 +5,7 @@
 #include "y_error_code.h"
 #include "y_ifile.h"
 
+
 class YCommand
 {
 public:
@@ -20,6 +21,8 @@ public:
 	virtual void			resetCommand();
 protected:
 	void					resetTypeArg();
+	bool					pathValidation(const std::string& szPath);
+	bool					noWildCardPathValidation(const std::string& szPath);
 	std::vector<std::string>	m_rArgList;
 	std::string					m_szCurWorkPath;
 	std::map<std::string,bool>	m_rTypeArg;

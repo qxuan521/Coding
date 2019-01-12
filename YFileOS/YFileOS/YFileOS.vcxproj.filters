@@ -31,17 +31,8 @@
     <ClInclude Include="y_file.h">
       <Filter>Core\Disk\File</Filter>
     </ClInclude>
-    <ClInclude Include="y_ifile.h">
-      <Filter>Core\global</Filter>
-    </ClInclude>
     <ClInclude Include="y_symlnk_file.h">
       <Filter>Core\Disk\File</Filter>
-    </ClInclude>
-    <ClInclude Include="y_error_code.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="y_tool.h">
-      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="y_disk_operator.h">
       <Filter>Core\Disk</Filter>
@@ -61,8 +52,20 @@
     <ClInclude Include="y_dir_command.h">
       <Filter>Core\file_operator\command</Filter>
     </ClInclude>
+    <ClInclude Include="y_input_resolve.h">
+      <Filter>Core\file_operator</Filter>
+    </ClInclude>
+    <ClInclude Include="y_tool.h">
+      <Filter>Core\global</Filter>
+    </ClInclude>
     <ClInclude Include="y_result_structure_def.h">
-      <Filter>Core</Filter>
+      <Filter>Core\global</Filter>
+    </ClInclude>
+    <ClInclude Include="y_error_code.h">
+      <Filter>Core\global</Filter>
+    </ClInclude>
+    <ClInclude Include="y_ifile.h">
+      <Filter>Core\Disk\File</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -72,14 +75,8 @@
     <ClCompile Include="y_file.cpp">
       <Filter>Core\Disk\File</Filter>
     </ClCompile>
-    <ClCompile Include="y_ifile.cpp">
-      <Filter>Core\global</Filter>
-    </ClCompile>
     <ClCompile Include="y_symlnk_file.cpp">
       <Filter>Core\Disk\File</Filter>
-    </ClCompile>
-    <ClCompile Include="y_tool.cpp">
-      <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="y_disk_operator.cpp">
       <Filter>Core\Disk</Filter>
@@ -98,6 +95,18 @@
     </ClCompile>
     <ClCompile Include="y_dir_command.cpp">
       <Filter>Core\file_operator\command</Filter>
+    </ClCompile>
+    <ClCompile Include="y_input_resolve.cpp">
+      <Filter>Core\file_operator</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="y_tool.cpp">
+      <Filter>Core\global</Filter>
+    </ClCompile>
+    <ClCompile Include="y_ifile.cpp">
+      <Filter>Core\Disk\File</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

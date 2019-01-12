@@ -7,6 +7,7 @@
 
 YDisk::YDisk()
 {
+	createRootNode("c:");
 }
 
 YDisk::~YDisk()
@@ -81,6 +82,7 @@ YErrorCode YDisk::getFileFullPath(YFile * pFile, std::string & fullPath)
 	if (pFile == nullptr)
 		return YERROR_POINTER_NULL;
 	fullPathHelper((YFile*)pFile, fullPath);
+	return Y_OPERAT_SUCCEED;
 }
 
 std::vector<YFile*>& YDisk::getRootArr()
@@ -104,10 +106,7 @@ YErrorCode YDisk::formatDisk()
 {
 	if (Y_OPERAT_FAILD == destroyAllFileNode())
 		return Y_OPERAT_FAILD;
-	YFile* pRoot = new YFile(Y_Folder);
-	m_rRootArr.push_back(pRoot);
-	pRoot->setModifyDate(getDate());
-	pRoot->setName("c:");
+	createRootNode("c:");
 	return Y_OPERAT_SUCCEED;
 }
 
@@ -171,12 +170,22 @@ YErrorCode YDisk::clear()
 {
 	return YErrorCode();
 }
+//没有名字非空验证
+YErrorCode YDisk::createRootNode(const std::string & szRootName)
+{
+	YFile* pRoot = new YFile(Y_Folder);
+	m_rRootArr.push_back(pRoot);
+	pRoot->setModifyDate(getDate());
+	pRoot->setName(szRootName);
+	return Y_OPERAT_SUCCEED;
+}
 
 YErrorCode YDisk::renameFile(YFile * pFileNode, const std::string & szName)
 {
 	if (nullptr == pFileNode)
 		return YERROR_POINTER_NULL;
 	pFileNode->setName(szName);
+	return Y_OPERAT_SUCCEED;
 }
 
 YFile * YDisk::queryFileHelper(YFile * pParent, std::vector<std::string>& rNameArr, size_t nPathindex)
@@ -201,7 +210,7 @@ void YDisk::destroyHelper(YFile *& pFile)
 	if (pFile->IsRealFolder())
 	{
 		std::vector<YFile*> rChildren = pFile->getChildren();
-		if (!rChildren.empty());
+		if (!rChildren.empty())
 		{
 			for (size_t index = 0; index < rChildren.size(); ++index)
 			{

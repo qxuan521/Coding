@@ -5,7 +5,7 @@ namespace YPathRegex
 {
 	std::regex rRealPathRegex("^[@]");
 };
-std::vector<std::string>& splitStrByCharacter(const std::string& srcStr, char spliter)
+std::vector<std::string> splitStrByCharacter(const std::string& srcStr, char spliter)
 {
 	size_t startIndex = 0;
 	std::vector<std::string> resultArr;

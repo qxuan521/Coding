@@ -24,10 +24,12 @@ public:
 	virtual const std::uint32_t		getChildrenCount();
 	virtual std::vector<YFile*>&	getChildren();
 	virtual const std::string&		getName();
-	virtual const std::string&		getShowName();
+	virtual const std::string		getShowName();
 	virtual	YFile*					getUseParent();
 	virtual YIFile*					getParent();
 
+	virtual const std::uint32_t		getChildrenFolderCount();
+	virtual const std::uint32_t		getChildrenFileCount();
 	//Ð´½Ó¿Ú
 	void	setFileData(int8_t* data,uint32_t size);
 	void	setModifyDate(const std::string& modifyDate);
@@ -55,5 +57,7 @@ private:
 	std::uint32_t				m_nFileDataSize;
 	std::vector<YFile*>		    m_rChildrenArr;
 	YFile*						m_pParent;
+	std::uint32_t				m_nChildFolderCount;
+	std::uint32_t				m_nChildFileCount;
 };
 
