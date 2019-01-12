@@ -26,6 +26,7 @@ ErrorCode Command::ToAbsolutePath()
 	bool IsCheckTypeArg = false;
 	for (int index = 1; index < (int)m_ArgList.size(); ++index)
 	{
+		//检查命令参数列表
 		if(!IsCheckTypeArg && index <= COMMAND_TYPE_INDEX_MAX)
 			if (!m_TypeArg.empty() && m_TypeArg.count(m_ArgList[index]))
 			{
