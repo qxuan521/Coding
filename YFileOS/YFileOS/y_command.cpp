@@ -22,18 +22,18 @@ void YCommand::errorPrint(YErrorCode rErrorType, std::string& szPath)
 
 }
 
-YErrorCode YCommand::toAbsolutePath()
+YErrorCode YCommand::toAbsolutePath(const std::vector<std::string>& rOrgrinalArgList)
 {
-	if ((int)m_rArgList.size() < m_nMustSize)
+	if ((int)rOrgrinalArgList.size() < m_nMustSize)
 		return YERROR_COMMAND_ARG_NUM_ERROR;
 	bool IsCheckTypeArg = false;
-	for (int index = 0; index < (int)m_rArgList.size(); ++index)
+	for (int index = 0; index < (int)rOrgrinalArgList.size(); ++index)
 	{
 		if (!IsCheckTypeArg && index < m_rTypeArg.size())
 		{
-			if (!m_rTypeArg.empty() && m_rTypeArg.count(m_rArgList[index]))
+			if (!m_rTypeArg.empty() && m_rTypeArg.count(rOrgrinalArgList[index]))
 			{
-				m_rTypeArg[m_rArgList[index]] = true;
+				m_rTypeArg[rOrgrinalArgList[index]] = true;
 				continue;
 			}
 			else
@@ -42,9 +42,12 @@ YErrorCode YCommand::toAbsolutePath()
 			}
 		}
 		//Â·¾¶´¦Àí
-		if (isRealPath(m_rArgList[index]))
+		if (isRealPath(rOrgrinalArgList[index]))
+		{
+			m_rArgList.push_back(rOrgrinalArgList[index]);
 			continue;
-		std::vector<std::string> tempStrArr = splitStrByCharacter(m_rArgList[index], '/');
+		}
+		std::vector<std::string> tempStrArr = splitStrByCharacter(rOrgrinalArgList[index], '/');
 		std::string AbsString = m_szCurWorkPath;
 		for (int LoopCount = 0; LoopCount < (int)tempStrArr.size(); ++LoopCount)
 		{
@@ -69,7 +72,7 @@ YErrorCode YCommand::toAbsolutePath()
 				AbsString.append(tempStrArr[LoopCount]);
 			}
 		}
-		m_rArgList[index] = AbsString;
+		m_rArgList.push_back(AbsString);
 	}
 	return Y_OPERAT_SUCCEED;
 }

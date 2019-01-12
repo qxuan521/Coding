@@ -117,11 +117,13 @@
   <ItemGroup>
     <ClInclude Include="y_command.h" />
     <ClInclude Include="y_command_factory.h" />
+    <ClInclude Include="y_dir_command.h" />
     <ClInclude Include="y_disk.h" />
     <ClInclude Include="y_disk_operator.h" />
     <ClInclude Include="y_error_code.h" />
     <ClInclude Include="y_file.h" />
     <ClInclude Include="y_ifile.h" />
+    <ClInclude Include="y_result_structure_def.h" />
     <ClInclude Include="y_symlnk_file.h" />
     <ClInclude Include="y_system.h" />
     <ClInclude Include="y_tool.h" />
@@ -130,6 +132,7 @@
   <ItemGroup>
     <ClCompile Include="y_command.cpp" />
     <ClCompile Include="y_command_factory.cpp" />
+    <ClCompile Include="y_dir_command.cpp" />
     <ClCompile Include="y_disk.cpp" />
     <ClCompile Include="y_disk_operator.cpp" />
     <ClCompile Include="y_file.cpp" />

@@ -4,7 +4,6 @@
 #include "y_symlnk_file.h"
 #include <time.h>
 
-std::unique_ptr<YDisk> g_pDiskPtr = std::make_unique<YDisk>();
 
 YDisk::YDisk()
 {
@@ -82,6 +81,11 @@ YErrorCode YDisk::getFileFullPath(YFile * pFile, std::string & fullPath)
 	if (pFile == nullptr)
 		return YERROR_POINTER_NULL;
 	fullPathHelper((YFile*)pFile, fullPath);
+}
+
+std::vector<YFile*>& YDisk::getRootArr()
+{
+	return m_rRootArr;
 }
 
 bool YDisk::isRootName(const std::string & szName)
@@ -211,12 +215,12 @@ void YDisk::destroyHelper(YFile *& pFile)
 
 void YDisk::fullPathHelper(YFile * pFile, std::string & subPath)
 {
-	if (nullptr == pFile->getParent())
+	if (nullptr == pFile->getUseParent())
 	{
 		subPath.append(pFile->getName());
 		return;
 	}
-	fullPathHelper(pFile->getParent(), subPath);
+	fullPathHelper(pFile->getUseParent(), subPath);
 	subPath.append(pFile->getName());
 }
 

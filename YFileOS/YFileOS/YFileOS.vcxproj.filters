@@ -58,6 +58,12 @@
     <ClInclude Include="y_touch_command.h">
       <Filter>Core\file_operator\command</Filter>
     </ClInclude>
+    <ClInclude Include="y_dir_command.h">
+      <Filter>Core\file_operator\command</Filter>
+    </ClInclude>
+    <ClInclude Include="y_result_structure_def.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="y_disk.cpp">
@@ -88,6 +94,9 @@
       <Filter>Core\file_operator\command</Filter>
     </ClCompile>
     <ClCompile Include="y_touch_command.cpp">
+      <Filter>Core\file_operator\command</Filter>
+    </ClCompile>
+    <ClCompile Include="y_dir_command.cpp">
       <Filter>Core\file_operator\command</Filter>
     </ClCompile>
   </ItemGroup>

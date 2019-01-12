@@ -25,9 +25,8 @@ public:
 	virtual std::vector<YFile*>&	getChildren();
 	virtual const std::string&		getName();
 	virtual const std::string&		getShowName();
-	//读接口
-	YFile*	getParent();
-
+	virtual	YFile*					getUseParent();
+	virtual YIFile*					getParent();
 
 	//写接口
 	void	setFileData(int8_t* data,uint32_t size);

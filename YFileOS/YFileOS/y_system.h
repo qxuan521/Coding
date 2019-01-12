@@ -6,6 +6,8 @@ public:
 	YSystem();
 	~YSystem();
 
+	void runingLoop();
+
 private:
 
 };

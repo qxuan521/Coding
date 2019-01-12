@@ -24,6 +24,7 @@ public:
 	YErrorCode  createFolderFile(YFile*& newFileNode, const std::string& szName);
 	YErrorCode	getFileFullPath(YFile* pFile, std::string& fullPath);
 
+	std::vector<YFile*>&	getRootArr();
 	//Verify
 	bool		isRootName(const std::string& szName);
 private:

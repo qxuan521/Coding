@@ -53,7 +53,12 @@ const std::string & YFile::getShowName()
 	return getName();
 }
 
-YFile * YFile::getParent()
+YFile * YFile::getUseParent()
+{
+	return m_pParent;
+}
+
+YIFile * YFile::getParent()
 {
 	return m_pParent;
 }

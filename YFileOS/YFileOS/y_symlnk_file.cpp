@@ -1,5 +1,5 @@
 #include "y_symlnk_file.h"
-
+#include "y_disk_operator.h"
 
 YSymlnkFile::YSymlnkFile(YFile* pDstFile)
 	: YFile(Y_SymLnk)
@@ -45,5 +45,10 @@ std::vector<YFile*>& YSymlnkFile::getChildren()
 
 const std::string & YSymlnkFile::getShowName()
 {
-	return m_szShowName = getName() + "[" + m_pDstFile->getName() + "]";
+	std::string szDstFullPath;
+	if (nullptr != m_pDstFile)
+	{
+		szDstFullPath = g_pDiskOperator->getFullPath(m_pDstFile);
+	}
+	return szDstFullPath;
 }

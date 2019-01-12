@@ -2,7 +2,7 @@
 #include "y_disk_operator.h"
 #include "y_tool.h"
 YTouchCommand::YTouchCommand(const std::string& szCommandRegexStr)
-	: YCommand(szCommandRegexStr, 2)
+	: YCommand(szCommandRegexStr, 1)
 {
 
 }
@@ -14,10 +14,9 @@ YTouchCommand::~YTouchCommand()
 YErrorCode YTouchCommand::excultCommand(std::vector<std::string> rArgArr)
 {
 	m_rArgList.clear();
-	m_rArgList = rArgArr;
 	YErrorCode rResultCode;
-	rResultCode = toAbsolutePath();
-	for (size_t index = 0; index < rArgArr.size();++index)
+	rResultCode = toAbsolutePath(rArgArr);
+	for (size_t index = 0; index < m_rArgList.size();++index)
 	{
 		if (isRealPath(m_rArgList[index]))
 		{
