@@ -30,6 +30,9 @@ protected:
 	bool					pathValidation(const std::string& szPath);
 	bool					noWildCardPathValidation(const std::string& szPath);
 	bool					rootDiskPathValidation(const std::string& szPath);
+	bool					wildCardOnlyLastLevel(const std::string& szPath);
+	bool					mayHaveWildCard(const std::string& szPath);
+	bool					pathCanbeRealValid();
 	std::vector<std::string>	m_rArgList;
 	std::string					m_szCurWorkPath;
 	std::map<std::string,bool>	m_rTypeArg;

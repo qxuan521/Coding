@@ -18,6 +18,8 @@ public:
 	YErrorCode createNewLnkFile(const std::string& szPath, const std::string & szDstFilePath, YIFile*& pResult);
 	YErrorCode createNewDisk(const std::string& szPath, YIFile*& pResult);
 	YErrorCode queryFolderNode(const std::string& szPath, std::vector<YIFile*>& rResultArr);
+	YErrorCode queryFileNode(const std::string& szPath, std::vector<YIFile*>& rResultArr);
+	YErrorCode queryAllNode(const std::string& szPath, std::vector<YIFile*>& rResultArr);
 //About File
 	YErrorCode getChildren(YIFile* pFile, std::vector<YIFile*>& rResult);
 

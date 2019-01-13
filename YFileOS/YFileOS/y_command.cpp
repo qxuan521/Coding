@@ -189,3 +189,86 @@ bool YCommand::rootDiskPathValidation(const std::string & szPath)
 	return true;
 }
 
+bool YCommand::wildCardOnlyLastLevel(const std::string & szPath)
+{
+	if (szPath.empty())
+		return false;
+	if (isRealPath(szPath))
+		return true;
+	std::vector<std::string> rPathSplitResult = splitStrByCharacter(szPath, '/');
+	if (rPathSplitResult.empty())
+	{
+		return false;
+	}
+	std::regex rPointRegex("[\\.]*");
+	std::regex rRootDiskRegex("[\\w+\\._]+:");
+	for (size_t index = 0; index < rPathSplitResult.size(); ++index)
+	{
+		if (0 == index)
+		{
+			if (!std::regex_match(rPathSplitResult[index], rRootDiskRegex) || std::regex_match(rPathSplitResult[index], rPointRegex))
+				return false;
+		}
+		else
+		{
+			if (rPathSplitResult.size() - 1 == index)
+			{
+				std::regex rBaseRegex("[\\w+\\._\\?\\* ]+");
+				std::regex rStartRegex("^[\\w\\._*?]+");
+				std::regex rEndRegex("[\\w\\._*?]+$");
+				bool bMatchResult = std::regex_match(rPathSplitResult[index], rBaseRegex);
+				bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rStartRegex);
+				bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rEndRegex);
+				bMatchResult = bMatchResult && !std::regex_match(rPathSplitResult[index], rPointRegex);
+				if (!bMatchResult)
+				{
+					return false;
+				}
+			}
+			else
+			{
+				std::regex rBaseRegex("[\\w+\\._ ]+");
+				std::regex rStartRegex("^[\\w\\._]+");
+				std::regex rEndRegex("[\\w\\._]+$");
+				bool bMatchResult = std::regex_match(rPathSplitResult[index], rBaseRegex);
+				bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rStartRegex);
+				bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rEndRegex);
+				bMatchResult = bMatchResult && !std::regex_match(rPathSplitResult[index], rPointRegex);
+				if (!bMatchResult)
+				{
+					return false;
+				}
+			}
+		}
+	}
+	return true;
+}
+
+bool YCommand::mayHaveWildCard(const std::string & szPath)
+{
+	return std::string::npos != szPath.find('*') || std::string::npos != szPath.find(',');
+}
+
+bool YCommand::pathCanbeRealValid()
+{
+	if (m_rArgList.size() != 2)
+	{
+		return false;
+	}
+	bool validation = mayHaveWildCard(m_rArgList[0]);
+	validation = validation && mayHaveWildCard(m_rArgList[1]);
+	if (isRealPath(m_rArgList[0]))
+	{
+		validation = validation && isHaveWildCard(m_rArgList[0]);
+	}
+	if (isRealPath(m_rArgList[1]))
+	{
+		validation = validation && isHaveWildCard(m_rArgList[1]);
+	}
+	if (isHaveWildCard(m_rArgList[0]))
+	{
+		validation = validation && g_pDiskOperator->isPathExist(m_rArgList[0]);
+	}
+	return validation;
+}
+

@@ -137,6 +137,73 @@ YErrorCode YDiskOperator::queryFolderNode(const std::string & szPath, std::vecto
 	return Y_OPERAT_SUCCEED;
 }
 
+YErrorCode YDiskOperator::queryFileNode(const std::string & szPath, std::vector<YIFile*>& rResultArr)
+{
+	if (szPath.empty())
+	{
+		return YERROR_PATH_ILLEGAL;
+	}
+	std::vector<std::string> rSplitResult = splitStrByCharacter(szPath, '/');
+	if (rSplitResult.empty())
+		return YERROR_PATH_ILLEGAL;
+	std::vector<YFile*> rRootArr = m_pDisk->getRootArr();
+	if (rRootArr.empty())
+	{
+		return TERROR_DISK_ERROR;
+	}
+	std::function<bool(YFile*, size_t)> rMatchFunc([=](YFile* pFile, size_t index)->bool
+	{
+		std::regex rPathRegex = makeRegexByPath(rSplitResult[index]);
+		std::string szNodePath = pFile->getName();
+		if (szNodePath.empty())
+		{
+			return false;
+		}
+		bool bFileType = rSplitResult.size() == index + 1? pFile ->IsRealFile() : pFile->IsFolder();
+		return (bFileType && std::regex_match(szNodePath, rPathRegex));
+	});
+	std::function<bool(size_t)> rFinishPredicate([=](size_t index)->bool
+	{
+		return rSplitResult.size() == index + 1;
+	});
+	std::set<YFile*> rMatchHistory;
+	queryHelper(rRootArr, 0, rMatchFunc, rFinishPredicate, rResultArr, rMatchHistory);
+	return Y_OPERAT_SUCCEED;
+}
+
+YErrorCode YDiskOperator::queryAllNode(const std::string & szPath, std::vector<YIFile*>& rResultArr)
+{
+	if (szPath.empty())
+	{
+		return YERROR_PATH_ILLEGAL;
+	}
+	std::vector<std::string> rSplitResult = splitStrByCharacter(szPath, '/');
+	if (rSplitResult.empty())
+		return YERROR_PATH_ILLEGAL;
+	std::vector<YFile*> rRootArr = m_pDisk->getRootArr();
+	if (rRootArr.empty())
+	{
+		return TERROR_DISK_ERROR;
+	}
+	std::function<bool(YFile*, size_t)> rMatchFunc([=](YFile* pFile, size_t index)->bool
+	{
+		std::regex rPathRegex = makeRegexByPath(rSplitResult[index]);
+		std::string szNodePath = pFile->getName();
+		if (szNodePath.empty())
+		{
+			return false;
+		}
+		return (std::regex_match(szNodePath, rPathRegex));
+	});
+	std::function<bool(size_t)> rFinishPredicate([=](size_t index)->bool
+	{
+		return rSplitResult.size() == index + 1;
+	});
+	std::set<YFile*> rMatchHistory;
+	queryHelper(rRootArr, 0, rMatchFunc, rFinishPredicate, rResultArr, rMatchHistory);
+	return Y_OPERAT_SUCCEED;
+}
+
 YErrorCode YDiskOperator::getChildren(YIFile * pFile, std::vector<YIFile*>& rResult)
 {
 	if (nullptr == pFile)

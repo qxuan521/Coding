@@ -45,3 +45,8 @@ bool isRealPath(const std::string & szPath)
 	return std::regex_match(szPath, YPathRegex::rRealPathRegex);
 }
 
+bool isHaveWildCard(const std::string & szPath)
+{
+	return std::string::npos != szPath.find('?') || std::string::npos != szPath.find('*');
+}
+
