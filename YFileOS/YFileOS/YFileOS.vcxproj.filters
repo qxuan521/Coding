@@ -67,6 +67,36 @@
     <ClInclude Include="y_ifile.h">
       <Filter>Core\Disk\File</Filter>
     </ClInclude>
+    <ClInclude Include="y_mkdir_command.h">
+      <Filter>Core\file_operator\command</Filter>
+    </ClInclude>
+    <ClInclude Include="y_move_command.h">
+      <Filter>Core\file_operator\command</Filter>
+    </ClInclude>
+    <ClInclude Include="y_copy_command.h">
+      <Filter>Core\file_operator\command</Filter>
+    </ClInclude>
+    <ClInclude Include="y_del_command.h">
+      <Filter>Core\file_operator\command</Filter>
+    </ClInclude>
+    <ClInclude Include="y_rd_command.h">
+      <Filter>Core\file_operator\command</Filter>
+    </ClInclude>
+    <ClInclude Include="y_ren_command.h">
+      <Filter>Core\file_operator\command</Filter>
+    </ClInclude>
+    <ClInclude Include="y_mkdisk_command.h">
+      <Filter>Core\file_operator\command</Filter>
+    </ClInclude>
+    <ClInclude Include="y_cd_command.h">
+      <Filter>Core\file_operator\command</Filter>
+    </ClInclude>
+    <ClInclude Include="y_mklink_command.h">
+      <Filter>Core\file_operator\command</Filter>
+    </ClInclude>
+    <ClInclude Include="y_cddisk_command.h">
+      <Filter>Core\file_operator\command</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="y_disk.cpp">
@@ -107,6 +137,36 @@
     </ClCompile>
     <ClCompile Include="y_ifile.cpp">
       <Filter>Core\Disk\File</Filter>
+    </ClCompile>
+    <ClCompile Include="y_mkdir_command.cpp">
+      <Filter>Core\file_operator\command</Filter>
+    </ClCompile>
+    <ClCompile Include="y_move_command.cpp">
+      <Filter>Core\file_operator\command</Filter>
+    </ClCompile>
+    <ClCompile Include="y_copy_command.cpp">
+      <Filter>Core\file_operator\command</Filter>
+    </ClCompile>
+    <ClCompile Include="y_del_command.cpp">
+      <Filter>Core\file_operator\command</Filter>
+    </ClCompile>
+    <ClCompile Include="y_rd_command.cpp">
+      <Filter>Core\file_operator\command</Filter>
+    </ClCompile>
+    <ClCompile Include="y_ren_command.cpp">
+      <Filter>Core\file_operator\command</Filter>
+    </ClCompile>
+    <ClCompile Include="y_mkdisk_command.cpp">
+      <Filter>Core\file_operator\command</Filter>
+    </ClCompile>
+    <ClCompile Include="y_cd_command.cpp">
+      <Filter>Core\file_operator\command</Filter>
+    </ClCompile>
+    <ClCompile Include="y_mklink_command.cpp">
+      <Filter>Core\file_operator\command</Filter>
+    </ClCompile>
+    <ClCompile Include="y_cddisk_command.cpp">
+      <Filter>Core\file_operator\command</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

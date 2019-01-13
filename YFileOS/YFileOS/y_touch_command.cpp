@@ -11,14 +11,14 @@ YTouchCommand::~YTouchCommand()
 {
 }
 
-YErrorCode YTouchCommand::excultCommand(std::vector<std::string> rArgArr)
+YErrorCode YTouchCommand::excultCommand(YCommandInfo& rCommandInfo)
 {
 	m_rArgList.clear();
 	YErrorCode rResultCode;
-	rResultCode = toAbsolutePath(rArgArr);
+	rResultCode = toAbsolutePath(rCommandInfo.rArglist);
 	for (size_t index = 0; index < m_rArgList.size();++index)
 	{
-		if (isRealPath(m_rArgList[index]))
+		if (isRealPath(m_rArgList[index])|| !noWildCardPathValidation(m_rArgList[index]))
 		{
 			errorPrint(YErrorCode::YERROR_PATH_ILLEGAL, m_rArgList[index]);
 			continue;

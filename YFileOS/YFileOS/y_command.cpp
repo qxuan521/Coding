@@ -17,7 +17,7 @@ void YCommand::setCurWoringPath(const std::string & szCurPath)
 	m_szCurWorkPath = szCurPath;
 }
 
-void YCommand::errorPrint(YErrorCode rErrorType, std::string& szPath)
+void YCommand::errorPrint(YErrorCode rErrorType, std::string szPath)
 {
 
 }
@@ -51,7 +51,7 @@ YErrorCode YCommand::toAbsolutePath(const std::vector<std::string>& rOrgrinalArg
 		std::string AbsString = m_szCurWorkPath;
 		for (int LoopCount = 0; LoopCount < (int)tempStrArr.size(); ++LoopCount)
 		{
-			if (g_pDiskOperator->isRootName(tempStrArr[LoopCount]))
+			if (rootDiskPathValidation(tempStrArr[LoopCount]))
 			{
 				AbsString = tempStrArr[LoopCount];
 				continue;
@@ -61,7 +61,9 @@ YErrorCode YCommand::toAbsolutePath(const std::vector<std::string>& rOrgrinalArg
 			if (".." == tempStrArr[LoopCount])
 			{
 				if (g_pDiskOperator->isRootName(AbsString))
-					continue;
+				{
+					return YERROR_PATH_ILLEGAL;
+				}
 				AbsString = getParentPath(AbsString);
 			}
 			else if ("." == tempStrArr[LoopCount])
@@ -109,17 +111,26 @@ bool YCommand::pathValidation(const std::string & szPath)
 	}
 	std::regex rBaseRegex("[\\w+\\._\\?\\* ]+");
 	std::regex rStartRegex("^[\\w\\._*?]+");
-	std::regex rEndRegex("$[\\w\\._*?]+");
+	std::regex rEndRegex("[\\w\\._*?]+$");
 	std::regex rPointRegex("[\\.]*");
+	std::regex rRootDiskRegex("[\\w+\\._*?]+:");
 	for (size_t index = 1; index < rPathSplitResult.size(); ++index)
 	{
-		bool bMatchResult = std::regex_match(rPathSplitResult[index], rBaseRegex);
-		bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rStartRegex);
-		bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rEndRegex);
-		bMatchResult = bMatchResult && !std::regex_match(rPathSplitResult[index], rPointRegex);
-		if (!bMatchResult)
+		if (0 == index)
 		{
-			return false;
+			if (!std::regex_match(rPathSplitResult[index], rRootDiskRegex) || std::regex_match(rPathSplitResult[index], rPointRegex))
+				return false;
+		}
+		else
+		{
+			bool bMatchResult = std::regex_match(rPathSplitResult[index], rBaseRegex);
+			bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rStartRegex);
+			bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rEndRegex);
+			bMatchResult = bMatchResult && !std::regex_match(rPathSplitResult[index], rPointRegex);
+			if (!bMatchResult)
+			{
+				return false;
+			}
 		}
 	}
 	return true;
@@ -138,18 +149,42 @@ bool YCommand::noWildCardPathValidation(const std::string & szPath)
 	}
 	std::regex rBaseRegex("[\\w+\\._ ]+");
 	std::regex rStartRegex("^[\\w\\._]+");
-	std::regex rEndRegex("$[\\w\\._]+");
+	std::regex rEndRegex("[\\w\\._]+$");
 	std::regex rPointRegex("[\\.]*");
-	for (size_t index = 1; index < rPathSplitResult.size(); ++index)
+	std::regex rRootDiskRegex("[\\w+\\._]+:");
+	for (size_t index = 0; index < rPathSplitResult.size(); ++index)
 	{
-		bool bMatchResult = std::regex_match(rPathSplitResult[index], rBaseRegex);
-		bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rStartRegex);
-		bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rEndRegex);
-		bMatchResult = bMatchResult && !std::regex_match(rPathSplitResult[index], rPointRegex);
-		if (!bMatchResult)
+		if (0 == index)
 		{
-			return false;
+			if (!std::regex_match(rPathSplitResult[index], rRootDiskRegex) || std::regex_match(rPathSplitResult[index], rPointRegex))
+				return false;
 		}
+		else
+		{
+			bool bMatchResult = std::regex_match(rPathSplitResult[index], rBaseRegex);
+			bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rStartRegex);
+			bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rEndRegex);
+			bMatchResult = bMatchResult && !std::regex_match(rPathSplitResult[index], rPointRegex);
+			if (!bMatchResult)
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool YCommand::rootDiskPathValidation(const std::string & szPath)
+{
+	if (szPath.empty())
+		return false;
+	if (isRealPath(szPath))
+		return false;
+	std::regex rRootDiskRegex("[\\w+\\._]+:");
+	std::regex rPointRegex("[\\.]*");
+	if (!std::regex_match(szPath, rRootDiskRegex) || std::regex_match(szPath, rPointRegex))
+	{
+		return false;
 	}
 	return true;
 }

@@ -13,7 +13,10 @@ public:
 	YDiskOperator();
 	~YDiskOperator();
 
-	YErrorCode createNewFile(const std::string& szPathArr,YIFile*& pResult);
+	YErrorCode createNewFile(const std::string& szPath, YIFile*& pResult);
+	YErrorCode createNewFolder(const std::string& szPath, YIFile*& pResult);
+	YErrorCode createNewLnkFile(const std::string& szPath, const std::string & szDstFilePath, YIFile*& pResult);
+	YErrorCode createNewDisk(const std::string& szPath, YIFile*& pResult);
 	YErrorCode queryFolderNode(const std::string& szPath, std::vector<YIFile*>& rResultArr);
 //About File
 	YErrorCode getChildren(YIFile* pFile, std::vector<YIFile*>& rResult);
@@ -21,11 +24,12 @@ public:
 //path
 	std::string getFullPath(YIFile* pFile);
 	std::string getCurWorkingPath();
-	void		setCurWorkingPath(const std::string& szCurWokingPath);
+	YErrorCode	setCurWorkingPath(const std::string& szCurWokingPath);
 //Verify
 	bool	isRootName(const std::string& szName);
 	bool	isPathExist(const std::string& szPath);
 private:
+	YFile*	lnkDstFindHelper(const std::string& szPath);
 	std::regex			makeRegexByPath(const std::string& szPath);
 	void				queryHelper(YFile* pNode, std::function<bool(YFile*)>& rPredicate,std::vector<YIFile*>& rResult, std::set<YFile*>& rHistorySet);
 private:

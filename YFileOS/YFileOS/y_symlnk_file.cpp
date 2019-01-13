@@ -52,3 +52,18 @@ const std::string  YSymlnkFile::getShowName()
 	}
 	return szDstFullPath;
 }
+
+bool YSymlnkFile::isValid()
+{
+	return m_pDstFile != nullptr;
+}
+
+void YSymlnkFile::setDstFile(YFile * pDstFile)
+{
+	m_pDstFile = pDstFile;
+}
+
+YFile * YSymlnkFile::getDstFile()
+{
+	return m_pDstFile;
+}

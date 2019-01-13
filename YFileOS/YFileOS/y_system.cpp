@@ -29,12 +29,12 @@ void YSystem::runingLoop()
 		//字符串处理 要能包含空格名字
 		YCommandInfo rResoveResult = rInputResolve.resolve(szInput);
 		//实例化命令
-		std::shared_ptr<YCommand> pCommand = rCommandFactory.queryCommandPtr(rResoveResult.szCommandName);
+		std::shared_ptr<YCommand> pCommand = rCommandFactory.queryCommandPtr(rResoveResult);
 		if (nullptr == pCommand)
 		{
 			continue;
 		}
 		pCommand->setCurWoringPath(szCurWoringPath);
-		pCommand->excultCommand(rResoveResult.rArglist);
+		pCommand->excultCommand(rResoveResult);
 	}
 }

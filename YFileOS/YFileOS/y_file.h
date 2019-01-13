@@ -27,6 +27,7 @@ public:
 	virtual const std::string		getShowName();
 	virtual	YFile*					getUseParent();
 	virtual YIFile*					getParent();
+	virtual bool					isValid();
 
 	virtual const std::uint32_t		getChildrenFolderCount();
 	virtual const std::uint32_t		getChildrenFileCount();

@@ -15,6 +15,9 @@ public:
 	virtual const std::uint32_t		getChildrenCount();
 	virtual std::vector<YFile*>&	getChildren();
 	virtual const std::string		getShowName();
+	virtual bool					isValid();
+	void	setDstFile(YFile* pDstFile);
+	YFile*	getDstFile();
 private:
 	YFile*			m_pDstFile;
 	std::string		m_szShowName;

@@ -39,6 +39,71 @@ YErrorCode YDiskOperator::createNewFile(const std::string & szPath, YIFile *& pR
 	return m_pDisk->addNode(pNewFileParent, pResultFile);
 }
 
+YErrorCode YDiskOperator::createNewFolder(const std::string & szPath, YIFile *& pResult)
+{
+	std::string szParent = getParentPath(szPath);
+	std::string szNamePart = getNameFromFullPath(szPath);
+	if (szParent.empty())
+	{
+		return YERROR_PATH_NOT_EXIST;
+	}
+	YFile* pNewFileParent = m_pDisk->queryFileNode(szParent);
+	YFile* pResultFile = nullptr;
+	if (nullptr == pNewFileParent)
+	{
+		return YERROR_PATH_NOT_EXIST;
+	}
+	if (pNewFileParent->IsRealSymLnk())
+	{
+		pNewFileParent = m_pDisk->queryFileNode(pNewFileParent->getShowName());
+		if (nullptr == pNewFileParent)
+		{
+			return YERROR_PATH_NOT_EXIST;
+		}
+	}
+	YErrorCode rResultCode = m_pDisk->createFolderFile(pResultFile, szNamePart);
+	if (rResultCode != Y_OPERAT_SUCCEED)
+	{
+		return rResultCode;
+	}
+	pResult = (YIFile*)pResultFile;
+	return m_pDisk->addNode(pNewFileParent, pResultFile);
+}
+
+YErrorCode YDiskOperator::createNewLnkFile(const std::string & szPath, const std::string & szDstFilePath, YIFile *& pResult)
+{
+	std::string szParent = getParentPath(szPath);
+	std::string szNamePart = getNameFromFullPath(szPath);
+	if (szParent.empty())
+	{
+		return YERROR_PATH_NOT_EXIST;
+	}
+	YFile* pNewFileParent = m_pDisk->queryFileNode(szParent);
+	YFile* pResultFile = nullptr;
+	YFile* pDstFile = g_pDiskOperator->lnkDstFindHelper(szDstFilePath);
+	if (nullptr == pNewFileParent || nullptr == pDstFile)
+	{
+		return YERROR_PATH_NOT_EXIST;
+	}
+	YErrorCode rResultCode = m_pDisk->createSymlnkFile(pResultFile, pDstFile, szNamePart);
+	if (rResultCode != Y_OPERAT_SUCCEED)
+	{
+		return rResultCode;
+	}
+	pResult = (YIFile*)pResultFile;
+	return m_pDisk->addNode(pNewFileParent, pResultFile);
+}
+
+YErrorCode YDiskOperator::createNewDisk(const std::string & szPath, YIFile *& pResult)
+{
+	YFile* pResultFile = nullptr;
+	if (g_pDiskOperator->isRootName(szPath))
+	{
+		return TERROR_DISK_ERROR;
+	}
+	return m_pDisk->createRootNode(szPath, pResultFile);
+}
+
 YErrorCode YDiskOperator::queryFolderNode(const std::string & szPath, std::vector<YIFile*>& rResultArr)
 {
 	if (szPath.empty())
@@ -99,9 +164,15 @@ std::string YDiskOperator::getCurWorkingPath()
 	return m_szCurWorkingPath;
 }
 
-void YDiskOperator::setCurWorkingPath(const std::string & szCurWokingPath)
+YErrorCode YDiskOperator::setCurWorkingPath(const std::string & szCurWokingPath)
 {
+	YFile* pFile = m_pDisk->queryFileNode(szCurWokingPath);
+	if (nullptr == pFile || !pFile->IsFolder())
+	{
+		return YERROR_PATH_ILLEGAL;
+	}
 	m_szCurWorkingPath = szCurWokingPath;
+	return Y_OPERAT_SUCCEED;
 }
 
 
@@ -113,6 +184,16 @@ bool YDiskOperator::isRootName(const std::string& szName)
 bool YDiskOperator::isPathExist(const std::string& szPath)
 {
 	return nullptr != m_pDisk->queryFileNode(szPath);
+}
+
+YFile * YDiskOperator::lnkDstFindHelper(const std::string & szPath)
+{
+	YFile* pDstFile = m_pDisk->queryFileNode(szPath);
+	while (pDstFile != nullptr && pDstFile->IsRealSymLnk())
+	{
+		pDstFile = m_pDisk->queryFileNode(pDstFile->getShowName());
+	}
+	return pDstFile;
 }
 
 std::regex YDiskOperator::makeRegexByPath(const std::string & szPath)
@@ -148,7 +229,7 @@ void YDiskOperator::queryHelper(YFile * pNode, std::function<bool(YFile*)>& rPre
 	}
 	for (size_t index = 0; index < rChildren.size();++index)
 	{
-		if (rHistorySet.find(rChildren[index]) != rHistorySet.end())
+		if (rHistorySet.find(rChildren[index]) == rHistorySet.end())
 		{
 			queryHelper(rChildren[index], rPredicate, rResult, rHistorySet);
 		}

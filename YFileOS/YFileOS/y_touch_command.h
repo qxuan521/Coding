@@ -8,7 +8,7 @@ public:
 	YTouchCommand(const std::string& szCommandRegexStr);
 	virtual ~YTouchCommand();
 
-	virtual YErrorCode	excultCommand(std::vector<std::string> rArgArr);
+	virtual YErrorCode	excultCommand(YCommandInfo& rCommandInfo);
 
 private:
 };

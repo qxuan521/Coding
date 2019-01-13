@@ -16,10 +16,10 @@ YDirCommand::~YDirCommand()
 
 }
 
-YErrorCode YDirCommand::excultCommand(std::vector<std::string> rArgArr)
+YErrorCode YDirCommand::excultCommand(YCommandInfo& rCommandInfo)
 {
 	YErrorCode rResultCode;
-	rResultCode = toAbsolutePath(rArgArr);
+	rResultCode = toAbsolutePath(rCommandInfo.rArglist);
 	if (Y_OPERAT_SUCCEED != rResultCode)
 	{
 		return rResultCode;
@@ -112,7 +112,7 @@ void YDirCommand::printResult(std::vector<DirSearchResult>& rResult)
 			}
 			std::string Name = SingleResult.CurLevelResult[LoopCount]->getName();
 
-			if (SingleResult.FilePtr->IsRealSymLnk())
+			if (SingleResult.CurLevelResult[LoopCount]->IsRealSymLnk())
 			{
 				std::cout << " " << SingleResult.CurLevelResult[LoopCount]->getName() << "[" << SingleResult.CurLevelResult[LoopCount]->getShowName() << "]" << std::endl;
 			}
@@ -162,7 +162,7 @@ void YDirCommand::printSeftNParent(YIFile * pFile)
 		std::cout << std::setw(6) << fileTypeString(pFile);
 		std::cout << std::setw(9) << std::setiosflags(std::ios::right) << " ";
 		std::string Name = ".";
-		std::cout << " " << pFile->getName() << std::endl;
+		std::cout << " " << Name << std::endl;
 	}
 	{// ..
 		YIFile* pParent = pFile->getParent();
@@ -181,7 +181,7 @@ void YDirCommand::printSeftNParent(YIFile * pFile)
 		std::cout << std::setw(6) << fileTypeString(pParent);
 		std::cout << std::setw(9) << std::setiosflags(std::ios::right) << " ";
 		std::string Name = "..";
-		std::cout << " " << pParent->getName() << std::endl;
+		std::cout << " " << Name << std::endl;
 	}
 }
 
@@ -232,11 +232,7 @@ YErrorCode YDirCommand::folderSearch(std::vector<YIFile*>& rDirArr, std::vector<
 	{
 		DirSearchResult rResult;
 		rHistorySet.insert(rDirArr[index]);
-		rResult.FilePtr = rDirArr[index];
-		rResult.ParentPtr = rDirArr[index]->getParent();
-		rResult.FileCount = rDirArr[index]->getChildrenFileCount();
-		rResult.FolderCount = rDirArr[index]->getChildrenFolderCount();
-		g_pDiskOperator->getChildren(rDirArr[index], rResult.CurLevelResult);
+		rResult.initializeResult(rDirArr[index]);
 		for (auto rIter = rResult.CurLevelResult.begin(); rIter != rResult.CurLevelResult.end();)
 		{
 			if (nullptr == (*rIter))
@@ -266,11 +262,7 @@ YErrorCode YDirCommand::normalSearch(std::vector<YIFile*>& rDirArr, std::vector<
 	{
 		DirSearchResult rResult;
 		rHistorySet.insert(rDirArr[index]);
-		rResult.FilePtr = rDirArr[index];
-		rResult.ParentPtr = rDirArr[index]->getParent();
-		rResult.FileCount = rDirArr[index]->getChildrenFileCount();
-		rResult.FolderCount = rDirArr[index]->getChildrenFolderCount();
-		g_pDiskOperator->getChildren(rDirArr[index], rResult.CurLevelResult);
+		rResult.initializeResult(rDirArr[index]);
 		for (auto rIter = rResult.CurLevelResult.begin(); rIter != rResult.CurLevelResult.end();++rIter)
 		{
 			if (nullptr == (*rIter))
@@ -291,13 +283,9 @@ YErrorCode YDirCommand::searchHelpter(YIFile * pFile, std::vector<DirSearchResul
 	{
 		return YERROR_POINTER_NULL;
 	}
-	DirSearchResult rResult;
 	rHistorySet.insert(pFile);
-	rResult.FilePtr = pFile;
-	rResult.ParentPtr = pFile->getParent();
-	rResult.FileCount = pFile->getChildrenFileCount();
-	rResult.FolderCount = pFile->getChildrenFolderCount();
-	g_pDiskOperator->getChildren(pFile, rResult.CurLevelResult);
+	DirSearchResult rResult;
+	rResult.initializeResult(pFile);
 	for (size_t index = 0; index < rResult.CurLevelResult.size();++index)
 	{
 		if (rResult.CurLevelResult[index]->IsFolder())
@@ -320,3 +308,11 @@ YErrorCode YDirCommand::searchHelpter(YIFile * pFile, std::vector<DirSearchResul
 	return Y_OPERAT_SUCCEED;
 }
 
+void DirSearchResult::initializeResult(YIFile * pFile)
+{
+	this->FilePtr = pFile;
+	this->ParentPtr = pFile->getParent();
+	this->FileCount = pFile->getChildrenFileCount();
+	this->FolderCount = pFile->getChildrenFolderCount();
+	g_pDiskOperator->getChildren(pFile, this->CurLevelResult);
+}

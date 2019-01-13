@@ -65,6 +65,11 @@ YIFile * YFile::getParent()
 	return m_pParent;
 }
 
+bool YFile::isValid()
+{
+	return true;
+}
+
 const std::uint32_t YFile::getChildrenFolderCount()
 {
 	return m_nChildFolderCount;

@@ -1,12 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-struct YCommandInfo
-{
-	std::string szCommandName;
-	std::vector<std::string> rArglist;
-
-};
+#include "y_command.h"
 class YInputResolve
 {
 public:

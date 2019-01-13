@@ -7,7 +7,8 @@
 
 YDisk::YDisk()
 {
-	createRootNode("c:");
+	YFile* pRoot = nullptr;
+	createRootNode("c:", pRoot);
 }
 
 YDisk::~YDisk()
@@ -57,7 +58,7 @@ YErrorCode YDisk::createDataFile(YFile *& newFileNode ,const std::string& szName
 
 YErrorCode YDisk::createSymlnkFile(YFile *& newFileNode, YFile* pDstFile, const std::string& szName)
 {
-	YFile* newFile = new YSymlnkFile(pDstFile);
+	YSymlnkFile* newFile = new YSymlnkFile(pDstFile);
 	if (nullptr == newFile)
 		return YERROR_POINTER_NULL;
 	newFile->setName(szName);
@@ -106,7 +107,8 @@ YErrorCode YDisk::formatDisk()
 {
 	if (Y_OPERAT_FAILD == destroyAllFileNode())
 		return Y_OPERAT_FAILD;
-	createRootNode("c:");
+	YFile* pRoot = nullptr;
+	createRootNode("c:", pRoot);
 	return Y_OPERAT_SUCCEED;
 }
 
@@ -171,12 +173,13 @@ YErrorCode YDisk::clear()
 	return YErrorCode();
 }
 //没有名字非空验证
-YErrorCode YDisk::createRootNode(const std::string & szRootName)
+YErrorCode YDisk::createRootNode(const std::string & szRootName, YFile* newRoot)
 {
 	YFile* pRoot = new YFile(Y_Folder);
 	m_rRootArr.push_back(pRoot);
 	pRoot->setModifyDate(getDate());
 	pRoot->setName(szRootName);
+	newRoot = pRoot;
 	return Y_OPERAT_SUCCEED;
 }
 
@@ -190,14 +193,21 @@ YErrorCode YDisk::renameFile(YFile * pFileNode, const std::string & szName)
 
 YFile * YDisk::queryFileHelper(YFile * pParent, std::vector<std::string>& rNameArr, size_t nPathindex)
 {
-	if(0 == pParent->getChildrenCount() ||nPathindex +1 >=rNameArr.size())
+	if(0 == pParent->getChildrenCount() ||nPathindex +1 >rNameArr.size())
 		return nullptr;
 	std::vector<YFile*>& rChildren = pParent->getChildren();
 	for (size_t index = 0; index < rChildren.size();++index)
 	{
 		if (rNameArr[nPathindex] == rChildren[index]->getName())
 		{
-			return queryFileHelper(rChildren[index], rNameArr,++nPathindex);
+			if (nPathindex + 1 == rNameArr.size())
+			{
+				return rChildren[index];
+			}
+			else
+			{
+				return queryFileHelper(rChildren[index], rNameArr, ++nPathindex);
+			}
 		}
 	}
 	return nullptr;
@@ -230,6 +240,7 @@ void YDisk::fullPathHelper(YFile * pFile, std::string & subPath)
 		return;
 	}
 	fullPathHelper(pFile->getUseParent(), subPath);
+	subPath.append("/");
 	subPath.append(pFile->getName());
 }
 

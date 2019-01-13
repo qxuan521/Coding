@@ -1,20 +1,22 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include "y_command.h"
 class YCommand;
 enum CommandType
 {
 	COMMAND_TOUCH,
 	COMMAND_DIR,
+	COMMAND_MD,
 	COMMAND_MKDISK,
-	COMMAND_MD ,
-	COMMAND_RD ,
-	COMMAND_CD ,
+	COMMAND_MKLINK, 
+	COMMAND_CD,
+	COMMAND_CDDISK,
+	COMMAND_RD,
 	COMMAND_DEL ,
 	COMMAND_COPY ,
 	COMMAND_REN ,
 	COMMAND_MOVE ,
-	COMMAND_MKLINK ,
 	COMMAND_SAVE ,
 	COMMAND_LOAD ,
 	COMMAND_CLS ,
@@ -28,7 +30,7 @@ public:
 	YCommandFactory();
 	~YCommandFactory();
 
-	std::shared_ptr<YCommand> queryCommandPtr(std::string& szCommandName);
+	std::shared_ptr<YCommand> queryCommandPtr(YCommandInfo& rCommandInfo);
 
 private:
 

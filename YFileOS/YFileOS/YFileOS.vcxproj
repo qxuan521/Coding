@@ -115,8 +115,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="y_cddisk_command.h" />
+    <ClInclude Include="y_cd_command.h" />
     <ClInclude Include="y_command.h" />
     <ClInclude Include="y_command_factory.h" />
+    <ClInclude Include="y_copy_command.h" />
+    <ClInclude Include="y_del_command.h" />
     <ClInclude Include="y_dir_command.h" />
     <ClInclude Include="y_disk.h" />
     <ClInclude Include="y_disk_operator.h" />
@@ -124,6 +128,12 @@
     <ClInclude Include="y_file.h" />
     <ClInclude Include="y_ifile.h" />
     <ClInclude Include="y_input_resolve.h" />
+    <ClInclude Include="y_mkdir_command.h" />
+    <ClInclude Include="y_mkdisk_command.h" />
+    <ClInclude Include="y_mklink_command.h" />
+    <ClInclude Include="y_move_command.h" />
+    <ClInclude Include="y_rd_command.h" />
+    <ClInclude Include="y_ren_command.h" />
     <ClInclude Include="y_result_structure_def.h" />
     <ClInclude Include="y_symlnk_file.h" />
     <ClInclude Include="y_system.h" />
@@ -132,14 +142,24 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="y_cddisk_command.cpp" />
+    <ClCompile Include="y_cd_command.cpp" />
     <ClCompile Include="y_command.cpp" />
     <ClCompile Include="y_command_factory.cpp" />
+    <ClCompile Include="y_copy_command.cpp" />
+    <ClCompile Include="y_del_command.cpp" />
     <ClCompile Include="y_dir_command.cpp" />
     <ClCompile Include="y_disk.cpp" />
     <ClCompile Include="y_disk_operator.cpp" />
     <ClCompile Include="y_file.cpp" />
     <ClCompile Include="y_ifile.cpp" />
     <ClCompile Include="y_input_resolve.cpp" />
+    <ClCompile Include="y_mkdir_command.cpp" />
+    <ClCompile Include="y_mkdisk_command.cpp" />
+    <ClCompile Include="y_mklink_command.cpp" />
+    <ClCompile Include="y_move_command.cpp" />
+    <ClCompile Include="y_rd_command.cpp" />
+    <ClCompile Include="y_ren_command.cpp" />
     <ClCompile Include="y_symlnk_file.cpp" />
     <ClCompile Include="y_system.cpp" />
     <ClCompile Include="y_tool.cpp" />

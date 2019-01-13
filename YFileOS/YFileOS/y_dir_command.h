@@ -9,6 +9,8 @@ struct DirSearchResult
 	std::vector<YIFile*>	CurLevelResult;
 	int						FolderCount = 0;
 	int						FileCount = 0;
+	//裸初始化 什么验证都没有
+	void initializeResult(YIFile* pFile);
 };
 
 class YDirCommand :public YCommand
@@ -16,7 +18,7 @@ class YDirCommand :public YCommand
 public:
 	YDirCommand(const std::string& szName);
 	virtual ~YDirCommand();
-	virtual YErrorCode	excultCommand(std::vector<std::string> rArgArr) ;
+	virtual YErrorCode	excultCommand(YCommandInfo& rCommandInfo) ;
 
 	 
 private:
