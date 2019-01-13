@@ -31,7 +31,15 @@ public:
 private:
 	YFile*	lnkDstFindHelper(const std::string& szPath);
 	std::regex			makeRegexByPath(const std::string& szPath);
-	void				queryHelper(YFile* pNode, std::function<bool(YFile*)>& rPredicate,std::vector<YIFile*>& rResult, std::set<YFile*>& rHistorySet);
+	void				queryHelper
+	(
+		std::vector<YFile*>& pParentNodes,
+		size_t nPathindex ,
+		std::function<bool(YFile*, size_t)>& rPredicate,
+		std::function<bool(size_t)>& rFinishPredicate,
+		std::vector<YIFile*>& rResult, 
+		std::set<YFile*>& rHistorySet
+	);
 private:
 
 	YDisk*		m_pDisk;

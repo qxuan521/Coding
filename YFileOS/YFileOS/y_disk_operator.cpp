@@ -110,31 +110,30 @@ YErrorCode YDiskOperator::queryFolderNode(const std::string & szPath, std::vecto
 	{
 		return YERROR_PATH_ILLEGAL;
 	}
-	std::regex rPathRegex = makeRegexByPath(szPath);
-	std::function<bool(YFile*)> rMatchFunc([=](YFile* pFile)->bool
+	std::vector<std::string> rSplitResult = splitStrByCharacter(szPath, '/');
+	if (rSplitResult.empty())
+		return YERROR_PATH_ILLEGAL;
+	std::vector<YFile*> rRootArr = m_pDisk->getRootArr();
+	if (rRootArr.empty())
 	{
-		std::string szNodePath;
-		if (Y_OPERAT_SUCCEED != m_pDisk->getFileFullPath(pFile, szNodePath))
-		{
-			return  false;
-		}
+		return TERROR_DISK_ERROR;
+	}
+	std::function<bool(YFile*, size_t)> rMatchFunc([=](YFile* pFile,size_t index)->bool
+	{
+		std::regex rPathRegex = makeRegexByPath(rSplitResult[index]);
+		std::string szNodePath = pFile->getName();
 		if (szNodePath.empty())
 		{
 			return false;
 		}
 		return (pFile->IsFolder() && std::regex_match(szNodePath, rPathRegex));
 	});
-
-	std::vector<YFile*> rRootArr = m_pDisk->getRootArr();
-	if (rRootArr.empty())
+	std::function<bool(size_t)> rFinishPredicate([=](size_t index)->bool 
 	{
-		return TERROR_DISK_ERROR;
-	}
+		return rSplitResult.size() == index + 1;
+	});
 	std::set<YFile*> rMatchHistory;
-	for (size_t index = 0; index < rRootArr.size(); ++index )
-	{
-		queryHelper(rRootArr[index], rMatchFunc, rResultArr, rMatchHistory);
-	}
+	queryHelper(rRootArr,0, rMatchFunc, rFinishPredicate, rResultArr, rMatchHistory);
 	return Y_OPERAT_SUCCEED;
 }
 
@@ -217,23 +216,43 @@ std::regex YDiskOperator::makeRegexByPath(const std::string & szPath)
 	return std::regex(szRegexStr);
 }
 
-void YDiskOperator::queryHelper(YFile * pNode, std::function<bool(YFile*)>& rPredicate, std::vector<YIFile*>& rResult, std::set<YFile*>& rHistorySet)
+void YDiskOperator::queryHelper
+(
+	std::vector<YFile*>& pParentNodes, 
+	size_t  nPathindex, 
+	std::function<bool(YFile*, size_t)>& rPredicate, 
+	std::function<bool(size_t)>& rFinishPredicate, 
+	std::vector<YIFile*>& rResult, 
+	std::set<YFile*>& rHistorySet
+)
 {
-	if (nullptr == pNode)
+	if (pParentNodes.empty())
 		return;
-	rHistorySet.insert(pNode);
-	std::vector<YFile*> rChildren = pNode->getChildren();
-	if (rPredicate(pNode))
+	if (rFinishPredicate(nPathindex - 1))
 	{
-		rResult.push_back(pNode);
+		return;
 	}
-	for (size_t index = 0; index < rChildren.size();++index)
+	for (size_t index = 0; index < pParentNodes.size(); ++index)
 	{
-		if (rHistorySet.find(rChildren[index]) == rHistorySet.end())
+		if (rHistorySet.find(pParentNodes[index]) == rHistorySet.end())
 		{
-			queryHelper(rChildren[index], rPredicate, rResult, rHistorySet);
+			if (rPredicate(pParentNodes[index], nPathindex))
+			{
+				if (rFinishPredicate(nPathindex))
+				{
+					rResult.push_back(pParentNodes[index]);
+				}
+				else
+				{
+					std::vector<YFile*> rChildren = pParentNodes[index]->getChildren();
+					if (!rChildren.empty())
+					{
+						queryHelper(rChildren, nPathindex + 1, rPredicate, rFinishPredicate, rResult, rHistorySet);
+					}
+				}
+			}
+			rHistorySet.insert(pParentNodes[index]);
 		}
 	}
 }
-
 

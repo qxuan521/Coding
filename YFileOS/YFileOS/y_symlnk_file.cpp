@@ -53,6 +53,16 @@ const std::string  YSymlnkFile::getShowName()
 	return szDstFullPath;
 }
 
+const std::uint32_t YSymlnkFile::getChildrenFolderCount()
+{
+	return m_pDstFile->getChildrenFolderCount();
+}
+
+const std::uint32_t YSymlnkFile::getChildrenFileCount()
+{
+	return m_pDstFile->getChildrenFileCount();
+}
+
 bool YSymlnkFile::isValid()
 {
 	return m_pDstFile != nullptr;
