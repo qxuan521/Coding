@@ -24,7 +24,7 @@ std::vector<std::string> splitStrByCharacter(const std::string& srcStr, char spl
 
 std::string getParentPath(const std::string & szPath)
 {
-	int ParentNameEnd = szPath.find_last_of("/");
+	size_t ParentNameEnd = szPath.find_last_of("/");
 	if (std::string::npos == ParentNameEnd)
 		return std::string("");
 	std::string DstParent = szPath.substr(0, ParentNameEnd);
@@ -33,7 +33,7 @@ std::string getParentPath(const std::string & szPath)
 
 std::string getNameFromFullPath(const std::string & szPath)
 {
-	int nNameIndex = szPath.find_last_of('/');
+	size_t nNameIndex = szPath.find_last_of('/');
 	if (std::string::npos == nNameIndex)
 		return szPath;
 	else
@@ -48,5 +48,26 @@ bool isRealPath(const std::string & szPath)
 bool isHaveWildCard(const std::string & szPath)
 {
 	return std::string::npos != szPath.find('?') || std::string::npos != szPath.find('*');
+}
+
+std::regex makeRegexByPath(const std::string & szPath)
+{
+	std::string szRegexStr;
+	for (size_t index = 0; index < szPath.size(); ++index)
+	{
+		if ('*' == szPath[index])
+		{
+			szRegexStr.append("[\\w_\\.]*");
+		}
+		else if ('?' == szPath[index])
+		{
+			szRegexStr.append("[\\w_\\.]?");
+		}
+		else
+		{
+			szRegexStr += szPath[index];
+		}
+	}
+	return std::regex(szRegexStr);
 }
 

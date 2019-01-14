@@ -15,7 +15,18 @@ YErrorCode YTouchCommand::excultCommand(YCommandInfo& rCommandInfo)
 {
 	m_rArgList.clear();
 	YErrorCode rResultCode;
-	rResultCode = toAbsolutePath(rCommandInfo.rArglist);
+	rResultCode = toAbsolutePath(rCommandInfo.rPathList);
+	if (Y_OPERAT_SUCCEED != rResultCode)
+	{
+		errorPrint(rResultCode);
+		return rResultCode;
+	}
+	rResultCode = handleCommandArg(rCommandInfo);
+	if (Y_OPERAT_SUCCEED != rResultCode)
+	{
+		errorPrint(rResultCode);
+		return rResultCode;
+	}
 	for (size_t index = 0; index < m_rArgList.size();++index)
 	{
 		if (isRealPath(m_rArgList[index])|| !noWildCardPathValidation(m_rArgList[index]))

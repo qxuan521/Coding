@@ -204,6 +204,38 @@ YErrorCode YDiskOperator::queryAllNode(const std::string & szPath, std::vector<Y
 	return Y_OPERAT_SUCCEED;
 }
 
+YErrorCode YDiskOperator::copyFileNode(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::vector<YIFile*>& rCopyResult)
+{
+	std::string szDstParent = getParentPath(rDstPathArr[0]);
+	YFile* pDstParent = m_pDisk->queryFileNode(szDstParent);
+	if (nullptr == pDstParent)
+	{
+		return YERROR_POINTER_NULL;
+	}
+	for (size_t index = 0; index < rDstPathArr.size();++index)
+	{
+		YFile* pDstFile = m_pDisk->queryFileNode(rDstPathArr[index]);
+		YFile* pSrcFile = m_pDisk->queryFileNode(rSrcPathArr[index]);
+		std::string szDstName = getNameFromFullPath(rDstPathArr[index]);
+		if (nullptr == pDstFile)
+		{//没有重名文件
+			if (szDstName.empty())
+			{
+				return YERROR_PATH_ILLEGAL;
+			}
+			copyFIleHelper(pSrcFile, pDstFile, szDstName);
+			m_pDisk->addNode(pDstParent, pDstFile);
+		}
+		else
+		{//存在重名文件
+			m_pDisk->takeNode(pDstParent, pDstFile);
+			m_pDisk->destroyFileNode(pDstFile);
+			copyFIleHelper(pSrcFile, pDstFile, szDstName);
+		}
+	}
+	return Y_COPY_SUCCEED;
+}
+
 YErrorCode YDiskOperator::getChildren(YIFile * pFile, std::vector<YIFile*>& rResult)
 {
 	if (nullptr == pFile)
@@ -262,26 +294,6 @@ YFile * YDiskOperator::lnkDstFindHelper(const std::string & szPath)
 	return pDstFile;
 }
 
-std::regex YDiskOperator::makeRegexByPath(const std::string & szPath)
-{
-	std::string szRegexStr;
-	for (size_t index = 0;index < szPath.size();++index)
-	{
-		if ('*' == szPath[index])
-		{
-			szRegexStr.append("[\\w_\\.]*");
-		}
-		else if ('?' == szPath[index])
-		{
-			szRegexStr.append("[\\w_\\.]");
-		}
-		else
-		{
-			szRegexStr+= szPath[index];
-		}
-	}
-	return std::regex(szRegexStr);
-}
 
 void YDiskOperator::queryHelper
 (
@@ -321,5 +333,20 @@ void YDiskOperator::queryHelper
 			rHistorySet.insert(pParentNodes[index]);
 		}
 	}
+}
+
+void YDiskOperator::copyFIleHelper(YFile *& pSrcFile, YFile *& pDstFile, std::string& szDstName)
+{
+	if (pSrcFile->IsRealFile())
+	{//数据文件
+		pDstFile = new YFile;
+		pDstFile->setFileData(pSrcFile->getFileData(), pSrcFile->getFileSize());
+	}
+	else
+	{//符号链接文件
+		pDstFile = new YSymlnkFile(((YSymlnkFile*)pSrcFile)->getDstFile());
+	}
+	pDstFile->setName(szDstName);
+	pDstFile->setModifyDate(pSrcFile->getModifyDate());
 }
 

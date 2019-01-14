@@ -3,6 +3,7 @@
 #include <regex>
 #include <map>
 #include <string>
+#include <iostream>
 #include "y_error_code.h"
 #include "y_ifile.h"
 struct YCommandInfo
@@ -20,11 +21,12 @@ public:
 	
 	virtual YErrorCode		excultCommand(YCommandInfo& rCommandInfo) = 0;
 	void					setCurWoringPath(const std::string& szCurPath);
-	virtual void			errorPrint(YErrorCode rErrorType, std::string szPath = std::string(""));
+	virtual YErrorCode		errorPrint(YErrorCode rErrorType, std::string szPath = std::string(""));
 	//整理路径为绝对路径
 	virtual YErrorCode		toAbsolutePath(const std::vector<std::string>& rOrgrinalArgList);
 	virtual bool			isThisCommand(std::string& szCommandStr);
 	virtual void			resetCommand();
+	virtual YErrorCode		handleCommandArg(YCommandInfo& rCommandInfo);
 protected:
 	void					resetTypeArg();
 	bool					pathValidation(const std::string& szPath);

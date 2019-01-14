@@ -17,9 +17,10 @@ YErrorCode YCdCommand::excultCommand(YCommandInfo& rCommandInfo)
 {
 	YErrorCode rResultCode;
 	rResultCode = toAbsolutePath(rCommandInfo.rPathList);
+	rResultCode = handleCommandArg(rCommandInfo);
 	if (Y_OPERAT_SUCCEED != rResultCode)
 	{
-		return rResultCode;
+		return errorPrint(rResultCode);
 	}
 	if (m_rArgList.size() >= 2)
 	{

@@ -17,9 +17,9 @@ void YCommand::setCurWoringPath(const std::string & szCurPath)
 	m_szCurWorkPath = szCurPath;
 }
 
-void YCommand::errorPrint(YErrorCode rErrorType, std::string szPath)
+YErrorCode YCommand::errorPrint(YErrorCode rErrorType, std::string szPath)
 {
-
+	return YErrorCode();
 }
 
 YErrorCode YCommand::toAbsolutePath(const std::vector<std::string>& rOrgrinalArgList)
@@ -27,13 +27,14 @@ YErrorCode YCommand::toAbsolutePath(const std::vector<std::string>& rOrgrinalArg
 	if ((int)rOrgrinalArgList.size() < m_nMustSize)
 		return YERROR_COMMAND_ARG_NUM_ERROR;
 	bool IsCheckTypeArg = false;
-	for (size_t index = 0; index < (int)rOrgrinalArgList.size(); ++index)
+	for (size_t index = 0; index < rOrgrinalArgList.size(); ++index)
 	{
+		std::string szPathOrgrinal = rOrgrinalArgList[index];
 		if (!IsCheckTypeArg && index < m_rTypeArg.size())
 		{
-			if (!m_rTypeArg.empty() && m_rTypeArg.count(rOrgrinalArgList[index]))
+			if (!m_rTypeArg.empty() && m_rTypeArg.count(szPathOrgrinal))
 			{
-				m_rTypeArg[rOrgrinalArgList[index]] = true;
+				m_rTypeArg[szPathOrgrinal] = true;
 				continue;
 			}
 			else
@@ -42,11 +43,12 @@ YErrorCode YCommand::toAbsolutePath(const std::vector<std::string>& rOrgrinalArg
 			}
 		}
 		//Â·¾¶´¦Àí
-		if (isRealPath(rOrgrinalArgList[index]))
+		if (isRealPath(szPathOrgrinal))
 		{
-			m_rArgList.push_back(rOrgrinalArgList[index]);
+			m_rArgList.push_back(szPathOrgrinal);
 			continue;
 		}
+		transform(szPathOrgrinal.begin(), szPathOrgrinal.end(), szPathOrgrinal.begin(), ::tolower);
 		std::vector<std::string> tempStrArr = splitStrByCharacter(rOrgrinalArgList[index], '/');
 		std::string AbsString = m_szCurWorkPath;
 		for (int LoopCount = 0; LoopCount < (int)tempStrArr.size(); ++LoopCount)
@@ -88,6 +90,42 @@ void YCommand::resetCommand()
 {
 	m_rArgList.clear();
 	resetTypeArg();
+}
+
+YErrorCode YCommand::handleCommandArg(YCommandInfo & rCommandInfo)
+{
+	if (rCommandInfo.rArgList.empty())
+	{
+		return Y_OPERAT_SUCCEED;
+	}
+	if (m_rTypeArg.empty())
+	{
+		return YERROR_COMMAND_ARG_ILLEGAL;
+	}
+	if (rCommandInfo.rArgList.size() != m_rTypeArg.size())
+	{
+		return YERROR_COMMAND_ARG_ILLEGAL;
+	}
+	for (size_t index = 0;index < rCommandInfo.rArgList.size();++index)
+	{
+		std::string& szCommandArg = rCommandInfo.rArgList[index];
+		if (m_rTypeArg.count(szCommandArg))
+		{
+			if (!m_rTypeArg[szCommandArg])
+			{
+				m_rTypeArg[szCommandArg] = true;
+			}
+			else
+			{
+				return YERROR_COMMAND_ARG_ILLEGAL;
+			}
+		}
+		else
+		{
+			return YERROR_COMMAND_ARG_ILLEGAL;
+		}
+	}
+	return Y_OPERAT_SUCCEED;
 }
 
 void YCommand::resetTypeArg()
@@ -181,7 +219,7 @@ bool YCommand::rootDiskPathValidation(const std::string & szPath)
 	if (isRealPath(szPath))
 		return false;
 	std::regex rRootDiskRegex("[A-Za-z]+:");
-	return std::regex_match(szPath, rRootDiskRegex))
+	return std::regex_match(szPath, rRootDiskRegex);
 }
 
 bool YCommand::wildCardOnlyLastLevel(const std::string & szPath)

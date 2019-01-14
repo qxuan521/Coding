@@ -12,7 +12,7 @@ class YDiskOperator
 public:
 	YDiskOperator();
 	~YDiskOperator();
-
+//command support
 	YErrorCode createNewFile(const std::string& szPath, YIFile*& pResult);
 	YErrorCode createNewFolder(const std::string& szPath, YIFile*& pResult);
 	YErrorCode createNewLnkFile(const std::string& szPath, const std::string & szDstFilePath, YIFile*& pResult);
@@ -20,6 +20,8 @@ public:
 	YErrorCode queryFolderNode(const std::string& szPath, std::vector<YIFile*>& rResultArr);
 	YErrorCode queryFileNode(const std::string& szPath, std::vector<YIFile*>& rResultArr);
 	YErrorCode queryAllNode(const std::string& szPath, std::vector<YIFile*>& rResultArr);
+
+	YErrorCode copyFileNode(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::vector<YIFile*>& rCopyResult);
 //About File
 	YErrorCode getChildren(YIFile* pFile, std::vector<YIFile*>& rResult);
 
@@ -32,8 +34,7 @@ public:
 	bool	isPathExist(const std::string& szPath);
 private:
 	YFile*	lnkDstFindHelper(const std::string& szPath);
-	std::regex			makeRegexByPath(const std::string& szPath);
-	void				queryHelper
+	void	queryHelper
 	(
 		std::vector<YFile*>& pParentNodes,
 		size_t nPathindex ,
@@ -42,6 +43,7 @@ private:
 		std::vector<YIFile*>& rResult, 
 		std::set<YFile*>& rHistorySet
 	);
+	void copyFIleHelper(YFile*& pSrcFile, YFile*& pDstFile,std::string& szDstName);
 private:
 
 	YDisk*		m_pDisk;

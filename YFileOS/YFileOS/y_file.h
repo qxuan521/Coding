@@ -32,7 +32,7 @@ public:
 	virtual const std::uint32_t		getChildrenFolderCount();
 	virtual const std::uint32_t		getChildrenFileCount();
 	//Ð´½Ó¿Ú
-	void	setFileData(int8_t* data,uint32_t size);
+	void	setFileData(const int8_t* data, const uint32_t size);
 	void	setModifyDate(const std::string& modifyDate);
 	void	addChild(YFile* child);
 	void	delChild(YFile* child);

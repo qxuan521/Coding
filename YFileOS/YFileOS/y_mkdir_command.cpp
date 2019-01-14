@@ -14,11 +14,15 @@ YMkdirCommand::~YMkdirCommand()
 
 YErrorCode YMkdirCommand::excultCommand(YCommandInfo& rCommandInfo)
 {
-	YErrorCode rResultCode = toAbsolutePath(rCommandInfo.rArglist);
+	YErrorCode rResultCode = toAbsolutePath(rCommandInfo.rPathList);
 	if (Y_OPERAT_SUCCEED != rResultCode)
 	{
-		errorPrint(rResultCode); 
-		return rResultCode;
+		return errorPrint(rResultCode);
+	}
+	rResultCode = handleCommandArg(rCommandInfo);
+	if (Y_OPERAT_SUCCEED != rResultCode)
+	{
+		return errorPrint(rResultCode);
 	}
 	for (size_t index = 0; index < m_rArgList.size(); ++index)
 	{

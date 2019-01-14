@@ -17,9 +17,15 @@ YErrorCode YMkdiskCommand::excultCommand(YCommandInfo& rCommandInfo)
 {
 	m_rArgList.clear();
 	YErrorCode rResultCode;
-	rResultCode = toAbsolutePath(rCommandInfo.rArglist);
+	rResultCode = toAbsolutePath(rCommandInfo.rPathList);
 	if (rResultCode != Y_OPERAT_SUCCEED)
 	{
+		return rResultCode;
+	}
+	rResultCode = handleCommandArg(rCommandInfo);
+	if (Y_OPERAT_SUCCEED != rResultCode)
+	{
+		errorPrint(rResultCode);
 		return rResultCode;
 	}
 	for (size_t index = 0; index < m_rArgList.size(); ++index)

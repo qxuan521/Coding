@@ -37,7 +37,7 @@ const std::string & YFile::getModifyDate()
 
 const std::uint32_t YFile::getChildrenCount()
 {
-	return m_rChildrenArr.size();
+	return (std::uint32_t)m_rChildrenArr.size();
 }
 
 std::vector<YFile*>& YFile::getChildren()
@@ -80,7 +80,7 @@ const std::uint32_t YFile::getChildrenFileCount()
 	return m_nChildFileCount;
 }
 
-void YFile::setFileData(int8_t * data, uint32_t size)
+void YFile::setFileData(const int8_t * data, const uint32_t size)
 {
 	if (nullptr == data || 0 <= size)
 		return;

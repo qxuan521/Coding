@@ -19,9 +19,15 @@ YDirCommand::~YDirCommand()
 YErrorCode YDirCommand::excultCommand(YCommandInfo& rCommandInfo)
 {
 	YErrorCode rResultCode;
-	rResultCode = toAbsolutePath(rCommandInfo.rArglist);
+	rResultCode = toAbsolutePath(rCommandInfo.rPathList);
 	if (Y_OPERAT_SUCCEED != rResultCode)
 	{
+		return rResultCode;
+	}
+	rResultCode = handleCommandArg(rCommandInfo);
+	if (Y_OPERAT_SUCCEED != rResultCode)
+	{
+		errorPrint(rResultCode);
 		return rResultCode;
 	}
 	std::set<YIFile*> rMatchHistory;

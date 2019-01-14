@@ -15,7 +15,7 @@ YCommandFactory::YCommandFactory()
 	m_rCommandPool[COMMAND_MKDISK] = std::make_shared<YMkdiskCommand>("mkdisk");
 	m_rCommandPool[COMMAND_MKLINK] = std::make_shared<YMklinkCommand>("mklink");
 	m_rCommandPool[COMMAND_CD] = std::make_shared<YCdCommand>("cd");
-	m_rCommandPool[COMMAND_CDDISK] = std::make_shared<YCddiskCommand>("[\\w+\\._]+:");
+	m_rCommandPool[COMMAND_CDDISK] = std::make_shared<YCddiskCommand>("[a-zA-Z]+:");
 
 // 	m_rCommandPool[COMMAND_RD] = "rd";
 // 	m_rCommandPool[COMMAND_CD] = "cd";

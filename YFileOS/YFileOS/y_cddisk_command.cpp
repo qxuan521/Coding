@@ -13,6 +13,12 @@ YCddiskCommand::~YCddiskCommand()
 
 YErrorCode YCddiskCommand::excultCommand(YCommandInfo& rCommandInfo)
 {
+	YErrorCode rResultCode = handleCommandArg(rCommandInfo);
+	if (Y_OPERAT_SUCCEED != rResultCode)
+	{
+		errorPrint(rResultCode);
+		return rResultCode;
+	}
 	m_rArgList.push_back(rCommandInfo.szCommandName);
 	if (m_rArgList.empty() || m_rArgList.size() != 1)
 	{
@@ -26,7 +32,7 @@ YErrorCode YCddiskCommand::excultCommand(YCommandInfo& rCommandInfo)
 	{
 		return YERROR_PATH_NOT_EXIST;
 	}
-	YErrorCode rResultCode = g_pDiskOperator->setCurWorkingPath(m_rArgList[0]);
+	rResultCode = g_pDiskOperator->setCurWorkingPath(m_rArgList[0]);
 	if (Y_OPERAT_SUCCEED != rResultCode)
 	{
 		return rResultCode;

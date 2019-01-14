@@ -117,6 +117,7 @@ YErrorCode YDisk::destroyFileNode(YFile *& beDestroYFile)
 	if (nullptr == beDestroYFile)
 		return YERROR_POINTER_NULL;
 	delete beDestroYFile;
+	beDestroYFile = nullptr;
 	return Y_OPERAT_SUCCEED;
 }
 
