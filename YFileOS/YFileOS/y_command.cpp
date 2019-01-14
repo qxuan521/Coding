@@ -180,13 +180,8 @@ bool YCommand::rootDiskPathValidation(const std::string & szPath)
 		return false;
 	if (isRealPath(szPath))
 		return false;
-	std::regex rRootDiskRegex("[\\w+\\._]+:");
-	std::regex rPointRegex("[\\.]*");
-	if (!std::regex_match(szPath, rRootDiskRegex) || std::regex_match(szPath, rPointRegex))
-	{
-		return false;
-	}
-	return true;
+	std::regex rRootDiskRegex("[A-Za-z]+:");
+	return std::regex_match(szPath, rRootDiskRegex))
 }
 
 bool YCommand::wildCardOnlyLastLevel(const std::string & szPath)

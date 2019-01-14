@@ -8,8 +8,8 @@
 struct YCommandInfo
 {
 	std::string szCommandName;
-	std::vector<std::string> rArglist;
-
+	std::vector<std::string> rArgList;
+	std::vector<std::string> rPathList;
 };
 
 class YCommand

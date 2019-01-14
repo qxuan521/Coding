@@ -34,7 +34,7 @@ YErrorCode YCopyCommand::excultCommand(YCommandInfo & rCommandInfo)
 	{//src real
 		if (dstIsReal)
 		{
-
+			//error
 		}
 		else
 		{

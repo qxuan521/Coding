@@ -21,9 +21,9 @@ YCommandInfo YInputResolve::resolve(const std::string & szInput)
 		return rResult;
 	}
 	std::string szTempInput(szInput);
-	std::replace_if(szTempInput.begin(), szTempInput.end(), [](char in) {return in == '\\'; }, '/');
 	std::vector<std::string> resultArr;
 	bool bNameWithSpace = false;
+	bool bMustBepath = false;
 	std::string szSubArg;
 	for (size_t index = 0; index < szTempInput.size(); ++index)
 	{
@@ -31,15 +31,24 @@ YCommandInfo YInputResolve::resolve(const std::string & szInput)
 		{//遇到空格
 			if (!bNameWithSpace)
 			{//如果没被双引号包裹 
-				if(rResult.szCommandName.empty())
+				if(rResult.szCommandName.empty()&& !bMustBepath)
 				{//优先初始话命令名字
 					rResult.szCommandName = szSubArg;
 					szSubArg.clear();
 				}
 				else
 				{
-					rResult.rArglist.push_back(szSubArg);
-					szSubArg.clear();
+					if (rResult.rPathList.empty() && !bMustBepath && !szSubArg.empty() && '/' == szSubArg[0])
+					{
+						rResult.rArgList.push_back(szSubArg);
+					}
+					else
+					{
+						std::replace_if(szSubArg.begin(), szSubArg.end(), [](char in) {return in == '\\'; }, '/');
+						rResult.rPathList.push_back(szSubArg);
+						szSubArg.clear();
+					}
+					
 				}
 			}
 			else
@@ -56,6 +65,10 @@ YCommandInfo YInputResolve::resolve(const std::string & szInput)
 			else
 			{
 				bNameWithSpace = !bNameWithSpace;
+				if (bNameWithSpace)
+				{
+					bMustBepath = true;
+				}
 			}
 		}
 		else
@@ -70,7 +83,7 @@ YCommandInfo YInputResolve::resolve(const std::string & szInput)
 	}
 	else
 	{
-		rResult.rArglist.push_back(szSubArg);
+		rResult.rPathList.push_back(szSubArg);
 		szSubArg.clear();
 	}
 	return rResult;
