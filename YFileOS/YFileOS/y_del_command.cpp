@@ -28,23 +28,18 @@ YErrorCode YDelCommand::excultCommand(YCommandInfo & rCommandInfo)
 		return errorPrint(YERROR_PATH_ILLEGAL);
 	}
 	std::vector<std::string> rDelPathArr;
-	DelOneLevel(rDelPathArr);
+	queryOneLevelFile(rDelPathArr);
 	//将路径全路径（有可能包含通配符）转换成节点数组 !!!!去掉通配符去掉文件夹 只留文件
 	std::vector<YIFile*> rQueryResult;
 	if (m_rTypeArg["/s"])
 	{//删除所有节点
-		for (size_t index = 0; index < m_rArgList.size(); index++)
-		{
-			rResultCode = g_pDiskOperator->queryAllNode(m_rArgList[index], rQueryResult);
-			if (rResultCode != Y_OPERAT_SUCCEED)
-			{
-				errorPrint(rResultCode, m_rArgList[index]);
-			}
-		}
+		queryAllChildFile(rDelPathArr);
 	}
-
-
-	return YErrorCode();
+	for (int index = (int)rDelPathArr.size() -1; index >=0 ;--index)
+	{
+		g_pDiskOperator->deleteNode(rDelPathArr[index]);
+	}
+	return Y_COPY_SUCCEED;
 }
 
 bool YDelCommand::checkPathValidation()
@@ -57,7 +52,29 @@ bool YDelCommand::checkPathValidation()
 	return true;
 }
 
-YErrorCode YDelCommand::DelOneLevel(std::vector<std::string>& rDelPathArr)
+bool YDelCommand::askDel(const std::string & szPath)
+{
+	while (true)
+	{
+		std::cout << "\"" << szPath << "\\*\"" << " has exist.Do you want to overwrite file?<y/n> ";
+		std::string InPut;
+		std::cin.clear();
+		std::cin.sync();
+		getline(std::cin, InPut);
+		if ("y" == InPut)
+		{
+			return true;
+		}
+		if ("n" == InPut)
+		{
+			return false;
+		}
+		std::cin.clear();
+	}
+	return false;
+}
+
+YErrorCode YDelCommand::queryOneLevelFile(std::vector<std::string>& rDelPathArr)
 {
 	YErrorCode rResultCode;
 	std::vector<YIFile*> rQueryResult;
@@ -69,4 +86,56 @@ YErrorCode YDelCommand::DelOneLevel(std::vector<std::string>& rDelPathArr)
 			errorPrint(rResultCode, m_rArgList[index]);
 		}
 	}
+	for (size_t index = 0; index < rQueryResult.size();++index)
+	{
+		if (nullptr == rQueryResult[index])
+		{
+			continue;
+		}
+		rDelPathArr.push_back(g_pDiskOperator->getFullPath(rQueryResult[index]));
+	}
+	return Y_OPERAT_SUCCEED;
 }
+
+YErrorCode YDelCommand::queryAllChildFile(std::vector<std::string>& rDelPathArr)
+{
+	YErrorCode rResultCode;
+	std::vector<YIFile*> rQueryResult;
+	std::vector<std::string> rParentArr;
+	std::vector<YIFile*> rResult;
+	for (size_t index = 0; index < m_rArgList.size(); index++)
+	{
+		rResultCode = g_pDiskOperator->queryFolderNode(m_rArgList[index], rQueryResult);
+		if (rResultCode != Y_OPERAT_SUCCEED)
+		{
+			errorPrint(rResultCode, m_rArgList[index]);
+		}
+	}
+	for (size_t index = 0; index < rQueryResult.size();++index)
+	{
+		if (rQueryResult[index]->IsFolder())
+		{
+			rParentArr.push_back(g_pDiskOperator->getFullPath(rQueryResult[index]));
+		}
+	}
+	for (size_t index = 0 ;index < rParentArr.size();++index)
+	{
+		g_pDiskOperator->queryAllChildFolder(rParentArr[index], rResult);
+	}
+	for (size_t index = 0; index < rResult.size();++index)
+	{
+		std::string szFullPath = g_pDiskOperator->getFullPath(rResult[index]);
+		if (askDel(szFullPath))
+		{
+			std::vector<YIFile*> rChildrenReult;
+			g_pDiskOperator->getChildren(rResult[index], rChildrenReult);
+			for (size_t nLoopCount = 0; nLoopCount < rChildrenReult.size();++nLoopCount)
+			{
+				std::string szChildFullPath = g_pDiskOperator->getFullPath(rChildrenReult[index]);
+				rDelPathArr.push_back(szChildFullPath);
+			}
+		}
+	}
+	return Y_OPERAT_SUCCEED;
+}
+

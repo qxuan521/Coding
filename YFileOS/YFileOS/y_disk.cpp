@@ -121,6 +121,13 @@ YErrorCode YDisk::destroyFileNode(YFile *& beDestroYFile)
 	return Y_OPERAT_SUCCEED;
 }
 
+YErrorCode YDisk::destroyAllChildFileNode(YFile *& beDestroYFile)
+{
+	destroyHelper(beDestroYFile);
+	if (nullptr != beDestroYFile)
+		return Y_OPERAT_FAILD;
+}
+
 //std::string & YDisk::getRootName()
 //{
 //	std::string curPath("");

@@ -205,6 +205,32 @@ YErrorCode YDiskOperator::queryAllNode(const std::string & szPath, std::vector<Y
 	return Y_OPERAT_SUCCEED;
 }
 
+YErrorCode YDiskOperator::queryAllChildFile(const std::string & szPath, std::vector<YIFile*>& rResultArr)
+{
+	YFile* pRootFolder = m_pDisk->queryFileNode(szPath);
+	std::set<YFile*> rHistorySet;
+	std::function<bool(YFile*)> rPredicate([=](YIFile* pfile)->bool
+	{
+		return !pfile->IsFolder();
+	});
+	std::vector<YFile*> rChildren = pRootFolder->getChildren();
+	queryHelper(rChildren, rPredicate, rResultArr, rHistorySet);
+	return Y_OPERAT_SUCCEED;
+}
+
+YErrorCode YDiskOperator::queryAllChildFolder(const std::string & szPath, std::vector<YIFile*>& rResultArr)
+{
+	YFile* pRootFolder = m_pDisk->queryFileNode(szPath);
+	std::set<YFile*> rHistorySet;
+	std::function<bool(YFile*)> rPredicate([=](YIFile* pfile)->bool
+	{
+		return pfile->IsFolder();
+	});
+	std::vector<YFile*> rChildren = pRootFolder->getChildren();
+	queryHelper(rChildren, rPredicate, rResultArr, rHistorySet);
+	return Y_OPERAT_SUCCEED;
+}
+
 YErrorCode YDiskOperator::copyFileNode(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::vector<YIFile*>& rCopyResult)
 {
 	std::string szDstParent = getParentPath(rDstPathArr[0]);
@@ -286,6 +312,16 @@ YErrorCode YDiskOperator::copyFileToRealDisk(std::vector<std::string>& rSrcPathA
 	rFileReader.write((char*)DataBuffer, fileSize);
 	rFileReader.close();
 	return Y_OPERAT_SUCCEED;
+}
+
+YErrorCode YDiskOperator::deleteNode(const std::string & szPath)
+{
+	YFile* pFile = m_pDisk->queryFileNode(szPath);
+	if (nullptr == pFile)
+	{
+		return YERROR_POINTER_NULL;
+	}
+	m_pDisk->destroyAllChildFileNode(pFile);
 }
 
 YErrorCode YDiskOperator::getChildren(YIFile * pFile, std::vector<YIFile*>& rResult)
@@ -383,6 +419,23 @@ void YDiskOperator::queryHelper
 				}
 			}
 			rHistorySet.insert(pParentNodes[index]);
+		}
+	}
+}
+
+void YDiskOperator::queryHelper(std::vector<YFile*>& rParentNodes, std::function<bool(YFile*)>& rPredicate, std::vector<YIFile*>& rResult, std::set<YFile*>& rHistorySet)
+{
+	for (size_t index = 0;index < rParentNodes.size();++index)
+	{
+		if (rPredicate(rParentNodes[index]))
+		{
+			rResult.push_back(rParentNodes[index]);
+			rHistorySet.insert(rParentNodes[index]);
+		}
+		std::vector<YFile*> rChildren = rParentNodes[index]->getChildren();
+		if (rParentNodes[index]->IsFolder())
+		{
+			queryHelper(rChildren, rPredicate, rResult, rHistorySet);
 		}
 	}
 }

@@ -22,11 +22,14 @@ public:
 	YErrorCode queryFolderNode(const std::string& szPath, std::vector<YIFile*>& rResultArr);
 	YErrorCode queryFileNode(const std::string& szPath, std::vector<YIFile*>& rResultArr);
 	YErrorCode queryAllNode(const std::string& szPath, std::vector<YIFile*>& rResultArr);
+	YErrorCode queryAllChildFile(const std::string& szPath, std::vector<YIFile*>& rResultArr);
+	YErrorCode queryAllChildFolder(const std::string& szPath, std::vector<YIFile*>& rResultArr);
 	//copy
 	YErrorCode copyFileNode(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::vector<YIFile*>& rCopyResult);
 	YErrorCode copyFileFromRealDisk(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::vector<YIFile*>& rCopyResult);
 	YErrorCode copyFileToRealDisk(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::vector<YIFile*>& rCopyResult);
-
+	//delete
+	YErrorCode deleteNode(const std::string& szPath);
 //About File
 	YErrorCode getChildren(YIFile* pFile, std::vector<YIFile*>& rResult);
 
@@ -48,6 +51,7 @@ private:
 		std::vector<YIFile*>& rResult, 
 		std::set<YFile*>& rHistorySet
 	);
+	void queryHelper(std::vector<YFile*>& rParentNodes, std::function<bool(YFile*)>& rPredicate, std::vector<YIFile*>& rResult, std::set<YFile*>& rHistorySet);
 	void copyFIleHelper(YFile*& pSrcFile, YFile*& pDstFile,std::string& szDstName);
 private:
 

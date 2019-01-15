@@ -27,7 +27,7 @@ const std::int8_t * YFile::getFileData()
 
 const std::uint32_t YFile::getFileSize()
 {
-	return m_pData.size();
+	return (std::uint32_t)m_pData.size();
 }
 
 const std::string & YFile::getModifyDate()

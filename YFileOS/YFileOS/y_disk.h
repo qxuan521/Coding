@@ -13,6 +13,7 @@ public:
 	YErrorCode  takeNode(YFile* parent, YFile* beTokenNode);
 	YErrorCode	formatDisk();
 	YErrorCode  destroyFileNode(YFile*& beDestroYFile);
+	YErrorCode  destroyAllChildFileNode(YFile*& beDestroYFile);
 	YFile*		queryFileNode(const std::string& szPath);
 	YErrorCode  clear();
 	YErrorCode	createRootNode(const std::string& szRootName ,YFile* newRoot);
