@@ -108,7 +108,7 @@ void YDirCommand::printResult(std::vector<DirSearchResult>& rResult)
 			std::cout << std::setw(25) << DateStr.c_str();
 			std::cout << "    ";
 			std::cout << std::setw(6) << fileTypeString(SingleResult.CurLevelResult[LoopCount]);
-			if (SingleResult.FilePtr->IsRealFile())
+			if (SingleResult.CurLevelResult[LoopCount]->IsRealFile())
 			{
 				std::cout << std::setw(9) << std::setiosflags(std::ios::right) << FileSize;
 			}
@@ -137,11 +137,11 @@ std::string YDirCommand::fileTypeString(YIFile * pFile)
 	std::string rTypeString;
 	if (pFile->IsRealFolder())
 	{
-		rTypeString = "[DIR]";
+		rTypeString = "<DIR>";
 	}
 	else if (pFile->IsRealSymLnk())
 	{
-		rTypeString = "[LNK]";
+		rTypeString = "<LNK>";
 	}
 	else
 	{

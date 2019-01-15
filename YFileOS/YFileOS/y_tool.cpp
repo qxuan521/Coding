@@ -1,9 +1,9 @@
 #include "y_tool.h"
 #include <regex>
-
+#include<sstream>
 namespace YPathRegex
 {
-	std::regex rRealPathRegex("^[@]");
+	std::regex rRealPathRegex("^[@][. ]*");
 };
 std::vector<std::string> splitStrByCharacter(const std::string& srcStr, char spliter)
 {
@@ -40,9 +40,18 @@ std::string getNameFromFullPath(const std::string & szPath)
 		return szPath.substr(nNameIndex + 1, szPath.size() - nNameIndex - 1);
 }
 
+std::string getPathFromRealPath(const std::string & szPath)
+{
+	if (szPath.empty() || '@' != szPath[0])
+	{
+		return std::string();
+	}
+	return  szPath.substr(1, szPath.size() - 1);
+}
+
 bool isRealPath(const std::string & szPath)
 {
-	return std::regex_match(szPath, YPathRegex::rRealPathRegex);
+	return !szPath.empty() && '@' == szPath[0];
 }
 
 bool isHaveWildCard(const std::string & szPath)
@@ -71,3 +80,47 @@ std::regex makeRegexByPath(const std::string & szPath)
 	return std::regex(szRegexStr);
 }
 
+
+std::regex makeRepaceRegexByPath(const std::string& szPath, std::string& szRepaceStr)
+{
+	std::string szRegexStr;
+	std::string szIndex;
+	std::stringstream rStringStream;
+	for (size_t index = 0; index < szPath.size(); ++index)
+	{
+		std::string szIndexBuffer;
+		if ('*' == szPath[index])
+		{
+			szRegexStr.append("([\\w_\\.]*)");
+			rStringStream << (index + 1);
+			szRepaceStr.append("$");
+			rStringStream >> szIndex;
+			szRepaceStr.append(szIndex);
+		}
+		else if ('?' == szPath[index])
+		{
+			szRegexStr.append("([\\w_\\.]?)");
+			rStringStream << (index + 1);
+			szRepaceStr.append("$");
+			rStringStream >> szIndex;
+			szRepaceStr.append(szIndex);
+		}
+		else
+		{
+			if (index == 0)
+			{
+				szRegexStr.append("(^[\\w_\\.])");
+			}
+			else if (index == szPath.size() - 1)
+			{
+				szRegexStr.append("([\\w_\\.]$)");
+			}
+			else
+			{
+				szRegexStr.append("([\\w_\\.])");
+			}
+			szRepaceStr += szPath[index];
+		}
+	}
+	return std::regex(szRegexStr);
+}

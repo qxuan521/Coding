@@ -27,7 +27,7 @@ const std::int8_t * YFile::getFileData()
 
 const std::uint32_t YFile::getFileSize()
 {
-	return m_nFileDataSize;
+	return m_pData.size();
 }
 
 const std::string & YFile::getModifyDate()
@@ -82,7 +82,7 @@ const std::uint32_t YFile::getChildrenFileCount()
 
 void YFile::setFileData(const int8_t * data, const uint32_t size)
 {
-	if (nullptr == data || 0 <= size)
+	if (nullptr == data/* || 0 <= size*/)
 		return;
 	m_pData.resize(size);
 	memcpy(&m_pData[0], data, size);

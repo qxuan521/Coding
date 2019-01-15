@@ -1,3 +1,4 @@
+#include <fstream>
 #include "y_disk_operator.h"
 #include "y_disk.h"
 #include "y_tool.h"
@@ -234,6 +235,57 @@ YErrorCode YDiskOperator::copyFileNode(std::vector<std::string>& rSrcPathArr, st
 		}
 	}
 	return Y_COPY_SUCCEED;
+}
+
+YErrorCode YDiskOperator::copyFileFromRealDisk(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::vector<YIFile*>& rCopyResult)
+{
+	std::fstream rFileReader(rSrcPathArr[0], std::ios::binary | std::ios::in);
+	if (!rFileReader.is_open())
+	{
+		return YERROR_PATH_ILLEGAL;
+	}
+	YIFile* pfile = m_pDisk->queryFileNode(rDstPathArr[0]);
+	YFile*	pDstParent = m_pDisk->queryFileNode(getParentPath(rDstPathArr[0]));
+	if (nullptr != pfile)
+	{
+		YFile* pFileRef = (YFile*)pfile;
+		m_pDisk->takeNode(pDstParent, pFileRef);
+		m_pDisk->destroyFileNode(pFileRef);
+		pfile = nullptr;
+	}
+	createNewFile(rDstPathArr[0], pfile);
+	rCopyResult.push_back(pfile);
+	std::vector<int8_t> rBuffer;
+	rFileReader.seekg(0, std::ios::end);
+	long fileSize = (long)rFileReader.tellg();
+	rBuffer.resize(fileSize);
+	int8_t* DataBuffer = &rBuffer[0];
+	rFileReader.seekg(0, std::ios::beg);
+	rFileReader.read((char*)DataBuffer, fileSize);
+	((YFile*)pfile)->setFileData(&rBuffer[0], fileSize);
+	rFileReader.close();
+	return 	Y_OPERAT_SUCCEED;
+}
+
+YErrorCode YDiskOperator::copyFileToRealDisk(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::vector<YIFile*>& rCopyResult)
+{
+	std::fstream rFileReader(rDstPathArr[0], std::ios::binary | std::ios::out | std::ios::trunc);
+	if (!rFileReader.is_open())
+	{
+		return YERROR_PATH_ILLEGAL;
+	}
+	YFile* pSrcFile = m_pDisk->queryFileNode(rSrcPathArr[0]);
+	if (nullptr == pSrcFile)
+	{
+		return YERROR_POINTER_NULL;
+	}
+
+	std::vector<int8_t> rBuffer;
+	const int8_t* DataBuffer = pSrcFile->getFileData();
+	int fileSize = pSrcFile->getFileSize();
+	rFileReader.write((char*)DataBuffer, fileSize);
+	rFileReader.close();
+	return Y_OPERAT_SUCCEED;
 }
 
 YErrorCode YDiskOperator::getChildren(YIFile * pFile, std::vector<YIFile*>& rResult)

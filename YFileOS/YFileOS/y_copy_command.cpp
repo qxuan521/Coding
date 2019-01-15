@@ -35,19 +35,47 @@ YErrorCode YCopyCommand::excultCommand(YCommandInfo & rCommandInfo)
 	if (srcIsReal)
 	{//src real
 		if (dstIsReal)
-		{
-			//error
+		{//不支持 真实磁盘路径间拷贝
+			return errorPrint(YERROR_PATH_ILLEGAL);
 		}
 		else
-		{
-
+		{//真实路径拷贝不允许出现通配符
+			if (!noWildCardPathValidation(szDst) || !noWildCardPathValidation(szSrc))
+			{
+				return errorPrint(YERROR_PATH_ILLEGAL);
+			}
+			m_rSrcArgList.push_back(getPathFromRealPath(szSrc));
+			rResultCode = handleDstToNoWildCard(szDst);
+			if (Y_OPERAT_SUCCEED != rResultCode)
+			{
+				return errorPrint(rResultCode);
+			}
+			std::vector<YIFile*> rCopyResultArr;
+			rResultCode = g_pDiskOperator->copyFileFromRealDisk(m_rSrcArgList, m_rDstArgList, rCopyResultArr);
+			return errorPrint(rResultCode);
 		}
 	}
 	else
-	{
+	{//源路径不是真实路径
 		if (dstIsReal)
-		{
-			
+		{//目标路径是真实路径
+			if (!noWildCardPathValidation(szDst) || !noWildCardPathValidation(szSrc))
+			{
+				return errorPrint(YERROR_PATH_ILLEGAL);
+			}
+			rResultCode = handleSrcToNoWildCard(szSrc);
+			if (Y_OPERAT_SUCCEED != rResultCode)
+			{
+				return errorPrint(rResultCode);
+			}
+			if (m_rSrcArgList.empty() || m_rSrcArgList.size() > 1)
+			{
+				return errorPrint(YERROR_PATH_ILLEGAL);
+			}
+			m_rDstArgList.push_back(getPathFromRealPath(szDst));
+			std::vector<YIFile*> rCopyResultArr;
+			rResultCode = g_pDiskOperator->copyFileToRealDisk(m_rSrcArgList, m_rDstArgList, rCopyResultArr);
+			return errorPrint(rResultCode);
 		}
 		else
 		{//虚拟磁盘向虚拟磁盘中拷贝
@@ -73,6 +101,12 @@ YErrorCode YCopyCommand::excultCommand(YCommandInfo & rCommandInfo)
 		}
 	}
 	return Y_OPERAT_SUCCEED;
+}
+void YCopyCommand::resetCommand()
+{
+	YCommand::resetCommand();
+	m_rDstArgList.clear();
+	m_rSrcArgList.clear();
 }
 YErrorCode YCopyCommand::handleSrcToNoWildCard(const std::string & szSrc)
 {
@@ -122,9 +156,11 @@ YErrorCode YCopyCommand::handleDstToNoWildCard(const std::string & szDst)
 {
 	if (isHaveWildCard(szDst))
 	{//目标路径存在通配符
-		std::regex rDstResgex = makeRegexByPath(getNameFromFullPath(szDst));
 		m_rDstArgList.resize(m_rSrcArgList.size());
 		std::string szDstParent = getParentPath(szDst);
+		std::string szDstName = getNameFromFullPath(szDst);
+		std::string szRepaceString;
+		std::regex rDstResgex = makeRepaceRegexByPath(getNameFromFullPath(szDst), szRepaceString);
 		for (size_t index = 0; index < m_rSrcArgList.size(); index++)
 		{
 			std::smatch szMatchSrcPathResult;
@@ -133,14 +169,15 @@ YErrorCode YCopyCommand::handleDstToNoWildCard(const std::string & szDst)
 			{
 				return YERROR_PATH_ILLEGAL;
 			}
-			std::regex_match(szSrcName, szMatchSrcPathResult, rDstResgex);
+			
+			std::string absDstName = std::regex_replace(szSrcName, rDstResgex, szRepaceString);
 			if (szMatchSrcPathResult.empty())
 			{
 				return YERROR_PATH_ILLEGAL;
 			}
 			m_rDstArgList[index].append(szDstParent);
 			m_rDstArgList[index].append("/");
-			m_rDstArgList[index].append(szMatchSrcPathResult);
+			m_rDstArgList[index].append(absDstName);
 		}
 	}
 	else
@@ -179,18 +216,18 @@ YErrorCode YCopyCommand::handleDstToNoWildCard(const std::string & szDst)
 		}
 		else
 		{//目标路径存在
+			pDstFile = rQueryResult[0];
 			if (pDstFile->IsFolder())
 			{//如果目标路径时一个文件夹 可以拷贝多个文件代表把源文件拷贝到当前文件夹下以源文件名命名
-				std::string szDstParent = getParentPath(szDst);
 				m_rDstArgList.resize(m_rSrcArgList.size());
 				for (size_t index = 0; index < m_rSrcArgList.size(); index++)
 				{
-					std::string szSrcName = getParentPath(m_rSrcArgList[index]);
+					std::string szSrcName = getNameFromFullPath(m_rSrcArgList[index]);
 					if (szSrcName.empty())
 					{
 						return YERROR_PATH_ILLEGAL;
 					}
-					m_rDstArgList[index].append(szDstParent);
+					m_rDstArgList[index].append(szDst);
 					m_rDstArgList[index].append("/");
 					m_rDstArgList[index].append(szSrcName);
 				}

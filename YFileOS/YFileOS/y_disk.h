@@ -27,12 +27,12 @@ public:
 	std::vector<YFile*>&	getRootArr();
 	//Verify
 	bool		isRootName(const std::string& szName);
+	std::string	getDate();
 private:
 	YErrorCode  destroyAllFileNode();
 	YFile*		queryFileHelper(YFile* pParent, std::vector<std::string>& rNameArr, size_t nPathindex);
 	void		destroyHelper(YFile*& pFile);
 	void		fullPathHelper(YFile* pFile, std::string& subPath);
-	std::string	getDate();
 private:
 	std::vector<YFile*>		m_rRootArr;
 };

@@ -6,6 +6,7 @@
 #include "y_mklink_command.h"
 #include "y_cd_command.h"
 #include "y_cddisk_command.h"
+#include "y_copy_command.h"
 YCommandFactory::YCommandFactory()
 {
 	m_rCommandPool.resize(COMMAND_MAX);
@@ -16,7 +17,7 @@ YCommandFactory::YCommandFactory()
 	m_rCommandPool[COMMAND_MKLINK] = std::make_shared<YMklinkCommand>("mklink");
 	m_rCommandPool[COMMAND_CD] = std::make_shared<YCdCommand>("cd");
 	m_rCommandPool[COMMAND_CDDISK] = std::make_shared<YCddiskCommand>("[a-zA-Z]+:");
-
+	m_rCommandPool[COMMAND_COPY] = std::make_shared<YCopyCommand>("copy");
 // 	m_rCommandPool[COMMAND_RD] = "rd";
 // 	m_rCommandPool[COMMAND_CD] = "cd";
 // 	m_rCommandPool[COMMAND_DEL] = "del";
@@ -43,6 +44,10 @@ std::shared_ptr<YCommand> YCommandFactory::queryCommandPtr(YCommandInfo& rComman
 	{
 		for (size_t index = 0; index < m_rCommandPool.size(); ++index)
 		{
+			if (nullptr == m_rCommandPool[index])
+			{
+				continue;
+			}
 			if (m_rCommandPool[index]->isThisCommand(szCommandName))
 			{
 				m_rCommandPool[index]->resetCommand();

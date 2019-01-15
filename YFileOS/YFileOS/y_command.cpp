@@ -48,6 +48,10 @@ YErrorCode YCommand::toAbsolutePath(const std::vector<std::string>& rOrgrinalArg
 			m_rArgList.push_back(szPathOrgrinal);
 			continue;
 		}
+		if (rOrgrinalArgList.empty())
+		{
+			return YERROR_PATH_ILLEGAL;
+		}
 		transform(szPathOrgrinal.begin(), szPathOrgrinal.end(), szPathOrgrinal.begin(), ::tolower);
 		std::vector<std::string> tempStrArr = splitStrByCharacter(rOrgrinalArgList[index], '/');
 		std::string AbsString = m_szCurWorkPath;
@@ -148,8 +152,8 @@ bool YCommand::pathValidation(const std::string & szPath)
 		return false;
 	}
 	std::regex rBaseRegex("[\\w+\\._\\?\\* ]+");
-	std::regex rStartRegex("^[\\w\\._*?]+");
-	std::regex rEndRegex("[\\w\\._*?]+$");
+	std::regex rStartRegex("^[\\w\\._*?][\\w+\\._\\?\\* ]*");
+	std::regex rEndRegex("[\\w+\\._\\?\\* ]*[\\w\\._*?]$");
 	std::regex rPointRegex("[\\.]*");
 	std::regex rRootDiskRegex("[\\w+\\._*?]+:");
 	for (size_t index = 1; index < rPathSplitResult.size(); ++index)
@@ -186,8 +190,8 @@ bool YCommand::noWildCardPathValidation(const std::string & szPath)
 		return false;
 	}
 	std::regex rBaseRegex("[\\w+\\._ ]+");
-	std::regex rStartRegex("^[\\w\\._]+");
-	std::regex rEndRegex("[\\w\\._]+$");
+	std::regex rStartRegex("^[\\w\\._][\\w+\\._ ]*");
+	std::regex rEndRegex("[\\w+\\._ ]*[\\w\\._]$");
 	std::regex rPointRegex("[\\.]*");
 	std::regex rRootDiskRegex("[\\w+\\._]+:");
 	for (size_t index = 0; index < rPathSplitResult.size(); ++index)
@@ -247,8 +251,8 @@ bool YCommand::wildCardOnlyLastLevel(const std::string & szPath)
 			if (rPathSplitResult.size() - 1 == index)
 			{
 				std::regex rBaseRegex("[\\w+\\._\\?\\* ]+");
-				std::regex rStartRegex("^[\\w\\._*?]+");
-				std::regex rEndRegex("[\\w\\._*?]+$");
+				std::regex rStartRegex("^[\\w\\._*?][\\w+\\._\\?\\* ]*");
+				std::regex rEndRegex("[\\w+\\._\\?\\* ]*[\\w\\._*?]$");
 				bool bMatchResult = std::regex_match(rPathSplitResult[index], rBaseRegex);
 				bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rStartRegex);
 				bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rEndRegex);
@@ -261,8 +265,8 @@ bool YCommand::wildCardOnlyLastLevel(const std::string & szPath)
 			else
 			{
 				std::regex rBaseRegex("[\\w+\\._ ]+");
-				std::regex rStartRegex("^[\\w\\._]+");
-				std::regex rEndRegex("[\\w\\._]+$");
+				std::regex rStartRegex("^[\\w\\._][\\w+\\._ ]*");
+				std::regex rEndRegex("[\\w+\\._ ]*[\\w\\._]$");
 				bool bMatchResult = std::regex_match(rPathSplitResult[index], rBaseRegex);
 				bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rStartRegex);
 				bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rEndRegex);
@@ -279,7 +283,7 @@ bool YCommand::wildCardOnlyLastLevel(const std::string & szPath)
 
 bool YCommand::mayHaveWildCard(const std::string & szPath)
 {
-	return std::string::npos != szPath.find('*') || std::string::npos != szPath.find(',');
+	return std::string::npos != szPath.find('*') || std::string::npos != szPath.find('?');
 }
 
 bool YCommand::pathCanbeRealValid()
@@ -288,19 +292,25 @@ bool YCommand::pathCanbeRealValid()
 	{
 		return false;
 	}
-	bool validation = mayHaveWildCard(m_rArgList[0]);
-	validation = validation && mayHaveWildCard(m_rArgList[1]);
+	bool validation = true;
+		//mayHaveWildCard(m_rArgList[0]);
+// 	validation = validation && mayHaveWildCard(m_rArgList[1]);
 	if (isRealPath(m_rArgList[0]))
 	{
-		validation = validation && isHaveWildCard(m_rArgList[0]);
+		validation = validation && noWildCardPathValidation(m_rArgList[0]);
+	}
+	else
+	{
+		validation = validation && wildCardOnlyLastLevel(m_rArgList[0]);
+
 	}
 	if (isRealPath(m_rArgList[1]))
 	{
-		validation = validation && isHaveWildCard(m_rArgList[1]);
+		validation = validation && noWildCardPathValidation(m_rArgList[1]);
 	}
-	if (isHaveWildCard(m_rArgList[0]))
+	else
 	{
-		validation = validation && g_pDiskOperator->isPathExist(m_rArgList[0]);
+		validation = validation && wildCardOnlyLastLevel(m_rArgList[1]);
 	}
 	return validation;
 }
