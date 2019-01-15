@@ -7,18 +7,12 @@ class YDelCommand : public YCommand
 public:
 	YDelCommand(const std::string& szName);
 	~YDelCommand();
+	virtual YErrorCode		excultCommand(YCommandInfo& rCommandInfo);
 
 private:
-
+	bool			checkPathValidation();
+	//删除符合条件的文件 不递归;
+	YErrorCode		DelOneLevel(std::vector<std::string>& rDelPathArr);
+	YErrorCode		DelAllChild(std::vector<YIFile*> rRootFolder);
 };
 
-YDelCommand::YDelCommand(const std::string& szName)
-	: YCommand(szName,1)
-{
-
-}
-
-YDelCommand::~YDelCommand()
-{
-
-}

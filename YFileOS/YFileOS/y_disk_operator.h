@@ -26,6 +26,7 @@ public:
 	YErrorCode copyFileNode(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::vector<YIFile*>& rCopyResult);
 	YErrorCode copyFileFromRealDisk(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::vector<YIFile*>& rCopyResult);
 	YErrorCode copyFileToRealDisk(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::vector<YIFile*>& rCopyResult);
+
 //About File
 	YErrorCode getChildren(YIFile* pFile, std::vector<YIFile*>& rResult);
 

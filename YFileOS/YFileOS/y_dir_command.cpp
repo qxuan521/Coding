@@ -30,7 +30,6 @@ YErrorCode YDirCommand::excultCommand(YCommandInfo& rCommandInfo)
 		errorPrint(rResultCode);
 		return rResultCode;
 	}
-	std::set<YIFile*> rMatchHistory;
 	//dir没有路径参数时视为 当前路径
 	if (m_rArgList.empty())
 	{
