@@ -227,7 +227,7 @@ YErrorCode YDirCommand::allChildFolderSearch(std::vector<YIFile*>& rDirArr, std:
 			errorPrint(rResultCode, szFileFullPath);
 		}
 	}
-	return YErrorCode();
+	return Y_OPERAT_SUCCEED;
 }
 
 YErrorCode YDirCommand::folderSearch(std::vector<YIFile*>& rDirArr, std::vector<DirSearchResult>& rDirResult)

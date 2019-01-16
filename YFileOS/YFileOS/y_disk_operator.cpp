@@ -412,6 +412,28 @@ YErrorCode YDiskOperator::saveData(const std::string & szDstPath)
 	return Y_OPERAT_SUCCEED;
 }
 
+YErrorCode YDiskOperator::moveFile(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::function<bool(std::string&szPath)>& rPredicate, int & nCount)
+{
+	std::set<std::string> rHistorySet;
+	for (size_t index = 0; index < rDstPathArr.size();++index)
+	{
+		YFile* pFile = m_pDisk->queryFileNode(rSrcPathArr[index]);
+		if (nullptr == pFile)
+		{
+			continue;
+		}
+		if (!pFile->IsRealFolder())
+		{
+			fileMoveHelper(pFile, rDstPathArr[index], rPredicate, nCount, rHistorySet);
+		}
+		else
+		{
+			folderMoveHelper(pFile, rDstPathArr[index], rPredicate, nCount, rHistorySet);
+		}
+	}
+	return YErrorCode();
+}
+
 YErrorCode YDiskOperator::getChildren(YIFile * pFile, std::vector<YIFile*>& rResult)
 {
 	if (nullptr == pFile)
@@ -564,8 +586,8 @@ void YDiskOperator::saveDataHelper(YFile * pParentNode, std::fstream & rFile, in
 		{
 			std::string szFullPath = this->getFullPath(rChildren[index]);
 			rFileHeader.nFileType = 2;
-			rFileHeader.nFilePathSize = szFullPath.size();
-			rFileHeader.nFileDataSize =((YSymlnkFile*)rChildren[index])->getShowName().size();
+			rFileHeader.nFilePathSize = (int)szFullPath.size();
+			rFileHeader.nFileDataSize =(int) ((YSymlnkFile*)rChildren[index])->getShowName().size();
 			memcpy(rFileHeader.rModifyDate,rChildren[index]->getModifyDate().c_str(), 25);
 			rFile.write((char*)(&rFileHeader), sizeof(rFileHeader));
 			rFile.write(this->getFullPath(rChildren[index]).c_str(), this->getFullPath(rChildren[index]).size());
@@ -579,7 +601,7 @@ void YDiskOperator::saveDataHelper(YFile * pParentNode, std::fstream & rFile, in
 				std::string szFullPath = this->getFullPath(rChildren[index]);
 				rFileHeader.nFileType = 0;
 				rFileHeader.nFileDataSize = rChildren[index]->getFileSize();
-				rFileHeader.nFilePathSize = szFullPath.size();
+				rFileHeader.nFilePathSize = (int)szFullPath.size();
 				memcpy(rFileHeader.rModifyDate, rChildren[index]->getModifyDate().c_str(), 25);
 				rFile.write((char*)(&rFileHeader), sizeof(rFileHeader));
 				rFile.write(this->getFullPath(rChildren[index]).c_str(), this->getFullPath(rChildren[index]).size());
@@ -591,7 +613,7 @@ void YDiskOperator::saveDataHelper(YFile * pParentNode, std::fstream & rFile, in
 				std::string szFullPath = this->getFullPath(rChildren[index]);
 				rFileHeader.nFileType = 1;
 				rFileHeader.nFileDataSize = rChildren[index]->getFileSize();
-				rFileHeader.nFilePathSize = szFullPath.size();
+				rFileHeader.nFilePathSize =(int) szFullPath.size();
 				memcpy(rFileHeader.rModifyDate, rChildren[index]->getFileData(), 25);
 				rFile.write((char*)(&rFileHeader), sizeof(rFileHeader));
 				rFile.write(this->getFullPath(rChildren[index]).c_str(), this->getFullPath(rChildren[index]).size());
@@ -723,5 +745,15 @@ void YDiskOperator::bufferResetByDataSize(std::vector<char>& rBuffer, int size)
 	{
 		rBuffer.resize(size);
 	}
+}
+
+void YDiskOperator::folderMoveHelper(YFile * rSrcRootNode, std::string & szDstPath, std::function<bool(std::string&szPath)>& rPredicate, int & nCount, std::set<std::string>& rHistorySet)
+{
+
+}
+
+void YDiskOperator::fileMoveHelper(YFile * rSrcRootNode, std::string & szDstPath, std::function<bool(std::string&szPath)>& rPredicate, int & nCount, std::set<std::string>& rHistorySet)
+{
+
 }
 

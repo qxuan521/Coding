@@ -6,6 +6,7 @@
 #include <iostream>
 #include "y_error_code.h"
 #include "y_ifile.h"
+
 struct YCommandInfo
 {
 	std::string szCommandName;

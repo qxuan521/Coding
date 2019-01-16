@@ -10,7 +10,7 @@
 #include "y_load_command.h"
 #include "y_save_command.h"
 #include "y_ren_command.h"
-#include "y_rd_command.h";
+#include "y_rd_command.h"
 #include "y_del_command.h"
 #include "y_cls_command.h"
 #include "y_move_command.h"

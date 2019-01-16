@@ -1,6 +1,48 @@
 #include "y_command.h"
 #include "y_disk_operator.h"
 #include "y_tool.h"
+/*
+enum YErrorCode
+{
+	Y_OPERAT_SUCCEED,
+	Y_OPERAT_FAILD,
+	//ptr
+	YERROR_POINTER_NULL,
+	//filestream
+
+	//disk
+	YERROR_QUERY_FILE_NON_EXISTENT,
+	TERROR_DISK_ERROR,
+	//file
+	YERROR_NO_THIS_CHILD,
+	YERROR_FILE_IS_EXIST,
+	YERROR_FOLDER_IS_NOT_BE_EMPTY,
+	//path
+	YERROR_PATH_NOT_EXIST,
+	YERROR_PATH_ILLEGAL,
+	//command
+	YERROR_COMMAND_ARG_NUM_ERROR,
+	YERROR_COMMAND_ARG_ILLEGAL,
+	Y_COPY_SUCCEED,
+
+};
+*/
+const std::string rErrorStringArr[] =
+{
+	" surprise!!!!",
+	" Operated Faild.",
+	" Pointer is null.",
+	" Query file is not existed.",
+	" Disk unknow error.",
+	" The folder dose not have the file.",
+	" The file is exist.",
+	" The folder is not be empty.",
+	" The path not exist.",
+	" The path illegal.",
+	" The command arg count error.",
+	" The command arg illegal."
+};
+
 YCommand::YCommand(const std::string& szName, int nMstSize)
 	: m_rRegex(szName)
 	, m_nMustSize(nMstSize)
@@ -19,7 +61,15 @@ void YCommand::setCurWoringPath(const std::string & szCurPath)
 
 YErrorCode YCommand::errorPrint(YErrorCode rErrorType, std::string szPath)
 {
-	return YErrorCode();
+	std::string szOutput;
+	if (!szPath.empty())
+	{
+		szOutput += "\"";
+		szOutput += szPath;
+		szOutput += "\"";
+	}
+	std::cout << szOutput << rErrorStringArr[rErrorType] << std::endl;
+	return rErrorType;
 }
 
 YErrorCode YCommand::toAbsolutePath(const std::vector<std::string>& rOrgrinalArgList)
