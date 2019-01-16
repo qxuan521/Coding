@@ -56,7 +56,7 @@ bool YDelCommand::askDel(const std::string & szPath)
 {
 	while (true)
 	{
-		std::cout << "\"" << szPath << "\\*\"" << " has exist.Do you want to overwrite file?<y/n> ";
+		std::cout << "\"" << szPath << "\\*\"" << " has exist.Do you want to Delete file?<y/n> ";
 		std::string InPut;
 		std::cin.clear();
 		std::cin.sync();
@@ -113,7 +113,7 @@ YErrorCode YDelCommand::queryAllChildFile(std::vector<std::string>& rDelPathArr)
 	}
 	for (size_t index = 0; index < rQueryResult.size();++index)
 	{
-		if (rQueryResult[index]->IsFolder())
+		if (rQueryResult[index]->IsRealFolder())
 		{
 			rParentArr.push_back(g_pDiskOperator->getFullPath(rQueryResult[index]));
 		}

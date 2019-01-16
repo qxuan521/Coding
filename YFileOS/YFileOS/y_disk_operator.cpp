@@ -6,6 +6,22 @@
 #include "y_symlnk_file.h"
 YDiskOperator* g_pDiskOperator = new YDiskOperator;
 
+struct YDataSaveFileHead
+{
+	int32_t			nFileType;
+	int32_t			nFilePathSize = 0;
+	int32_t			nFileDataSize = 0;
+	char			rModifyDate[25];
+};
+
+struct LinkFileData
+{
+	std::string RealPath;
+	std::string DstPath;
+	std::string ModifyDate;
+};
+
+
 YDiskOperator::YDiskOperator()
 	: m_pDisk(new YDisk)
 {
@@ -97,7 +113,7 @@ YErrorCode YDiskOperator::createNewLnkFile(const std::string & szPath, const std
 
 YErrorCode YDiskOperator::createNewDisk(const std::string & szPath, YIFile *& pResult)
 {
-	YFile* pResultFile = nullptr;
+	YFile* pResultFile = (YFile*)pResult;
 	if (g_pDiskOperator->isRootName(szPath))
 	{
 		return TERROR_DISK_ERROR;
@@ -322,6 +338,78 @@ YErrorCode YDiskOperator::deleteNode(const std::string & szPath)
 		return YERROR_POINTER_NULL;
 	}
 	m_pDisk->destroyAllChildFileNode(pFile);
+	return Y_OPERAT_SUCCEED;
+}
+
+YErrorCode YDiskOperator::changeName(const std::string & szSrcPath, const std::string & szName)
+{
+	YFile* pParent = m_pDisk->queryFileNode(getParentPath(szSrcPath));
+	YFile* pFile = m_pDisk->queryFileNode(szSrcPath);
+	if (nullptr == pFile && nullptr == pParent)
+	{
+		return YERROR_POINTER_NULL;
+	}
+	//验重
+	std::vector<YFile*> rChildren = pParent->getChildren();
+	for (size_t index  = 0 ;index < rChildren.size();++index)
+	{
+		if (rChildren[index]->getName() == szName)
+		{
+			return YERROR_FILE_IS_EXIST;
+		}
+	}
+	pFile->setName(szName);
+	return Y_OPERAT_SUCCEED;
+}
+
+YErrorCode YDiskOperator::loadData(const std::string & szSrcPath)
+{
+
+	std::vector<char> rBuffer;
+	std::vector<LinkFileData> LinkFileQueue;
+	std::fstream rFileReader(szSrcPath, std::ios::binary | std::ios::in);
+	if (!rFileReader.is_open())
+	{
+		return YERROR_PATH_ILLEGAL;
+	}
+	//格式化磁盘
+	m_pDisk->formatDisk();
+	//开始读文件
+	int32_t nDiskCount = 0, nFileCount = 0;
+	rFileReader.read((char*)&nDiskCount, sizeof(int32_t));
+	rFileReader.read((char*)&nFileCount, sizeof(int32_t));
+	rBuffer.resize(nDiskCount);
+	rFileReader.read(&rBuffer[0], nDiskCount);
+	YErrorCode rResultCode = initializeRootDisk(rBuffer);
+	rResultCode = initializeFileTree(nFileCount, rFileReader);
+	rFileReader.close();
+	return Y_OPERAT_SUCCEED;
+}
+
+YErrorCode YDiskOperator::saveData(const std::string & szDstPath)
+{
+	std::fstream rFileReader(szDstPath, std::ios::binary | std::ios::out | std::ios::trunc);
+	if (!rFileReader.is_open())
+	{
+		return YERROR_PATH_ILLEGAL;
+	}
+	//写盘符
+	rFileReader.write((char*)m_pDisk->getRootArr().size(), 4);
+	rFileReader.write((char*)m_pDisk->getRootArr().size(), 4);
+	std::vector<YFile*> rRootArr = m_pDisk->getRootArr();
+	for (size_t index = 0 ;index < rRootArr.size() ;++index )
+	{
+		rFileReader.write(&rRootArr[index]->getName()[0], 1);
+	}
+	int32_t nFileCount = 0;
+	for (size_t index = 0;index < rRootArr.size();++index)
+	{
+		saveDataHelper(rRootArr[index], rFileReader, nFileCount);
+	}
+	rFileReader.seekg(4, std::ios::beg);
+	rFileReader.write((char*)&nFileCount, sizeof(int32_t));
+	rFileReader.close();
+	return Y_OPERAT_SUCCEED;
 }
 
 YErrorCode YDiskOperator::getChildren(YIFile * pFile, std::vector<YIFile*>& rResult)
@@ -336,6 +424,13 @@ YErrorCode YDiskOperator::getChildren(YIFile * pFile, std::vector<YIFile*>& rRes
 		rResult.push_back(rChildren[index]);
 	}
 	return Y_OPERAT_SUCCEED;
+}
+
+void YDiskOperator::formatDisk()
+{
+	m_pDisk->formatDisk();
+	YFile* pRoot = nullptr;
+	m_pDisk->createRootNode("c:", pRoot);
 }
 
 std::string YDiskOperator::getFullPath(YIFile* pFile)
@@ -433,7 +528,7 @@ void YDiskOperator::queryHelper(std::vector<YFile*>& rParentNodes, std::function
 			rHistorySet.insert(rParentNodes[index]);
 		}
 		std::vector<YFile*> rChildren = rParentNodes[index]->getChildren();
-		if (rParentNodes[index]->IsFolder())
+		if (rParentNodes[index]->IsRealFolder())
 		{
 			queryHelper(rChildren, rPredicate, rResult, rHistorySet);
 		}
@@ -453,5 +548,180 @@ void YDiskOperator::copyFIleHelper(YFile *& pSrcFile, YFile *& pDstFile, std::st
 	}
 	pDstFile->setName(szDstName);
 	pDstFile->setModifyDate(pSrcFile->getModifyDate());
+}
+
+void YDiskOperator::saveDataHelper(YFile * pParentNode, std::fstream & rFile, int& nFileCount)
+{
+	if (pParentNode == nullptr)
+	{
+		return;
+	}
+	std::vector<YFile*> rChildren = pParentNode->getChildren();
+	for (size_t index = 0; index < rChildren.size();++index)
+	{
+		YDataSaveFileHead rFileHeader;
+		if (rChildren[index]->IsRealSymLnk())
+		{
+			std::string szFullPath = this->getFullPath(rChildren[index]);
+			rFileHeader.nFileType = 2;
+			rFileHeader.nFilePathSize = szFullPath.size();
+			rFileHeader.nFileDataSize =((YSymlnkFile*)rChildren[index])->getShowName().size();
+			memcpy(rFileHeader.rModifyDate,rChildren[index]->getModifyDate().c_str(), 25);
+			rFile.write((char*)(&rFileHeader), sizeof(rFileHeader));
+			rFile.write(this->getFullPath(rChildren[index]).c_str(), this->getFullPath(rChildren[index]).size());
+			rFile.write(((YSymlnkFile*)rChildren[index])->getShowName().c_str(), ((YSymlnkFile*)rChildren[index])->getShowName().size());
+			++nFileCount;
+		}
+		else 
+		{
+			if (rChildren[index]->IsRealFile())
+			{
+				std::string szFullPath = this->getFullPath(rChildren[index]);
+				rFileHeader.nFileType = 0;
+				rFileHeader.nFileDataSize = rChildren[index]->getFileSize();
+				rFileHeader.nFilePathSize = szFullPath.size();
+				memcpy(rFileHeader.rModifyDate, rChildren[index]->getModifyDate().c_str(), 25);
+				rFile.write((char*)(&rFileHeader), sizeof(rFileHeader));
+				rFile.write(this->getFullPath(rChildren[index]).c_str(), this->getFullPath(rChildren[index]).size());
+				rFile.write((char*)(rChildren[index]->getFileData()), rChildren[index]->getFileSize());
+				++nFileCount;
+			}
+			else
+			{
+				std::string szFullPath = this->getFullPath(rChildren[index]);
+				rFileHeader.nFileType = 1;
+				rFileHeader.nFileDataSize = rChildren[index]->getFileSize();
+				rFileHeader.nFilePathSize = szFullPath.size();
+				memcpy(rFileHeader.rModifyDate, rChildren[index]->getFileData(), 25);
+				rFile.write((char*)(&rFileHeader), sizeof(rFileHeader));
+				rFile.write(this->getFullPath(rChildren[index]).c_str(), this->getFullPath(rChildren[index]).size());
+				++nFileCount;
+
+				saveDataHelper(rChildren[index], rFile, nFileCount);
+			}
+		}
+	}
+}
+
+YErrorCode YDiskOperator::initializeRootDisk(std::vector<char>& rRootArr)
+{
+	if (rRootArr.empty())
+	{
+		return TERROR_DISK_ERROR;
+	}
+	for (size_t index = 0; index < rRootArr.size();++index)
+	{
+		std::string szRootName;
+		szRootName += (rRootArr[index]);
+		szRootName += ':';
+		YFile* pResultFile = nullptr;
+		if (g_pDiskOperator->isRootName(szRootName))
+		{
+			return TERROR_DISK_ERROR;
+		}
+		YErrorCode rResult = m_pDisk->createRootNode(szRootName, pResultFile);
+		if (Y_OPERAT_SUCCEED != rResult)
+		{
+			return rResult;
+		}
+	}
+	return Y_OPERAT_SUCCEED;
+}
+
+YErrorCode YDiskOperator::initializeFileTree(int32_t nFileCount, std::fstream & rFileStream)
+{
+	if (0 == nFileCount)
+	{
+		return Y_OPERAT_SUCCEED;
+	}
+	int32_t nCount = 1;
+	std::vector<char> rBuffer;
+	std::vector<LinkFileData> rLnkArr;
+	//初始化文件
+	for ( ;nCount <= nFileCount && !rFileStream.eof(); ++nCount )
+	{
+		YDataSaveFileHead rHeader;
+		rFileStream.read((char*)&rHeader, sizeof(rHeader));
+		if (rHeader.nFileType == Y_SymLnk)
+		{//符号链接文件处理
+			LinkFileData rLnkData;
+			bufferResetByDataSize(rBuffer, rHeader.nFilePathSize);
+			rFileStream.read(&rBuffer[0], rHeader.nFilePathSize);
+			rLnkData.RealPath = makeStringFromBuffer(rBuffer, rHeader.nFilePathSize);
+			bufferResetByDataSize(rBuffer, rHeader.nFileDataSize);
+			rFileStream.read(&rBuffer[0], rHeader.nFileDataSize);
+			rLnkData.DstPath = makeStringFromBuffer(rBuffer, rHeader.nFileDataSize);
+			bufferResetByDataSize(rBuffer, rHeader.nFileDataSize);
+			rFileStream.read(&rBuffer[0], 25);
+			rLnkData.ModifyDate = makeStringFromBuffer(rBuffer, 25);
+			rLnkArr.push_back(rLnkData);
+		}
+		else
+		{//普通文件文件夹
+			YIFile* pFile = nullptr;
+			if (rHeader.nFileType == Y_File)
+			{
+				std::string szFilePath;
+				bufferResetByDataSize(rBuffer, rHeader.nFilePathSize);
+				rFileStream.read(&rBuffer[0], rHeader.nFilePathSize);
+				szFilePath = makeStringFromBuffer(rBuffer, rHeader.nFilePathSize);
+				createNewFile(szFilePath, pFile);
+				if (nullptr != pFile)
+				{
+					bufferResetByDataSize(rBuffer, rHeader.nFileDataSize);
+					rFileStream.read(&rBuffer[0], rHeader.nFileDataSize);
+					((YFile*)pFile)->setFileData((int8_t*)&rBuffer[0], rHeader.nFileDataSize);
+				}
+				else
+				{
+					break;
+				}
+			}
+			else
+			{
+				std::string szFilePath;
+				bufferResetByDataSize(rBuffer, rHeader.nFilePathSize);
+				rFileStream.read(&rBuffer[0], rHeader.nFilePathSize);
+				szFilePath = makeStringFromBuffer(rBuffer, rHeader.nFilePathSize);
+				 createNewFolder(szFilePath, pFile);
+				
+			}
+			if (nullptr != pFile)
+			{
+				rHeader.rModifyDate[24] = '\0';
+				((YFile*)pFile)->setModifyDate(rHeader.rModifyDate);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	if (nCount + rLnkArr.size() != nFileCount)
+	{
+		formatDisk();
+		return TERROR_DISK_ERROR;
+	}
+	YErrorCode rResultCode;
+	for (size_t index = 0; index < rLnkArr.size(); index++)
+	{
+		YIFile* pResult = nullptr;
+		rResultCode = createNewLnkFile(rLnkArr[index].RealPath, rLnkArr[index].DstPath, pResult);
+		if (rResultCode != Y_OPERAT_SUCCEED || nullptr == pResult)
+		{
+			formatDisk();
+			return TERROR_DISK_ERROR;
+		}
+		((YFile*)pResult)->setModifyDate(rLnkArr[index].ModifyDate);
+	}
+	return Y_COPY_SUCCEED;
+}
+
+void YDiskOperator::bufferResetByDataSize(std::vector<char>& rBuffer, int size)
+{
+	if ((int)rBuffer.size() < size)
+	{
+		rBuffer.resize(size);
+	}
 }
 

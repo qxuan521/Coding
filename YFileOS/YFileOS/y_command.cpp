@@ -30,18 +30,18 @@ YErrorCode YCommand::toAbsolutePath(const std::vector<std::string>& rOrgrinalArg
 	for (size_t index = 0; index < rOrgrinalArgList.size(); ++index)
 	{
 		std::string szPathOrgrinal = rOrgrinalArgList[index];
-		if (!IsCheckTypeArg && index < m_rTypeArg.size())
-		{
-			if (!m_rTypeArg.empty() && m_rTypeArg.count(szPathOrgrinal))
+		/*	if (!IsCheckTypeArg && index < m_rTypeArg.size())
 			{
-				m_rTypeArg[szPathOrgrinal] = true;
-				continue;
-			}
-			else
-			{
-				IsCheckTypeArg = true;
-			}
-		}
+				if (!m_rTypeArg.empty() && m_rTypeArg.count(szPathOrgrinal))
+				{
+					m_rTypeArg[szPathOrgrinal] = true;
+					continue;
+				}
+				else
+				{
+					IsCheckTypeArg = true;
+				}
+			}*/
 		//Â·¾¶´¦Àí
 		if (isRealPath(szPathOrgrinal))
 		{

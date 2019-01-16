@@ -105,11 +105,11 @@ bool YDisk::isRootName(const std::string & szName)
 
 YErrorCode YDisk::formatDisk()
 {
-	if (Y_OPERAT_FAILD == destroyAllFileNode())
-		return Y_OPERAT_FAILD;
-	YFile* pRoot = nullptr;
-	createRootNode("c:", pRoot);
-	return Y_OPERAT_SUCCEED;
+// 	if (Y_OPERAT_FAILD == destroyAllFileNode())
+// 		return Y_OPERAT_FAILD;
+	/*YFile* pRoot = nullptr;*/
+	/*createRootNode("c:", pRoot);*/
+	return destroyAllFileNode();
 }
 
 YErrorCode YDisk::destroyFileNode(YFile *& beDestroYFile)
@@ -126,6 +126,7 @@ YErrorCode YDisk::destroyAllChildFileNode(YFile *& beDestroYFile)
 	destroyHelper(beDestroYFile);
 	if (nullptr != beDestroYFile)
 		return Y_OPERAT_FAILD;
+	return Y_OPERAT_SUCCEED;
 }
 
 //std::string & YDisk::getRootName()

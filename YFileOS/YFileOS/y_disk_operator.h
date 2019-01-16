@@ -30,13 +30,20 @@ public:
 	YErrorCode copyFileToRealDisk(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::vector<YIFile*>& rCopyResult);
 	//delete
 	YErrorCode deleteNode(const std::string& szPath);
+	//changeName
+	YErrorCode changeName(const std::string& szSrcPath, const std::string& szName);
+	//load & save
+	YErrorCode loadData(const std::string& szSrcPath);
+	YErrorCode saveData(const std::string& szDstPath);
 //About File
 	YErrorCode getChildren(YIFile* pFile, std::vector<YIFile*>& rResult);
-
+//Disk
+	void	formatDisk();
 //path
 	std::string getFullPath(YIFile* pFile);
 	std::string getCurWorkingPath();
 	YErrorCode	setCurWorkingPath(const std::string& szCurWokingPath);
+
 //Verify
 	bool	isRootName(const std::string& szName);
 	bool	isPathExist(const std::string& szPath);
@@ -53,6 +60,10 @@ private:
 	);
 	void queryHelper(std::vector<YFile*>& rParentNodes, std::function<bool(YFile*)>& rPredicate, std::vector<YIFile*>& rResult, std::set<YFile*>& rHistorySet);
 	void copyFIleHelper(YFile*& pSrcFile, YFile*& pDstFile,std::string& szDstName);
+	void saveDataHelper(YFile* pParentNode, std::fstream& rFile,int& nFileCount);
+	YErrorCode initializeRootDisk(std::vector<char>& rRootArr);
+	YErrorCode initializeFileTree(int32_t nFileCount, std::fstream& rFileStream);
+	void bufferResetByDataSize(std::vector<char>& rBuffer, int size);
 private:
 
 	YDisk*		m_pDisk;

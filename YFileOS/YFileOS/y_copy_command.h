@@ -6,7 +6,7 @@ class YCopyCommand : public YCommand
 {
 public:
 	YCopyCommand(const std::string& szName);
-	~YCopyCommand();
+	virtual ~YCopyCommand();
 
 	virtual YErrorCode		excultCommand(YCommandInfo& rCommandInfo);
 	virtual void			resetCommand();

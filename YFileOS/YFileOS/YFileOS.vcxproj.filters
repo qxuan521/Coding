@@ -97,6 +97,15 @@
     <ClInclude Include="y_cddisk_command.h">
       <Filter>Core\file_operator\command</Filter>
     </ClInclude>
+    <ClInclude Include="y_load_command.h">
+      <Filter>Core\file_operator\command</Filter>
+    </ClInclude>
+    <ClInclude Include="y_save_command.h">
+      <Filter>Core\file_operator\command</Filter>
+    </ClInclude>
+    <ClInclude Include="y_cls_command.h">
+      <Filter>Core\file_operator\command</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="y_disk.cpp">
@@ -166,6 +175,15 @@
       <Filter>Core\file_operator\command</Filter>
     </ClCompile>
     <ClCompile Include="y_cddisk_command.cpp">
+      <Filter>Core\file_operator\command</Filter>
+    </ClCompile>
+    <ClCompile Include="y_load_command.cpp">
+      <Filter>Core\file_operator\command</Filter>
+    </ClCompile>
+    <ClCompile Include="y_save_command.cpp">
+      <Filter>Core\file_operator\command</Filter>
+    </ClCompile>
+    <ClCompile Include="y_cls_command.cpp">
       <Filter>Core\file_operator\command</Filter>
     </ClCompile>
   </ItemGroup>

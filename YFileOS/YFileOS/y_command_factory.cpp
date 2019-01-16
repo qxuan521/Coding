@@ -7,6 +7,13 @@
 #include "y_cd_command.h"
 #include "y_cddisk_command.h"
 #include "y_copy_command.h"
+#include "y_load_command.h"
+#include "y_save_command.h"
+#include "y_ren_command.h"
+#include "y_rd_command.h";
+#include "y_del_command.h"
+#include "y_cls_command.h"
+#include "y_move_command.h"
 YCommandFactory::YCommandFactory()
 {
 	m_rCommandPool.resize(COMMAND_MAX);
@@ -18,16 +25,13 @@ YCommandFactory::YCommandFactory()
 	m_rCommandPool[COMMAND_CD] = std::make_shared<YCdCommand>("cd");
 	m_rCommandPool[COMMAND_CDDISK] = std::make_shared<YCddiskCommand>("[a-zA-Z]+:");
 	m_rCommandPool[COMMAND_COPY] = std::make_shared<YCopyCommand>("copy");
-// 	m_rCommandPool[COMMAND_RD] = "rd";
-// 	m_rCommandPool[COMMAND_CD] = "cd";
-// 	m_rCommandPool[COMMAND_DEL] = "del";
-// 	m_rCommandPool[COMMAND_COPY] = "copy";
-// 	m_rCommandPool[COMMAND_REN] = "ren";
-// 	m_rCommandPool[COMMAND_MOVE] = "move";
-// 	m_rCommandPool[COMMAND_SAVE] = "save";
-// 	m_rCommandPool[COMMAND_LOAD] = "load";
-// 	m_rCommandPool[COMMAND_CLS] = "cls";
-
+	m_rCommandPool[COMMAND_RD] = std::make_shared<YRdCommand>("rd");
+	m_rCommandPool[COMMAND_REN] = std::make_shared<YRenCommand>("ren");
+	m_rCommandPool[COMMAND_DEL] = std::make_shared<YDelCommand>("del");
+	m_rCommandPool[COMMAND_SAVE] = std::make_shared<YSaveCommand>("save");
+	m_rCommandPool[COMMAND_LOAD] = std::make_shared<YLoadCommand>("load");
+	m_rCommandPool[COMMAND_MOVE] = std::make_shared<YMoveCommand>("move");
+	m_rCommandPool[COMMAND_CLS] = std::make_shared<YClsCommand>("cls");
 }
 
 YCommandFactory::~YCommandFactory()

@@ -20,8 +20,7 @@ enum CommandType
 	COMMAND_SAVE ,
 	COMMAND_LOAD ,
 	COMMAND_CLS ,
-	COMMAND_MAX,
-	ERROR_COMMAND_NUM
+	COMMAND_MAX
 };
 
 class YCommandFactory

@@ -5,7 +5,7 @@ class YCdCommand : public YCommand
 {
 public:
 	YCdCommand(const std::string& szName);
-	~YCdCommand();
+	virtual ~YCdCommand();
 
 	virtual YErrorCode		excultCommand(YCommandInfo& rCommandInfo);
 	virtual YErrorCode		toAbsolutePath(const std::vector<std::string>& rOrgrinalArgList);

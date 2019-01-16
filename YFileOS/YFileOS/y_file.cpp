@@ -93,6 +93,15 @@ void YFile::setModifyDate(const std::string & modifyDate)
 	m_szModifyDate = modifyDate;
 }
 
+void YFile::setModifyDate(char (*modifyDate)[25])
+{
+	m_szModifyDate.clear();
+	for (size_t index = 0; index < 25;++index)
+	{
+		m_szModifyDate += modifyDate[index];
+	}
+}
+
 void YFile::addChild(YFile * child)
 {
 	if (nullptr == child)

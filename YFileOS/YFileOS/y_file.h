@@ -39,7 +39,7 @@ public:
 	void	setName(const std::string& name);
 	void	setParent(YFile* pParent);
 
-	
+	void	setModifyDate(char(*modifyDate)[25]);
 
 	//验证文件类型..Real为实际类型，Isxxx接口有可能是符号链接文件指向一个文件夹
 	virtual bool IsFile();

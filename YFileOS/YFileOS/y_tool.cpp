@@ -124,3 +124,8 @@ std::regex makeRepaceRegexByPath(const std::string& szPath, std::string& szRepac
 	}
 	return std::regex(szRegexStr);
 }
+
+std::string makeStringFromBuffer(std::vector<char>& rBuffer, int size)
+{
+	return std::string();
+}
