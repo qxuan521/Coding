@@ -35,15 +35,20 @@ std::string VirtualDisk::getCurPath(void)
 
 bool VirtualDisk::containNode(std::string path, int & size, int & type)
 {
-	std::shared_ptr< FileInfo> File = g_DataDiskPtr->GetFileInfo(path);
-	if (NULL == File)
+	std::vector<YIFile*> rResult;
+	g_pDiskOperator->queryAllNode(path, rResult);
+	if (rResult.empty() || NULL == rResult[0])
+	{
+		size = -1;
+		type = 0;
 		return false;
-	size = File->GetSize();
-	if (FOLDER_FILE == File->GetRealType())
+	}
+	size = rResult[0]->getFileSize();
+	if (rResult[0])->IsRealFolder())
 	{
 		type = 1;
 	}
-	else if(DATA_FILE == File->GetRealType())
+	else if(rResult[0])->IsRealFile())
 	{
 		type = 2;
 	}
@@ -56,8 +61,10 @@ bool VirtualDisk::containNode(std::string path, int & size, int & type)
 #include "link_file_info.h"
 std::string VirtualDisk::getLinkNode(std::string path)
 {
-	std::shared_ptr<LinkFileInfo> LinkFile = std::static_pointer_cast<LinkFileInfo>(g_DataDiskPtr->GetFileInfo(path));
-	if (NULL == LinkFile)
-		return "";
-	return LinkFile->GetDstFile()->GetRealPath();
+	g_pDiskOperator->queryAllNode(path, rResult);
+	if (rResult.empty() || NULL == rResult[0])
+	{
+		return std::string("");
+	}
+	return rResult[0]->getShowName();
 }

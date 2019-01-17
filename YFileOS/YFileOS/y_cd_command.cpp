@@ -22,9 +22,13 @@ YErrorCode YCdCommand::excultCommand(YCommandInfo& rCommandInfo)
 	{
 		return errorPrint(rResultCode);
 	}
-	if (m_rArgList.size() >= 2)
+	if (m_rArgList.size() >= 2 )
 	{
 		return YERROR_COMMAND_ARG_NUM_ERROR;
+	}
+	if (m_rArgList.empty())
+	{
+		return Y_COPY_SUCCEED;
 	}
 	if (!noWildCardPathValidation(m_rArgList[0]))
 	{

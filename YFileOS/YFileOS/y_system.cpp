@@ -39,7 +39,7 @@ void YSystem::runingLoop()
 	}
 }
 
-void YSystem::runCommand(const std::string & szCmd)
+YErrorCode YSystem::runCommand(const std::string & szCmd)
 {
 	YCommandFactory rCommandFactory;
 	YInputResolve rInputResolve;
@@ -50,8 +50,8 @@ void YSystem::runCommand(const std::string & szCmd)
 	std::shared_ptr<YCommand> pCommand = rCommandFactory.queryCommandPtr(rResoveResult);
 	if (nullptr == pCommand)
 	{
-		return;
+		return Y_OPERAT_FAILD;
 	}
 	pCommand->setCurWoringPath(szCurWoringPath);
-	pCommand->excultCommand(rResoveResult);
+	return pCommand->excultCommand(rResoveResult);
 }
