@@ -11,3 +11,4 @@ bool						isHaveWildCard(const std::string& szPath);
 std::regex					makeRegexByPath(const std::string & szPath); 
 std::regex					makeRepaceRegexByPath(const std::string& szPath , std::string& szRepaceStr);
 std::string					makeStringFromBuffer(std::vector<char>& rBuffer,int size);
+bool						equalOrLowerWithCurPath(const std::string& szCurPath, const std::string& szPath);

@@ -29,19 +29,20 @@ YErrorCode YDisk::takeNode(YFile * parent, YFile * beTokenNode)
 {
 	if (nullptr == parent || nullptr == beTokenNode)
 		return YERROR_POINTER_NULL;
-	std::vector<YFile*>& Children = parent->getChildren();
-	for (std::vector<YFile*>::iterator rIter = Children.begin(); rIter != Children.end();)
-	{
-		if (beTokenNode == *rIter)
-		{
-			Children.erase(rIter);
-			return Y_OPERAT_SUCCEED;
-		}
-		else
-		{
-			++rIter;
-		}
-	}
+	parent->delChild(beTokenNode);
+// 	std::vector<YFile*>& Children = parent->getChildren();
+// 	for (std::vector<YFile*>::iterator rIter = Children.begin(); rIter != Children.end();)
+// 	{
+// 		if (beTokenNode == *rIter)
+// 		{
+// 			Children.erase(rIter);
+// 			return Y_OPERAT_SUCCEED;
+// 		}
+// 		else
+// 		{
+// 			++rIter;
+// 		}
+// 	}
 	return YERROR_NO_THIS_CHILD;
 }
 
@@ -109,7 +110,13 @@ YErrorCode YDisk::formatDisk()
 // 		return Y_OPERAT_FAILD;
 	/*YFile* pRoot = nullptr;*/
 	/*createRootNode("c:", pRoot);*/
-	return destroyAllFileNode();
+	YErrorCode rResultCode = destroyAllFileNode();
+	if (Y_OPERAT_SUCCEED != rResultCode)
+	{
+		return rResultCode;
+	}
+	m_rRootArr.clear();
+	return Y_OPERAT_SUCCEED;
 }
 
 YErrorCode YDisk::destroyFileNode(YFile *& beDestroYFile)

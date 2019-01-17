@@ -41,6 +41,7 @@ YCommandInfo YInputResolve::resolve(const std::string & szInput)
 					if (rResult.rPathList.empty() && !bMustBepath && !szSubArg.empty() && '/' == szSubArg[0])
 					{
 						rResult.rArgList.push_back(szSubArg);
+						szSubArg.clear();
 					}
 					else
 					{

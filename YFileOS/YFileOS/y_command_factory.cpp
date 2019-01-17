@@ -59,6 +59,7 @@ std::shared_ptr<YCommand> YCommandFactory::queryCommandPtr(YCommandInfo& rComman
 			}
 		}
 	}
+	std::cout << "command is not exist." << std::endl;
 	return NULL;
 }
 

@@ -333,12 +333,19 @@ YErrorCode YDiskOperator::copyFileToRealDisk(std::vector<std::string>& rSrcPathA
 YErrorCode YDiskOperator::deleteNode(const std::string & szPath)
 {
 	YFile* pFile = m_pDisk->queryFileNode(szPath);
-	if (nullptr == pFile)
+	std::string szParentPath = getParentPath(szPath);
+	YFile* pParent = m_pDisk->queryFileNode(szParentPath);
+	if (nullptr == pFile || nullptr == pParent)
 	{
 		return YERROR_POINTER_NULL;
 	}
-	m_pDisk->destroyAllChildFileNode(pFile);
-	return Y_OPERAT_SUCCEED;
+	YErrorCode rResultCode;
+	rResultCode = m_pDisk->takeNode(pParent, pFile);
+	if (Y_OPERAT_SUCCEED != rResultCode)
+	{
+		return rResultCode;
+	}
+	return m_pDisk->destroyAllChildFileNode(pFile);
 }
 
 YErrorCode YDiskOperator::changeName(const std::string & szSrcPath, const std::string & szName)
@@ -394,8 +401,9 @@ YErrorCode YDiskOperator::saveData(const std::string & szDstPath)
 		return YERROR_PATH_ILLEGAL;
 	}
 	//Ð´ÅÌ·û
-	rFileReader.write((char*)m_pDisk->getRootArr().size(), 4);
-	rFileReader.write((char*)m_pDisk->getRootArr().size(), 4);
+	uint32_t nRootSize =(uint32_t)m_pDisk->getRootArr().size();
+	rFileReader.write((char*)&nRootSize ,4);
+	rFileReader.write((char*)&nRootSize, 4);
 	std::vector<YFile*> rRootArr = m_pDisk->getRootArr();
 	for (size_t index = 0 ;index < rRootArr.size() ;++index )
 	{
@@ -658,7 +666,7 @@ void YDiskOperator::saveDataHelper(YFile * pParentNode, std::fstream & rFile, in
 				rFileHeader.nFileType = 1;
 				rFileHeader.nFileDataSize = rChildren[index]->getFileSize();
 				rFileHeader.nFilePathSize =(int) szFullPath.size();
-				memcpy(rFileHeader.rModifyDate, rChildren[index]->getFileData(), 25);
+				memcpy(rFileHeader.rModifyDate, rChildren[index]->getModifyDate().c_str(), 25);
 				rFile.write((char*)(&rFileHeader), sizeof(rFileHeader));
 				rFile.write(this->getFullPath(rChildren[index]).c_str(), this->getFullPath(rChildren[index]).size());
 				++nFileCount;
@@ -732,6 +740,7 @@ YErrorCode YDiskOperator::initializeFileTree(int32_t nFileCount, std::fstream & 
 				rFileStream.read(&rBuffer[0], rHeader.nFilePathSize);
 				szFilePath = makeStringFromBuffer(rBuffer, rHeader.nFilePathSize);
 				createNewFile(szFilePath, pFile);
+
 				if (nullptr != pFile)
 				{
 					bufferResetByDataSize(rBuffer, rHeader.nFileDataSize);
@@ -763,7 +772,7 @@ YErrorCode YDiskOperator::initializeFileTree(int32_t nFileCount, std::fstream & 
 			}
 		}
 	}
-	if (nCount + rLnkArr.size() != nFileCount)
+	if (nCount + rLnkArr.size() -1!= nFileCount)
 	{
 		formatDisk();
 		return TERROR_DISK_ERROR;

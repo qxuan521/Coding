@@ -62,6 +62,10 @@ YErrorCode YDelCommand::queryOneLevelFile(std::vector<std::string>& rDelPathArr)
 	std::vector<YIFile*> rQueryResult;
 	for (size_t index = 0; index < m_rArgList.size(); index++)
 	{
+		if (equalOrLowerWithCurPath(m_szCurWorkPath, m_rArgList[index]))
+		{
+			return errorPrint(YERROR_PATH_ILLEGAL);
+		}
 		rResultCode = g_pDiskOperator->queryFileNode(m_rArgList[index], rQueryResult);
 		if (rResultCode != Y_OPERAT_SUCCEED)
 		{

@@ -35,6 +35,10 @@ YErrorCode YMoveCommand::excultCommand(YCommandInfo & rCommandInfo)
 	std::string szDst = m_rArgList[1];
 	srcIsReal = isRealPath(szSrc);
 	dstIsReal = isRealPath(szDst);
+	if (equalOrLowerWithCurPath(m_szCurWorkPath, szSrc))
+	{
+		return errorPrint(YERROR_PATH_ILLEGAL);
+	}
 	if (srcIsReal)
 	{//src real
 		if (dstIsReal)

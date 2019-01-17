@@ -88,8 +88,11 @@ void YFile::setFileData(const int8_t * data, const uint32_t size)
 {
 	if (nullptr == data/* || 0 <= size*/)
 		return;
-	m_pData.resize(size);
-	memcpy(&m_pData[0], data, size);
+	if (size > 0)
+	{
+		m_pData.resize(size);
+		memcpy(&m_pData[0], data, size);
+	}
 }
 
 void YFile::setModifyDate(const std::string & modifyDate)
@@ -131,11 +134,11 @@ void YFile::delChild(YFile * child)
 		{
 			if ((*rIter)->IsRealFolder())
 			{
-				++m_nChildFolderCount;
+				--m_nChildFolderCount;
 			}
 			else
 			{
-				++m_nChildFileCount;
+				--m_nChildFileCount;
 			}
 			rIter = m_rChildrenArr.erase(rIter);
 		}

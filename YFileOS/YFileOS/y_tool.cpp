@@ -127,5 +127,24 @@ std::regex makeRepaceRegexByPath(const std::string& szPath, std::string& szRepac
 
 std::string makeStringFromBuffer(std::vector<char>& rBuffer, int size)
 {
-	return std::string();
+	std::string szPath;
+	for (size_t index = 0; index < rBuffer.size();++index)
+	{
+		szPath += rBuffer[index];
+	}
+	return szPath;
+}
+
+bool equalOrLowerWithCurPath(const std::string & szCurPath, const std::string & szPath)
+{
+	std::string szTempPath = szCurPath;
+	while (!szTempPath.empty())
+	{
+		if (szPath == szTempPath)
+		{
+			return true;
+		}
+		szTempPath = getParentPath(szTempPath);
+	}
+	return false;
 }

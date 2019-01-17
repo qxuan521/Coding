@@ -15,11 +15,11 @@ YSaveCommand::~YSaveCommand()
 
 YErrorCode YSaveCommand::excultCommand(YCommandInfo & rCommandInfo)
 {
+	YErrorCode rErrorCode = toAbsolutePath(rCommandInfo.rPathList);
 	if (m_rArgList.size() != 1)
 	{
 		return errorPrint(YERROR_COMMAND_ARG_NUM_ERROR);
 	}
-	YErrorCode rErrorCode = toAbsolutePath(rCommandInfo.rPathList);
 	if (Y_OPERAT_SUCCEED != rErrorCode)
 	{
 		return errorPrint(rErrorCode);

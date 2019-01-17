@@ -40,7 +40,7 @@ YErrorCode YRdCommand::excultCommand(YCommandInfo & rCommandInfo)
 			errorPrint(YERROR_POINTER_NULL, g_pDiskOperator->getFullPath(rQueryResult[index]));
 			continue;
 		}
-		if (rQueryResult[index]->getChildrenCount() != 0)
+		if (rQueryResult[index]->getChildrenCount() != 0 && !m_rTypeArg["/s"])
 		{
 			errorPrint(YERROR_FOLDER_IS_NOT_BE_EMPTY, g_pDiskOperator->getFullPath(rQueryResult[index]));
 			continue;
@@ -66,6 +66,10 @@ YErrorCode YRdCommand::queryFolderOneLevel(std::vector<std::string>& rWaitRemove
 	std::vector<YIFile*> rQueryResult;
 	for (size_t index = 0; index < m_rArgList.size(); index++)
 	{
+		if (equalOrLowerWithCurPath(m_szCurWorkPath, m_rArgList[index]))
+		{
+			return errorPrint(YERROR_PATH_ILLEGAL);
+		}
 		rResultCode = g_pDiskOperator->queryFolderNode(m_rArgList[index], rQueryResult);
 		if (rResultCode != Y_OPERAT_SUCCEED)
 		{
