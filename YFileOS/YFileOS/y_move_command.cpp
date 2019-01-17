@@ -173,18 +173,13 @@ YErrorCode YMoveCommand::handleDstToNoWildCard(const std::string & szDst)
 		std::regex rDstResgex = makeRepaceRegexByPath(getNameFromFullPath(szDst), szRepaceString);
 		for (size_t index = 0; index < m_rSrcArgList.size(); index++)
 		{
-			std::smatch szMatchSrcPathResult;
-			std::string szSrcName = getParentPath(m_rSrcArgList[index]);
+			std::string szSrcName = getNameFromFullPath(m_rSrcArgList[index]);
 			if (szSrcName.empty())
 			{
 				return YERROR_PATH_ILLEGAL;
 			}
 
 			std::string absDstName = std::regex_replace(szSrcName, rDstResgex, szRepaceString);
-			if (szMatchSrcPathResult.empty())
-			{
-				return YERROR_PATH_ILLEGAL;
-			}
 			m_rDstArgList[index].append(szDstParent);
 			m_rDstArgList[index].append("/");
 			m_rDstArgList[index].append(absDstName);

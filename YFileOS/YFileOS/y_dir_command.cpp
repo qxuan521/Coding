@@ -37,31 +37,46 @@ YErrorCode YDirCommand::excultCommand(YCommandInfo& rCommandInfo)
 	}
 	//将路径全路径（有可能包含通配符）转换成节点数组
 	std::vector<YIFile*> rQueryResult;
-	handleWildCard(rQueryResult);
-	//进行查询
 	std::vector<DirSearchResult> rDirResult;
-	if (m_rTypeArg["/s"])
+	for (size_t index = 0; index < m_rArgList.size(); index++)
 	{
-		if (m_rTypeArg["/ad"])
-		{//all children folder
-			rResultCode = allChildFolderSearch(rQueryResult, rDirResult);
+		std::regex	rMutchRegex("[\\w_:\\.]*");
+		std::string szDirPath = m_rArgList[index];
+		if (isHaveWildCard(m_rArgList[index]))
+		{
+			std::string szName = getNameFromFullPath(szDirPath);
+			rMutchRegex = makeRegexByPath(szName);
+			szDirPath = getParentPath(szDirPath);
+		}
+		YErrorCode rResultCode = g_pDiskOperator->queryFolderNode(szDirPath, rQueryResult);
+		if (rResultCode != Y_OPERAT_SUCCEED)
+		{
+			errorPrint(rResultCode, m_rArgList[index]);
+		}
+		if (m_rTypeArg["/s"])
+		{
+			if (m_rTypeArg["/ad"])
+			{//all children folder
+				rResultCode = allChildFolderSearch(rQueryResult, rDirResult, rMutchRegex);
+			}
+			else
+			{//all children file&folder
+				rResultCode = allChildSearch(rQueryResult, rDirResult, rMutchRegex);
+			}
 		}
 		else
-		{//all children file&folder
-			rResultCode = allChildSearch(rQueryResult, rDirResult);
+		{
+			if (m_rTypeArg["/ad"])
+			{//folder
+				rResultCode = folderSearch(rQueryResult, rDirResult, rMutchRegex);
+			}
+			else
+			{//file&folder 
+				rResultCode = normalSearch(rQueryResult, rDirResult, rMutchRegex);
+			}
 		}
 	}
-	else
-	{
-		if (m_rTypeArg["/ad"])
-		{//folder
-			rResultCode = folderSearch(rQueryResult, rDirResult);
-		}
-		else
-		{//file&folder 
-			rResultCode = normalSearch(rQueryResult,rDirResult);
-		}
-	}
+	//进行查询
 	if (Y_OPERAT_SUCCEED != rResultCode)
 	{
 		return rResultCode;
@@ -186,12 +201,12 @@ void YDirCommand::printSeftNParent(YIFile * pFile)
 	}
 }
 
-YErrorCode YDirCommand::allChildSearch(std::vector<YIFile*>& rDirArr, std::vector<DirSearchResult>& rDirResult)
+YErrorCode YDirCommand::allChildSearch(std::vector<YIFile*>& rDirArr, std::vector<DirSearchResult>& rDirResult, std::regex& rMatchRegex)
 {
 	std::set<YIFile*> rHistorySet;
-	std::function<bool(YIFile*)> rPredicate([](YIFile* pFile)->bool
+	std::function<bool(YIFile*)> rPredicate([&](YIFile* pFile)->bool
 	{
-		return pFile != nullptr;
+		return std::regex_match(pFile->getName(), rMatchRegex) && pFile != nullptr;
 	});
 	YErrorCode rResultCode;
 	for (size_t index = 0;index < rDirArr.size(); ++index)
@@ -206,12 +221,12 @@ YErrorCode YDirCommand::allChildSearch(std::vector<YIFile*>& rDirArr, std::vecto
 	return Y_OPERAT_SUCCEED;
 }
 
-YErrorCode YDirCommand::allChildFolderSearch(std::vector<YIFile*>& rDirArr, std::vector<DirSearchResult>& rDirResult)
+YErrorCode YDirCommand::allChildFolderSearch(std::vector<YIFile*>& rDirArr, std::vector<DirSearchResult>& rDirResult, std::regex& rMatchRegex)
 {
 	std::set<YIFile*> rHistorySet;
-	std::function<bool(YIFile*)> rPredicate([](YIFile* pFile)->bool
+	std::function<bool(YIFile*)> rPredicate([&](YIFile* pFile)->bool
 	{
-		return (pFile != nullptr && pFile->IsFolder());
+		return std::regex_match(pFile->getName(),rMatchRegex) &&(pFile != nullptr && pFile->IsFolder());
 	});
 	YErrorCode rResultCode;
 	for (size_t index = 0; index < rDirArr.size(); ++index)
@@ -226,7 +241,7 @@ YErrorCode YDirCommand::allChildFolderSearch(std::vector<YIFile*>& rDirArr, std:
 	return Y_OPERAT_SUCCEED;
 }
 
-YErrorCode YDirCommand::folderSearch(std::vector<YIFile*>& rDirArr, std::vector<DirSearchResult>& rDirResult)
+YErrorCode YDirCommand::folderSearch(std::vector<YIFile*>& rDirArr, std::vector<DirSearchResult>& rDirResult, std::regex& rMatchRegex)
 {
 	std::set<YIFile*> rHistorySet;
 	for (size_t index = 0;index < rDirArr.size(); ++index)
@@ -242,7 +257,7 @@ YErrorCode YDirCommand::folderSearch(std::vector<YIFile*>& rDirArr, std::vector<
 				errorPrint(YERROR_POINTER_NULL, szFileFullPath);
 				continue;
 			}
-			if (!(*rIter)->IsFolder())
+			if (!(*rIter)->IsFolder() || !std::regex_match((*rIter)->getName(), rMatchRegex))
 			{
 				rIter = rResult.CurLevelResult.erase(rIter);
 			}
@@ -256,7 +271,7 @@ YErrorCode YDirCommand::folderSearch(std::vector<YIFile*>& rDirArr, std::vector<
 	return Y_OPERAT_SUCCEED;
 }
 
-YErrorCode YDirCommand::normalSearch(std::vector<YIFile*>& rDirArr, std::vector<DirSearchResult>& rDirResult)
+YErrorCode YDirCommand::normalSearch(std::vector<YIFile*>& rDirArr, std::vector<DirSearchResult>& rDirResult, std::regex& rMatchRegex)
 {
 	std::set<YIFile*> rHistorySet;
 	for (size_t index = 0; index < rDirArr.size(); ++index)
@@ -264,13 +279,21 @@ YErrorCode YDirCommand::normalSearch(std::vector<YIFile*>& rDirArr, std::vector<
 		DirSearchResult rResult;
 		rHistorySet.insert(rDirArr[index]);
 		rResult.initializeResult(rDirArr[index]);
-		for (auto rIter = rResult.CurLevelResult.begin(); rIter != rResult.CurLevelResult.end();++rIter)
+		for (auto rIter = rResult.CurLevelResult.begin(); rIter != rResult.CurLevelResult.end();)
 		{
 			if (nullptr == (*rIter))
 			{
 				std::string szFileFullPath = g_pDiskOperator->getFullPath(*rIter);
 				errorPrint(YERROR_POINTER_NULL, szFileFullPath);
 				continue;
+			}
+			if (!std::regex_match((*rIter)->getName(), rMatchRegex))
+			{
+				rIter = rResult.CurLevelResult.erase(rIter);
+			}
+			else
+			{
+				++rIter;
 			}
 		}
 		rDirResult.push_back(rResult);
