@@ -1,3 +1,4 @@
+#include <functional>
 #include "y_move_command.h"
 #include "y_tool.h"
 #include "y_disk_operator.h"
@@ -46,16 +47,49 @@ YErrorCode YMoveCommand::excultCommand(YCommandInfo & rCommandInfo)
 			{
 				return errorPrint(YERROR_PATH_ILLEGAL);
 			}
+			m_rSrcArgList.push_back(getPathFromRealPath(szSrc));
+			rResultCode = handleDstToNoWildCard(szDst);
+			if (Y_OPERAT_SUCCEED != rResultCode)
+			{
+				return rResultCode;
+			}
+			rResultCode = checkSrcReal();
+			if (Y_OPERAT_SUCCEED != rResultCode)
+			{
+				return errorPrint(rResultCode);
+			}
+			std::vector<YIFile*> rResult;
+			rResultCode = g_pDiskOperator->moveFileFromRealDisk(m_rSrcArgList, m_rDstArgList, rResult);
 		}
 	}
 	else
 	{//源路径不是真实路径
 		if (dstIsReal)
 		{//目标路径是真实路径
+			//verify
 			if (!noWildCardPathValidation(szDst) || !noWildCardPathValidation(szSrc))
 			{
 				return errorPrint(YERROR_PATH_ILLEGAL);
 			}
+			//将通配符匹配成路径
+			rResultCode = handleSrcToNoWildCard(szSrc);
+			if (Y_OPERAT_SUCCEED != rResultCode)
+			{
+				return errorPrint(rResultCode);
+			}
+			if (m_rSrcArgList.size() > 1)
+			{
+				return errorPrint(YERROR_PATH_ILLEGAL);
+			}
+			m_rDstArgList.push_back(getPathFromRealPath(szDst));
+			//验证，目标路径
+			rResultCode = checkDstReal();
+			if (Y_OPERAT_SUCCEED != rResultCode)
+			{
+				return errorPrint(rResultCode);
+			}
+			std::vector<YIFile*> rResult;
+			rResultCode = g_pDiskOperator->moveFileToRealDisk(m_rSrcArgList, m_rDstArgList, rResult);
 		}
 		else
 		{//虚拟磁盘向虚拟磁盘中拷贝
@@ -65,19 +99,38 @@ YErrorCode YMoveCommand::excultCommand(YCommandInfo & rCommandInfo)
 			{
 				return errorPrint(rResultCode);
 			}
-			if (m_rSrcArgList.empty())
-			{
-				return errorPrint(YERROR_PATH_ILLEGAL);
-			}
 			rResultCode = handleDstToNoWildCard(szDst);
 			if (Y_OPERAT_SUCCEED != rResultCode)
 			{
 				return errorPrint(rResultCode);
 			}
-			virtual2virtualMove();
+			if (!sameCheck())
+			{
+				return YERROR_COMMAND_ARG_ILLEGAL;
+			}
+			if (!m_rTypeArg["/y"])
+			{
+				std::function<bool(std::string&)> rPredicate([=](std::string &szName)->bool 
+				{
+					return userAsk(szName, " has exist.Do you want to Delete file?<y/n>:");
+				});
+				rResultCode = g_pDiskOperator->moveFile(m_rSrcArgList, m_rDstArgList, rPredicate);
+			}
+			else
+			{
+				std::function<bool(std::string&)> rPredicate([=]( std::string &szName)->bool {return true; });
+				rResultCode = g_pDiskOperator->moveFile(m_rSrcArgList, m_rDstArgList, rPredicate);
+			}
 		}
 	}
-	return Y_OPERAT_SUCCEED;
+	return errorPrint(rResultCode);
+}
+
+void YMoveCommand::resetCommand()
+{
+	YCommand::resetCommand();
+	m_rDstArgList.clear();
+	m_rSrcArgList.clear();
 }
 
 YErrorCode YMoveCommand::virtual2virtualMove()
@@ -101,6 +154,10 @@ YErrorCode YMoveCommand::handleSrcToNoWildCard(const std::string & szSrc)
 	for (size_t index = 0; index < rQueryResult.size(); ++index)
 	{
 		m_rSrcArgList.push_back(g_pDiskOperator->getFullPath(rQueryResult[index]));
+	}
+	if (m_rSrcArgList.empty())
+	{
+		return YERROR_PATH_ILLEGAL;
 	}
 	return Y_OPERAT_SUCCEED;
 }
@@ -195,14 +252,81 @@ YErrorCode YMoveCommand::handleDstToNoWildCard(const std::string & szDst)
 				{
 					std::vector<YIFile*> rQuerySrcResult;
 					YErrorCode rResultCode = g_pDiskOperator->queryAllNode(m_rSrcArgList[0], rQuerySrcResult);
-					if (rQuerySrcResult[0]->IsRealFolder())
+					if (!isRealPath(m_rArgList[0]))
 					{
-						return YERROR_PATH_ILLEGAL;
+						if (rQuerySrcResult[0]->IsRealFolder())
+						{
+							return YERROR_PATH_ILLEGAL;
+						}
 					}
 					m_rDstArgList.push_back(szDst);
 				}
 			}
 		}
+	}
+	return Y_OPERAT_SUCCEED;
+}
+
+bool YMoveCommand::sameCheck()
+{
+	if (m_rDstArgList.size() != m_rSrcArgList.size()
+		|| m_rSrcArgList.empty() || m_rDstArgList.empty())
+	{
+		return false;
+	}
+	for (size_t index = 0; index< m_rDstArgList.size();++index)
+	{
+		if (m_rDstArgList[index] == m_rSrcArgList[index])
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+YErrorCode YMoveCommand::checkSrcReal()
+{
+	YErrorCode rResultCode;
+	std::vector<YIFile*> rDstNode;
+	rResultCode = g_pDiskOperator->queryFileNode(m_rDstArgList[0], rDstNode);
+	if (rDstNode.empty())
+	{
+		return Y_OPERAT_SUCCEED;
+	}
+	else
+	{
+		if (nullptr != rDstNode[0])
+		{
+			if (!rDstNode[0]->IsRealFile())
+			{
+				return YERROR_PATH_ILLEGAL;
+			}
+			bool isCover = userAsk(m_rDstArgList[0], " has exist.Do you want to Delete file?<y/n>:");
+			if (isCover)
+			{
+				return Y_OPERAT_SUCCEED;
+			}
+			else {
+				return Y_OPERAT_FAILD;
+			}
+		}
+	}
+	return Y_OPERAT_SUCCEED;
+}
+
+YErrorCode YMoveCommand::checkDstReal()
+{
+	YErrorCode rResultCode;
+	rResultCode = handleDstToNoWildCard(m_rSrcArgList[0]);
+	if (Y_OPERAT_SUCCEED != rResultCode)
+	{
+		return rResultCode;
+	}
+	std::vector<YIFile*> rSrcNode;
+	g_pDiskOperator->queryFileNode(m_rSrcArgList[0], rSrcNode);
+	if (rSrcNode.size() != 1 || nullptr == rSrcNode[0] || !rSrcNode[0]->IsRealFile())
+	{
+		return YERROR_PATH_ILLEGAL;
 	}
 	return Y_OPERAT_SUCCEED;
 }

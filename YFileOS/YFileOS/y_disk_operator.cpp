@@ -412,7 +412,7 @@ YErrorCode YDiskOperator::saveData(const std::string & szDstPath)
 	return Y_OPERAT_SUCCEED;
 }
 
-YErrorCode YDiskOperator::moveFile(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::function<bool(std::string&szPath)>& rPredicate, int & nCount)
+YErrorCode YDiskOperator::moveFile(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::function<bool(std::string&szPath)>& rPredicate)
 {
 	std::set<std::string> rHistorySet;
 	for (size_t index = 0; index < rDstPathArr.size();++index)
@@ -424,14 +424,39 @@ YErrorCode YDiskOperator::moveFile(std::vector<std::string>& rSrcPathArr, std::v
 		}
 		if (!pFile->IsRealFolder())
 		{
-			fileMoveHelper(pFile, rDstPathArr[index], rPredicate, nCount, rHistorySet);
+			fileMoveHelper(pFile, rDstPathArr[index], rPredicate,  rHistorySet);
 		}
 		else
 		{
-			folderMoveHelper(pFile, rDstPathArr[index], rPredicate, nCount, rHistorySet);
+			folderMoveHelper(pFile, rDstPathArr[index], rPredicate, rHistorySet);
 		}
 	}
 	return YErrorCode();
+}
+
+YErrorCode YDiskOperator::moveFileFromRealDisk(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::vector<YIFile*>& rCopyResult)
+{
+	YErrorCode rResultCode = copyFileFromRealDisk(rSrcPathArr, rDstPathArr, rCopyResult);
+	if (Y_OPERAT_SUCCEED != rResultCode)
+	{
+		return rResultCode;
+	}
+	std::string szPath;
+	szPath += "del ";
+	szPath += rSrcPathArr[0];
+	std::replace_if(szPath.begin(), szPath.end(), [](char in) {return in == '/'; }, '\\');
+	system(szPath.c_str());
+	return Y_OPERAT_SUCCEED;
+}
+
+YErrorCode YDiskOperator::moveFileToRealDisk(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::vector<YIFile*>& rCopyResult)
+{
+	YErrorCode rResultCode = copyFileToRealDisk(rSrcPathArr, rDstPathArr, rCopyResult);
+	if (Y_OPERAT_SUCCEED != rResultCode)
+	{
+		return rResultCode;
+	}
+	return deleteNode(rDstPathArr[0]);
 }
 
 YErrorCode YDiskOperator::getChildren(YIFile * pFile, std::vector<YIFile*>& rResult)
@@ -446,6 +471,21 @@ YErrorCode YDiskOperator::getChildren(YIFile * pFile, std::vector<YIFile*>& rRes
 		rResult.push_back(rChildren[index]);
 	}
 	return Y_OPERAT_SUCCEED;
+}
+
+YErrorCode YDiskOperator::getChild(YIFile * pFile, const std::string& szName ,YIFile*& pChild)
+{
+	std::vector<YFile*> rChildren = ((YFile*)pFile)->getChildren();
+	for (size_t index = 0; index < rChildren.size(); ++index)
+	{
+		if (szName == rChildren[index]->getName())
+		{
+			pChild = rChildren[index];
+			return Y_OPERAT_FAILD;
+		}
+	}
+	pChild = nullptr;
+	return Y_OPERAT_FAILD;
 }
 
 void YDiskOperator::formatDisk()
@@ -564,9 +604,13 @@ void YDiskOperator::copyFIleHelper(YFile *& pSrcFile, YFile *& pDstFile, std::st
 		pDstFile = new YFile;
 		pDstFile->setFileData(pSrcFile->getFileData(), pSrcFile->getFileSize());
 	}
-	else
+	else if(pSrcFile->IsRealSymLnk())
 	{//符号链接文件
 		pDstFile = new YSymlnkFile(((YSymlnkFile*)pSrcFile)->getDstFile());
+	}
+	else
+	{
+		pDstFile = new YFile(Y_Folder);
 	}
 	pDstFile->setName(szDstName);
 	pDstFile->setModifyDate(pSrcFile->getModifyDate());
@@ -747,13 +791,143 @@ void YDiskOperator::bufferResetByDataSize(std::vector<char>& rBuffer, int size)
 	}
 }
 
-void YDiskOperator::folderMoveHelper(YFile * rSrcRootNode, std::string & szDstPath, std::function<bool(std::string&szPath)>& rPredicate, int & nCount, std::set<std::string>& rHistorySet)
+YErrorCode YDiskOperator::folderMoveHelper(YFile * rSrcRootNode, std::string & szDstPath, std::function<bool(std::string&szPath)>& rPredicate, std::set<std::string>& rHistorySet)
 {
-
+	YFile* pDstFileNode = m_pDisk->queryFileNode(szDstPath);
+	YFile* pParentNode = m_pDisk->queryFileNode(getParentPath(szDstPath));
+	if (nullptr == pParentNode)
+	{
+		return YERROR_POINTER_NULL;
+	}
+	if (nullptr == pDstFileNode)
+	{//没有重名 直接移动
+		std::string szSrcPath = getFullPath(rSrcRootNode);
+		YFile* pSrcParent = m_pDisk->queryFileNode(getParentPath(szSrcPath));
+		if (nullptr == pSrcParent)
+		{
+			return YERROR_POINTER_NULL;
+		}
+		m_pDisk->takeNode(pSrcParent, rSrcRootNode);
+		m_pDisk->addNode(pParentNode, rSrcRootNode);
+	}
+	else
+	{//存在重名 hebing 
+		std::string szSrcPath = getFullPath(rSrcRootNode);
+		YFile* pSrcParent = m_pDisk->queryFileNode(getParentPath(szSrcPath));
+		if (nullptr == pSrcParent)
+		{
+			return YERROR_POINTER_NULL;
+		}
+		if (rPredicate(szSrcPath))
+		{
+			YFile* pResultParent = nullptr;
+			m_pDisk->createFolderFile(pResultParent, "result");
+			FolderMoveCoverHelper(rSrcRootNode, pSrcParent, pDstFileNode, pParentNode,rPredicate, pResultParent);
+			std::vector<YFile*> rChildren = pResultParent->getChildren();
+			if (rChildren.empty())
+			{
+				return TERROR_DISK_ERROR;
+			}
+			YFile* pResult = rChildren[0];
+			m_pDisk->takeNode(pParentNode, pDstFileNode);
+			m_pDisk->destroyAllChildFileNode(pDstFileNode);
+			m_pDisk->addNode(pParentNode,pResult);
+		}
+	}
+	return Y_OPERAT_SUCCEED;
 }
 
-void YDiskOperator::fileMoveHelper(YFile * rSrcRootNode, std::string & szDstPath, std::function<bool(std::string&szPath)>& rPredicate, int & nCount, std::set<std::string>& rHistorySet)
+YErrorCode YDiskOperator::fileMoveHelper(YFile * rSrcRootNode, std::string & szDstPath, std::function<bool(std::string&szPath)>& rPredicate, std::set<std::string>& rHistorySet)
 {
+	YFile* pDstFileNode = m_pDisk->queryFileNode(szDstPath);
+	YFile* pParentNode = m_pDisk->queryFileNode(getParentPath(szDstPath));
+	if (nullptr == pParentNode)
+	{
+		return YERROR_POINTER_NULL;
+	}
+	if (nullptr == pDstFileNode)
+	{//没有重名 直接移动
+		std::string szSrcPath = getFullPath(rSrcRootNode);
+		YFile* pSrcParent = m_pDisk->queryFileNode(getParentPath(szSrcPath));
+		if (nullptr == pSrcParent)
+		{
+			return YERROR_POINTER_NULL;
+		}
+		m_pDisk->takeNode(pSrcParent, rSrcRootNode);
+		m_pDisk->addNode(pParentNode, rSrcRootNode);
+	}
+	else
+	{//存在重名
+		std::string szSrcPath = getFullPath(rSrcRootNode);
+		YFile* pSrcParent = m_pDisk->queryFileNode(getParentPath(szSrcPath));
+		if (nullptr == pSrcParent)
+		{
+			return YERROR_POINTER_NULL;
+		}
+		if (rPredicate(szSrcPath))
+		{
+			m_pDisk->takeNode(pParentNode, pDstFileNode);
+			m_pDisk->destroyFileNode(pDstFileNode);
+			m_pDisk->takeNode(pSrcParent, rSrcRootNode);
+			m_pDisk->addNode(pParentNode, rSrcRootNode);
+		}
+	}
+	return Y_OPERAT_SUCCEED;
+}
 
+YErrorCode YDiskOperator::FolderMoveCoverHelper(
+	YFile * pSrcRootNode, 
+	YFile * pSrcParentNode,
+	YFile * pDstRootNode,
+	YFile * pDstParentNode, 
+	std::function<bool(std::string&szPath)>& rPredicate,
+	YFile*& pResultRoot)
+{
+	if (nullptr == pSrcRootNode || nullptr == pDstParentNode || nullptr == pSrcParentNode)
+	{
+		return YERROR_POINTER_NULL;
+	}
+	std::string szSrcPath = getFullPath(pSrcRootNode);
+	std::string szNamePart = getNameFromFullPath(szSrcPath);
+	if (nullptr == pDstRootNode)
+	{
+		m_pDisk->takeNode(pSrcParentNode, pSrcRootNode);
+		m_pDisk->addNode(pResultRoot, pSrcRootNode);
+	}
+	else
+	{
+		if (pSrcRootNode->IsRealFolder())
+		{
+			if (rPredicate(szSrcPath))
+			{
+				YFile* pCopyFolder = nullptr;
+				copyFIleHelper(pSrcRootNode, pCopyFolder, szNamePart);
+				m_pDisk->addNode(pResultRoot, pCopyFolder);
+				std::vector<YFile*> rChildren = pSrcRootNode->getChildren();
+				for (size_t index = 0; index < rChildren.size();++index)
+				{
+					std::string szChildName = getNameFromFullPath(getFullPath(rChildren[index]));
+					YIFile* pDstChild = nullptr;
+					getChild(pDstRootNode, szChildName, pDstChild);
+					FolderMoveCoverHelper(pSrcRootNode, rChildren[index], (YFile*)pDstChild, pDstRootNode, rPredicate, pCopyFolder);
+				}
+				if (0 == pSrcRootNode->getChildrenCount())
+				{
+					m_pDisk->takeNode(pSrcParentNode, pSrcRootNode);
+					m_pDisk->destroyFileNode(pSrcRootNode);
+				}
+			}
+		}
+		else
+		{
+			if (rPredicate(szSrcPath))
+			{
+				m_pDisk->takeNode(pSrcParentNode, pSrcRootNode);
+				m_pDisk->addNode(pResultRoot, pSrcRootNode);
+			}
+		}
+	}
+	
+	return Y_OPERAT_SUCCEED;
 }
 

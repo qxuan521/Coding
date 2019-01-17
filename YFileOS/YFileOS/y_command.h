@@ -36,6 +36,7 @@ protected:
 	bool					wildCardOnlyLastLevel(const std::string& szPath);
 	bool					mayHaveWildCard(const std::string& szPath);
 	bool					pathCanbeRealValid();
+	bool					userAsk(const std::string& szPath, const std::string& szAskContent);
 	std::vector<std::string>	m_rArgList;
 	std::string					m_szCurWorkPath;
 	std::map<std::string,bool>	m_rTypeArg;

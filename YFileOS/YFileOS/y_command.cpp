@@ -365,3 +365,32 @@ bool YCommand::pathCanbeRealValid()
 	return validation;
 }
 
+bool YCommand::userAsk(const std::string & szPath, const std::string & szAskContent)
+{
+	while (true)
+	{
+		if (szPath.empty())
+		{
+			std::cout << "\"" << szPath << "\"" << szAskContent;
+		}
+		else
+		{
+			std::cout << "\"" << szPath << "\"" << szAskContent;
+		}
+		std::string InPut;
+		std::cin.clear();
+		std::cin.sync();
+		getline(std::cin, InPut);
+		if ("y" == InPut)
+		{
+			return true;
+		}
+		if ("n" == InPut)
+		{
+			return false;
+		}
+		std::cin.clear();
+	}
+	return false;
+}
+

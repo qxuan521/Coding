@@ -1,5 +1,5 @@
 #include "y_file.h"
-
+#include "y_link_manager.h"
 
 
 //------YFile----------------------------------------------------------------//
@@ -16,6 +16,10 @@ YFile::YFile(YFileType rFileType)
 
 YFile::~YFile()
 {
+	if (!IsRealSymLnk())
+	{
+		g_pSymMananger->delDstFile(this);
+	}
 }
 
 const std::int8_t * YFile::getFileData()

@@ -30,6 +30,6 @@ private:
 	YErrorCode		folderSearch(std::vector<YIFile*>& rDirArr, std::vector<DirSearchResult>& rDirResult);
 	YErrorCode		normalSearch(std::vector<YIFile*>& rDirArr, std::vector<DirSearchResult>& rDirResult);
 	YErrorCode		searchHelpter(YIFile* pFile, std::vector<DirSearchResult>& rDirResultArr, std::set<YIFile*>& rHistorySet,std::function<bool(YIFile*)>& rPredicate);
+	YErrorCode		handleWildCard(std::vector<YIFile*>& rResult);
 private:
-
 };

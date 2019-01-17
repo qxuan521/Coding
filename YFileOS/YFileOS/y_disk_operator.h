@@ -36,9 +36,12 @@ public:
 	YErrorCode loadData(const std::string& szSrcPath);
 	YErrorCode saveData(const std::string& szDstPath);
 	// move
-	YErrorCode moveFile(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::function<bool(std::string& szPath)>& rPredicate, int& nCount);
+	YErrorCode moveFile(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::function<bool(std::string& szPath)>& rPredicate);
+	YErrorCode moveFileFromRealDisk(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::vector<YIFile*>& rCopyResult);
+	YErrorCode moveFileToRealDisk(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::vector<YIFile*>& rCopyResult);
 //About File
 	YErrorCode getChildren(YIFile* pFile, std::vector<YIFile*>& rResult);
+	YErrorCode getChild(YIFile * pFile, const std::string& szName, YIFile*& pChild);
 //Disk
 	void	formatDisk();
 //path
@@ -66,8 +69,16 @@ private:
 	YErrorCode initializeRootDisk(std::vector<char>& rRootArr);
 	YErrorCode initializeFileTree(int32_t nFileCount, std::fstream& rFileStream);
 	void bufferResetByDataSize(std::vector<char>& rBuffer, int size);
-	void folderMoveHelper(YFile* rSrcRootNode,std::string& szDstPath, std::function<bool(std::string& szPath)>& rPredicate, int& nCount, std::set<std::string>& rHistorySet);
-	void fileMoveHelper(YFile* rSrcRootNode, std::string& szDstPath, std::function<bool(std::string& szPath)>& rPredicate, int& nCount, std::set<std::string>& rHistorySet);
+	YErrorCode folderMoveHelper(YFile* rSrcRootNode,std::string& szDstPath, std::function<bool(std::string& szPath)>& rPredicate, std::set<std::string>& rHistorySet);
+	YErrorCode fileMoveHelper(YFile* rSrcRootNode, std::string& szDstPath, std::function<bool(std::string& szPath)>& rPredicate,  std::set<std::string>& rHistorySet);
+	YErrorCode FolderMoveCoverHelper(
+		YFile* pSrcRootNode, 
+		YFile* pSrcParentNode, 
+		YFile* pDstRootNode, 
+		YFile* pDstParentNode, 
+		std::function<bool(std::string& szPath)>& rPredicate,
+		YFile*& pResultRoot
+	);
 private:
 
 	YDisk*		m_pDisk;

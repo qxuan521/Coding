@@ -52,28 +52,6 @@ bool YDelCommand::checkPathValidation()
 	return true;
 }
 
-bool YDelCommand::askDel(const std::string & szPath)
-{
-	while (true)
-	{
-		std::cout << "\"" << szPath << "\\*\"" << " has exist.Do you want to Delete file?<y/n> ";
-		std::string InPut;
-		std::cin.clear();
-		std::cin.sync();
-		getline(std::cin, InPut);
-		if ("y" == InPut)
-		{
-			return true;
-		}
-		if ("n" == InPut)
-		{
-			return false;
-		}
-		std::cin.clear();
-	}
-	return false;
-}
-
 YErrorCode YDelCommand::queryOneLevelFile(std::vector<std::string>& rDelPathArr)
 {
 	YErrorCode rResultCode;
@@ -125,7 +103,7 @@ YErrorCode YDelCommand::queryAllChildFile(std::vector<std::string>& rDelPathArr)
 	for (size_t index = 0; index < rResult.size();++index)
 	{
 		std::string szFullPath = g_pDiskOperator->getFullPath(rResult[index]);
-		if (askDel(szFullPath))
+		if (userAsk(szFullPath, " has exist.Do you want to Delete file?<y/n>:"))
 		{
 			std::vector<YIFile*> rChildrenReult;
 			g_pDiskOperator->getChildren(rResult[index], rChildrenReult);

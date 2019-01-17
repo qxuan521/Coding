@@ -1,15 +1,19 @@
 #include "y_symlnk_file.h"
 #include "y_disk_operator.h"
-
+#include "y_link_manager.h"
 YSymlnkFile::YSymlnkFile(YFile* pDstFile)
 	: YFile(Y_SymLnk)
 	, m_pDstFile(pDstFile)
 {
-	
+	if (nullptr != pDstFile)
+	{
+		g_pSymMananger->addMapped(pDstFile, this);
+	}
 }
 
 YSymlnkFile::~YSymlnkFile()
 {
+	g_pSymMananger->delSymLnkFile(this);
 }
 
 bool YSymlnkFile::IsFile()
@@ -71,6 +75,10 @@ bool YSymlnkFile::isValid()
 void YSymlnkFile::setDstFile(YFile * pDstFile)
 {
 	m_pDstFile = pDstFile;
+	if (nullptr != m_pDstFile)
+	{
+		g_pSymMananger->addMapped(m_pDstFile, this);
+	}
 }
 
 YFile * YSymlnkFile::getDstFile()

@@ -50,6 +50,11 @@ YErrorCode YCopyCommand::excultCommand(YCommandInfo & rCommandInfo)
 			{
 				return errorPrint(rResultCode);
 			}
+			rResultCode = checkSrcReal();
+			if (Y_OPERAT_SUCCEED != rResultCode)
+			{
+				return errorPrint(rResultCode);
+			}
 			std::vector<YIFile*> rCopyResultArr;
 			rResultCode = g_pDiskOperator->copyFileFromRealDisk(m_rSrcArgList, m_rDstArgList, rCopyResultArr);
 			return errorPrint(rResultCode);
@@ -73,6 +78,11 @@ YErrorCode YCopyCommand::excultCommand(YCommandInfo & rCommandInfo)
 				return errorPrint(YERROR_PATH_ILLEGAL);
 			}
 			m_rDstArgList.push_back(getPathFromRealPath(szDst));
+			rResultCode = checkDstReal();
+			if (Y_OPERAT_SUCCEED != rResultCode)
+			{
+				return errorPrint(rResultCode);
+			}
 			std::vector<YIFile*> rCopyResultArr;
 			rResultCode = g_pDiskOperator->copyFileToRealDisk(m_rSrcArgList, m_rDstArgList, rCopyResultArr);
 			return errorPrint(rResultCode);
@@ -93,6 +103,10 @@ YErrorCode YCopyCommand::excultCommand(YCommandInfo & rCommandInfo)
 			if (Y_OPERAT_SUCCEED != rResultCode)
 			{
 				return errorPrint(rResultCode);
+			}
+			if (!sameCheck())
+			{
+				return YERROR_COMMAND_ARG_ILLEGAL;
 			}
 			//生成目标路径
 			std::vector<YIFile*> rCopyResultArr;
@@ -248,6 +262,23 @@ YErrorCode YCopyCommand::handleDstToNoWildCard(const std::string & szDst)
 	return Y_OPERAT_SUCCEED;
 }
 
+bool YCopyCommand::sameCheck()
+{
+	if (m_rDstArgList.size() != m_rSrcArgList.size()
+		|| m_rSrcArgList.empty() || m_rDstArgList.empty())
+	{
+		return false;
+	}
+	for (size_t index = 0; index < m_rDstArgList.size(); ++index)
+	{
+		if (m_rDstArgList[index] == m_rSrcArgList[index])
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 YErrorCode YCopyCommand::checkSameNAsk()
 {
 	if (m_rSrcArgList.empty() || m_rDstArgList.empty() || m_rDstArgList.size() != m_rSrcArgList.size())
@@ -272,44 +303,66 @@ YErrorCode YCopyCommand::checkSameNAsk()
 		}
 		else
 		{//存在重复验证是否覆盖
-			while (true)
+			if (userAsk(*rDstIter, " has exist.Do you want to overwrite file?<y/n> "))
 			{
-				std::cout << "\"" << *rDstIter << "\"" << " has exist.Do you want to overwrite file?<y/n> ";
-				std::string InPut;
-				std::cin.clear();
-				std::cin.sync();
-				getline(std::cin, InPut);
-				if ("y" == InPut)
-				{
-					rExistSet.insert(*rDstIter);
-					++rSrcIter;
-					++rDstIter;
-				}
-				if ("n" == InPut)
-				{
-					rSrcIter = m_rSrcArgList.erase(rSrcIter);
-					rDstIter = m_rDstArgList.erase(rDstIter);
-				}
-				std::cin.clear();
+				rExistSet.insert(*rDstIter);
+				++rSrcIter;
+				++rDstIter;
+			}
+			else
+			{
+				rSrcIter = m_rSrcArgList.erase(rSrcIter);
+				rDstIter = m_rDstArgList.erase(rDstIter);
 			}
 		}
 	}
 	return Y_OPERAT_SUCCEED;
 }
 
-YErrorCode YCopyCommand::real2VirtualCopy()
+YErrorCode YCopyCommand::checkSrcReal()
 {
-	return YErrorCode();
+	YErrorCode rResultCode;
+	std::vector<YIFile*> rDstNode;
+	rResultCode = g_pDiskOperator->queryFileNode(m_rDstArgList[0], rDstNode);
+	if (rDstNode.empty())
+	{
+		return Y_OPERAT_SUCCEED;
+	}
+	else
+	{
+		if (nullptr != rDstNode[0])
+		{
+			if (!rDstNode[0]->IsRealFile())
+			{
+				return YERROR_PATH_ILLEGAL;
+			}
+			bool isCover = userAsk(m_rDstArgList[0], " has exist.Do you want to overWrite file?<y/n>:");
+			if (isCover)
+			{
+				return Y_OPERAT_SUCCEED;
+			}
+			else {
+				return Y_OPERAT_FAILD;
+			}
+		}
+	}
+	return Y_OPERAT_SUCCEED;
 }
-
-YErrorCode YCopyCommand::virtual2RealCopy()
+YErrorCode YCopyCommand::checkDstReal()
 {
-	return YErrorCode();
-}
-
-YErrorCode YCopyCommand::virtual2VirtualCopy()
-{
-	return Y_COPY_SUCCEED;
+	YErrorCode rResultCode;
+	rResultCode = handleDstToNoWildCard(m_rSrcArgList[0]);
+	if (Y_OPERAT_SUCCEED != rResultCode)
+	{
+		return rResultCode;
+	}
+	std::vector<YIFile*> rSrcNode;
+	g_pDiskOperator->queryFileNode(m_rSrcArgList[0], rSrcNode);
+	if (rSrcNode.size() != 1 || nullptr == rSrcNode[0] || !rSrcNode[0]->IsRealFile())
+	{
+		return YERROR_PATH_ILLEGAL;
+	}
+	return Y_OPERAT_SUCCEED;
 }
 
 
