@@ -12,7 +12,7 @@ VirtualDisk::~VirtualDisk()
 
 bool VirtualDisk::formatDisk(void)
 {
-	g_pDiskOperator->formatDisk()
+	g_pDiskOperator->formatDisk();
 	return true;
 }
 
@@ -44,11 +44,11 @@ bool VirtualDisk::containNode(std::string path, int & size, int & type)
 		return false;
 	}
 	size = rResult[0]->getFileSize();
-	if (rResult[0])->IsRealFolder())
+	if (rResult[0]->IsRealFolder())
 	{
 		type = 1;
 	}
-	else if(rResult[0])->IsRealFile())
+	else if(rResult[0]->IsRealFile())
 	{
 		type = 2;
 	}
@@ -58,9 +58,9 @@ bool VirtualDisk::containNode(std::string path, int & size, int & type)
 	}
 	return true;
 }
-#include "link_file_info.h"
 std::string VirtualDisk::getLinkNode(std::string path)
 {
+	std::vector<YIFile*> rResult;
 	g_pDiskOperator->queryAllNode(path, rResult);
 	if (rResult.empty() || NULL == rResult[0])
 	{
