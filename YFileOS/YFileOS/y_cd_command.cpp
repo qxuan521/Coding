@@ -45,17 +45,9 @@ YErrorCode YCdCommand::toAbsolutePath(const std::vector<std::string>& rOrgrinalA
 	bool IsCheckTypeArg = false;
 	for (size_t index = 0; index < (int)rOrgrinalArgList.size(); ++index)
 	{
-		if (!IsCheckTypeArg && index < m_rTypeArg.size())
+		if (rOrgrinalArgList[index].empty())
 		{
-			if (!m_rTypeArg.empty() && m_rTypeArg.count(rOrgrinalArgList[index]))
-			{
-				m_rTypeArg[rOrgrinalArgList[index]] = true;
-				continue;
-			}
-			else
-			{
-				IsCheckTypeArg = true;
-			}
+			continue;
 		}
 		//Â·¾¶´¦Àí
 		if (isRealPath(rOrgrinalArgList[index]))

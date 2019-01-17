@@ -78,6 +78,10 @@ YErrorCode YDiskOperator::createNewFolder(const std::string & szPath, YIFile *& 
 			return YERROR_PATH_NOT_EXIST;
 		}
 	}
+	if (pNewFileParent->IsFile())
+	{
+		return Y_OPERAT_FAILD;
+	}
 	YErrorCode rResultCode = m_pDisk->createFolderFile(pResultFile, szNamePart);
 	if (rResultCode != Y_OPERAT_SUCCEED)
 	{
