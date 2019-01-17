@@ -37,7 +37,7 @@ YErrorCode YDirCommand::excultCommand(YCommandInfo& rCommandInfo)
 	}
 	//将路径全路径（有可能包含通配符）转换成节点数组
 	std::vector<YIFile*> rQueryResult;
-
+	handleWildCard(rQueryResult);
 	//进行查询
 	std::vector<DirSearchResult> rDirResult;
 	if (m_rTypeArg["/s"])

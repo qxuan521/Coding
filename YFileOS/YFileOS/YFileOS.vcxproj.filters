@@ -106,6 +106,9 @@
     <ClInclude Include="y_cls_command.h">
       <Filter>Core\file_operator\command</Filter>
     </ClInclude>
+    <ClInclude Include="y_link_manager.h">
+      <Filter>Core\Disk\File</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="y_disk.cpp">
@@ -185,6 +188,9 @@
     </ClCompile>
     <ClCompile Include="y_cls_command.cpp">
       <Filter>Core\file_operator\command</Filter>
+    </ClCompile>
+    <ClCompile Include="y_link_manager.cpp">
+      <Filter>Core\Disk\File</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

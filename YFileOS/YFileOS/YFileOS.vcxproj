@@ -129,6 +129,7 @@
     <ClInclude Include="y_file.h" />
     <ClInclude Include="y_ifile.h" />
     <ClInclude Include="y_input_resolve.h" />
+    <ClInclude Include="y_link_manager.h" />
     <ClInclude Include="y_load_command.h" />
     <ClInclude Include="y_mkdir_command.h" />
     <ClInclude Include="y_mkdisk_command.h" />
@@ -158,6 +159,7 @@
     <ClCompile Include="y_file.cpp" />
     <ClCompile Include="y_ifile.cpp" />
     <ClCompile Include="y_input_resolve.cpp" />
+    <ClCompile Include="y_link_manager.cpp" />
     <ClCompile Include="y_load_command.cpp" />
     <ClCompile Include="y_mkdir_command.cpp" />
     <ClCompile Include="y_mkdisk_command.cpp" />
