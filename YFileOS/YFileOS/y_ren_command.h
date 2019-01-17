@@ -12,6 +12,6 @@ public:
 	virtual YErrorCode excultCommand(YCommandInfo& rCommandInfo);
 	virtual YErrorCode toAbsolutePath(const std::vector<std::string>& rOrgrinalArgList);
 private:
-
+	bool noWildCardNameValidation(const std::string & szPath);
 };
 

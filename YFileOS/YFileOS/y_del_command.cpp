@@ -35,6 +35,10 @@ YErrorCode YDelCommand::excultCommand(YCommandInfo & rCommandInfo)
 	{//删除所有节点
 		queryAllChildFile(rDelPathArr);
 	}
+	if (rDelPathArr.empty())
+	{
+		return errorPrint(YERROR_FILE_IS_EXIST);
+	}
 	for (int index = (int)rDelPathArr.size() -1; index >=0 ;--index)
 	{
 		g_pDiskOperator->deleteNode(rDelPathArr[index]);

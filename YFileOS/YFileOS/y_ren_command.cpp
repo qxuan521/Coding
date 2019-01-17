@@ -21,7 +21,7 @@ YErrorCode YRenCommand::excultCommand(YCommandInfo & rCommandInfo)
 	}
 	std::string szSrcPath(m_rArgList[0]);
 	std::string szNewName(m_rArgList[1]);
-	if (!noWildCardPathValidation(szNewName))
+	if (!noWildCardNameValidation(szNewName))
 	{
 		return YERROR_PATH_ILLEGAL;
 	}
@@ -74,6 +74,35 @@ YErrorCode YRenCommand::toAbsolutePath(const std::vector<std::string>& rOrgrinal
 		}
 	}
 	m_rArgList.push_back(AbsString);
-	
+	m_rArgList.push_back(rOrgrinalArgList[1]);
 	return Y_OPERAT_SUCCEED;
+}
+bool YRenCommand::noWildCardNameValidation(const std::string & szPath)
+{
+	if (szPath.empty())
+		return false;
+	if (isRealPath(szPath))
+		return true;
+	std::vector<std::string> rPathSplitResult = splitStrByCharacter(szPath, '/');
+	if (rPathSplitResult.empty())
+	{
+		return false;
+	}
+	std::regex rBaseRegex("[\\w+\\._ ]+");
+	std::regex rStartRegex("^[\\w\\._][\\w+\\._ ]*");
+	std::regex rEndRegex("[\\w+\\._ ]*[\\w\\._]$");
+	std::regex rPointRegex("[\\.]*");
+	std::regex rRootDiskRegex("[\\w+\\._]+:");
+	for (size_t index = 0; index < rPathSplitResult.size(); ++index)
+	{
+		bool bMatchResult = std::regex_match(rPathSplitResult[index], rBaseRegex);
+		bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rStartRegex);
+		bMatchResult = bMatchResult && std::regex_match(rPathSplitResult[index], rEndRegex);
+		bMatchResult = bMatchResult && !std::regex_match(rPathSplitResult[index], rPointRegex);
+		if (!bMatchResult)
+		{
+			return false;
+		}
+	}
+	return true;
 }

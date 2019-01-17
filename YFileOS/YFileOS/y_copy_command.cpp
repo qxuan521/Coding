@@ -128,11 +128,11 @@ YErrorCode YCopyCommand::handleSrcToNoWildCard(const std::string & szSrc)
 	YErrorCode rResultCode = g_pDiskOperator->queryAllNode(szSrc, rQueryResult);
 	if (Y_OPERAT_SUCCEED != rResultCode)
 	{
-		return errorPrint(rResultCode);
+		return rResultCode;
 	}
 	if (rQueryResult.empty())
 	{
-		return errorPrint(YERROR_PATH_NOT_EXIST);
+		return YERROR_PATH_NOT_EXIST;
 	}
 	if (isHaveWildCard(szSrc))
 	{
