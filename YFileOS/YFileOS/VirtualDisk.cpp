@@ -1,7 +1,7 @@
 #include "VirtualDisk.h"
-#include "data_disk.h"
-#include "file_operator.h"
-#include "file_info.h"
+#include "y_disk_operator.h"
+#include "y_system.h"
+#include "y_file.h"
 VirtualDisk::VirtualDisk()
 {
 }
@@ -12,20 +12,25 @@ VirtualDisk::~VirtualDisk()
 
 bool VirtualDisk::formatDisk(void)
 {
-	
-	return g_DataDiskPtr->FormatDisk();
+	g_pDiskOperator->formatDisk()
+	return true;
 }
 
 bool VirtualDisk::executeCmd(std::string cmdStr)
 {
-	FileOperator System;
-	System.ExecuteCmd(cmdStr);
+	YSystem System;
+	System.runCommand(cmdStr);
 	return true;
 }
 
 std::string VirtualDisk::getCurPath(void)
 {
-	return g_DataDiskPtr->GetWorkingPath();
+	std::string szPath = g_pDiskOperator->getCurWorkingPath();
+	if (g_pDiskOperator->isRootName(szPath))
+	{
+		szPath += '\\';
+	}
+	return szPath;
 }
 
 bool VirtualDisk::containNode(std::string path, int & size, int & type)

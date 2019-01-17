@@ -38,3 +38,20 @@ void YSystem::runingLoop()
 		pCommand->excultCommand(rResoveResult);
 	}
 }
+
+void YSystem::runCommand(const std::string & szCmd)
+{
+	YCommandFactory rCommandFactory;
+	YInputResolve rInputResolve;
+	YCommandInfo rResoveResult = rInputResolve.resolve(szCmd);
+	//ÊµÀý»¯ÃüÁî
+	std::string szCurWoringPath = g_pDiskOperator->getCurWorkingPath();
+	std::string szInput;
+	std::shared_ptr<YCommand> pCommand = rCommandFactory.queryCommandPtr(rResoveResult);
+	if (nullptr == pCommand)
+	{
+		return;
+	}
+	pCommand->setCurWoringPath(szCurWoringPath);
+	pCommand->excultCommand(rResoveResult);
+}

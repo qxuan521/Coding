@@ -1,4 +1,3 @@
-#include "y_console.h"
 #include "y_system.h"
 
 int main()

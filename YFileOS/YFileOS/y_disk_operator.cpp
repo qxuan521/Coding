@@ -259,6 +259,11 @@ YErrorCode YDiskOperator::copyFileNode(std::vector<std::string>& rSrcPathArr, st
 	{
 		YFile* pDstFile = m_pDisk->queryFileNode(rDstPathArr[index]);
 		YFile* pSrcFile = m_pDisk->queryFileNode(rSrcPathArr[index]);
+		YFile* pSrcParent = m_pDisk->queryFileNode(rSrcPathArr[index]);
+		if (pSrcParent == nullptr || pSrcFile == nullptr)
+		{
+			continue;
+		}
 		std::string szDstName = getNameFromFullPath(rDstPathArr[index]);
 		if (nullptr == pDstFile)
 		{//没有重名文件
@@ -271,9 +276,11 @@ YErrorCode YDiskOperator::copyFileNode(std::vector<std::string>& rSrcPathArr, st
 		}
 		else
 		{//存在重名文件
+			YFile* pNewFile = nullptr;
 			m_pDisk->takeNode(pDstParent, pDstFile);
 			m_pDisk->destroyFileNode(pDstFile);
-			copyFIleHelper(pSrcFile, pDstFile, szDstName);
+			copyFIleHelper(pSrcFile, pNewFile, szDstName);
+			m_pDisk->addNode(pDstParent, pNewFile);
 		}
 	}
 	return Y_COPY_SUCCEED;

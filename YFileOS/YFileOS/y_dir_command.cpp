@@ -97,7 +97,7 @@ void YDirCommand::printResult(std::vector<DirSearchResult>& rResult)
 		std::cout << "" << std::endl;
 		//输出. .. 如果时盘符则不输出
 		std::int32_t rSizeCount = 0;
-		if(!g_pDiskOperator->isRootName(szFullPath) && (SingleResult.FilePtr->IsRealSymLnk() && !g_pDiskOperator->isRootName(SingleResult.FilePtr->getShowName())))
+		if(!g_pDiskOperator->isRootName(szFullPath) && (!SingleResult.FilePtr->IsRealSymLnk() || !g_pDiskOperator->isRootName(SingleResult.FilePtr->getShowName())))
 		{
 			printSeftNParent(SingleResult.FilePtr);
 		}

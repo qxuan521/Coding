@@ -249,7 +249,10 @@ YErrorCode YCopyCommand::handleDstToNoWildCard(const std::string & szDst)
 				}
 				else
 				{
-					m_rDstArgList.push_back(szDst);
+					if (userAsk(szDst, " file has be exist.Do you want to overwrite?<y/n>"))
+					{
+						m_rDstArgList.push_back(szDst);
+					}
 				}
 			}
 		}
