@@ -40,7 +40,7 @@ YErrorCode YDirCommand::excultCommand(YCommandInfo& rCommandInfo)
 	std::vector<DirSearchResult> rDirResult;
 	for (size_t index = 0; index < m_rArgList.size(); index++)
 	{
-		std::regex	rMutchRegex("[\\w_:\\.]*");
+		std::regex	rMutchRegex("[\\w_:\\. ]*");
 		std::string szDirPath = m_rArgList[index];
 		if (isHaveWildCard(m_rArgList[index]))
 		{
@@ -310,13 +310,6 @@ YErrorCode YDirCommand::searchHelpter(YIFile * pFile, std::vector<DirSearchResul
 	rHistorySet.insert(pFile);
 	DirSearchResult rResult;
 	rResult.initializeResult(pFile);
-	for (size_t index = 0; index < rResult.CurLevelResult.size();++index)
-	{
-		if (rResult.CurLevelResult[index]->IsFolder())
-		{
-			searchHelpter(rResult.CurLevelResult[index], rDirResultArr, rHistorySet, rPredicate);
-		}
-	}
 	for (auto rIter = rResult.CurLevelResult.begin(); rIter != rResult.CurLevelResult.end();)
 	{
 		if (!rPredicate(*rIter))
@@ -327,7 +320,14 @@ YErrorCode YDirCommand::searchHelpter(YIFile * pFile, std::vector<DirSearchResul
 		{
 			++rIter;
 		}
-		rDirResultArr.push_back(rResult);
+	}
+	rDirResultArr.push_back(rResult);
+	for (size_t index = 0; index < rResult.CurLevelResult.size();++index)
+	{
+		if (rResult.CurLevelResult[index]->IsFolder())
+		{
+			searchHelpter(rResult.CurLevelResult[index], rDirResultArr, rHistorySet, rPredicate);
+		}
 	}
 	return Y_OPERAT_SUCCEED;
 }

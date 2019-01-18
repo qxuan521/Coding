@@ -146,7 +146,7 @@ YErrorCode YCommand::handleCommandArg(YCommandInfo & rCommandInfo)
 	{
 		return YERROR_COMMAND_ARG_ILLEGAL;
 	}
-	if (rCommandInfo.rArgList.size() != m_rTypeArg.size())
+	if (rCommandInfo.rArgList.size() > m_rTypeArg.size())
 	{
 		return YERROR_COMMAND_ARG_ILLEGAL;
 	}

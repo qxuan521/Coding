@@ -43,8 +43,12 @@ void YLinkManager::addMapped(YFile * pDstFile, YFile * pSymLnkFile)
 	}
 	else
 	{
+		std::vector<YFile*> rLnkVector;
+		rLnkVector.push_back(pSymLnkFile);
+		std::pair<YFile*, std::vector<YFile*>> rMapPair(pDstFile, rLnkVector);
 		std::pair<YFile*, YFile*> rNewPair(pSymLnkFile, pDstFile);
 		rSym2DstMap.insert(rNewPair);
+		rMap.insert(rMapPair);
 	}
 }
 

@@ -43,7 +43,7 @@ YErrorCode YDisk::takeNode(YFile * parent, YFile * beTokenNode)
 // 			++rIter;
 // 		}
 // 	}
-	return YERROR_NO_THIS_CHILD;
+	return Y_OPERAT_SUCCEED;
 }
 
 YErrorCode YDisk::createDataFile(YFile *& newFileNode ,const std::string& szName)

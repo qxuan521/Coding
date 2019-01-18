@@ -84,9 +84,17 @@ YCommandInfo YInputResolve::resolve(const std::string & szInput)
 	}
 	else
 	{
-		std::replace_if(szSubArg.begin(), szSubArg.end(), [](char in) {return in == '\\'; }, '/');
-		rResult.rPathList.push_back(szSubArg);
-		szSubArg.clear();
+		if (rResult.rPathList.empty() && !bMustBepath && !szSubArg.empty() && '/' == szSubArg[0])
+		{
+			rResult.rArgList.push_back(szSubArg);
+			szSubArg.clear();
+		}
+		else
+		{
+			std::replace_if(szSubArg.begin(), szSubArg.end(), [](char in) {return in == '\\'; }, '/');
+			rResult.rPathList.push_back(szSubArg);
+			szSubArg.clear();
+		}
 	}
 	return rResult;
 }
