@@ -30,12 +30,14 @@ std::string VirtualDisk::getCurPath(void)
 	{
 		szPath += '\\';
 	}
+	std::replace_if(szPath.begin(), szPath.end(), [](char in) {return in == '/'; }, '\\');
 	return szPath;
 }
 
 bool VirtualDisk::containNode(std::string path, int & size, int & type)
 {
 	std::vector<YIFile*> rResult;
+	std::replace_if(path.begin(), path.end(), [](char in) {return in == '\\'; }, '/' );
 	g_pDiskOperator->queryAllNode(path, rResult);
 	if (rResult.empty() || NULL == rResult[0])
 	{
@@ -61,10 +63,13 @@ bool VirtualDisk::containNode(std::string path, int & size, int & type)
 std::string VirtualDisk::getLinkNode(std::string path)
 {
 	std::vector<YIFile*> rResult;
+	std::replace_if(path.begin(), path.end(), [](char in) {return in == '\\'; }, '/');
 	g_pDiskOperator->queryAllNode(path, rResult);
 	if (rResult.empty() || NULL == rResult[0])
 	{
 		return std::string("");
 	}
-	return rResult[0]->getShowName();
+	std::string szDstPath = rResult[0]->getShowName();
+	std::replace_if(szDstPath.begin(), szDstPath.end(), [](char in) {return in == '/'; }, '\\');
+	return szDstPath;
 }
