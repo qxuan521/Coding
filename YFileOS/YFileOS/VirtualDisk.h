@@ -11,4 +11,6 @@ public:
 	std::string getCurPath(void);
 	bool containNode(std::string path, int& size, int& type);
 	std::string getLinkNode(std::string path);
+private:
+	void dealRealPath(std::string path, int& size, int& type);
 };

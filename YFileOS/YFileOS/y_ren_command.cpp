@@ -21,6 +21,7 @@ YErrorCode YRenCommand::excultCommand(YCommandInfo & rCommandInfo)
 	}
 	std::string szSrcPath(m_rArgList[0]);
 	std::string szNewName(m_rArgList[1]);
+	std::vector<YIFile*> rQueryResult;
 	if (!noWildCardNameValidation(szNewName))
 	{
 		return YERROR_PATH_ILLEGAL;

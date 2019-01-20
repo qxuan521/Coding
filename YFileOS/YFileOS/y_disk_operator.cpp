@@ -4,6 +4,7 @@
 #include "y_tool.h"
 #include "y_file.h"
 #include "y_symlnk_file.h"
+#include "y_link_manager.h"
 YDiskOperator* g_pDiskOperator = new YDiskOperator;
 
 struct YDataSaveFileHead
@@ -282,8 +283,9 @@ YErrorCode YDiskOperator::copyFileNode(std::vector<std::string>& rSrcPathArr, st
 		{//存在重名文件
 			YFile* pNewFile = nullptr;
 			m_pDisk->takeNode(pDstParent, pDstFile);
-			m_pDisk->destroyFileNode(pDstFile);
 			copyFIleHelper(pSrcFile, pNewFile, szDstName);
+			g_pSymMananger->changeLnkDst(pDstFile, pNewFile);
+			m_pDisk->destroyFileNode(pDstFile);
 			m_pDisk->addNode(pDstParent, pNewFile);
 		}
 	}
@@ -363,7 +365,7 @@ YErrorCode YDiskOperator::changeName(const std::string & szSrcPath, const std::s
 {
 	YFile* pParent = m_pDisk->queryFileNode(getParentPath(szSrcPath));
 	YFile* pFile = m_pDisk->queryFileNode(szSrcPath);
-	if (nullptr == pFile && nullptr == pParent)
+	if (nullptr == pFile || nullptr == pParent)
 	{
 		return YERROR_POINTER_NULL;
 	}
@@ -450,7 +452,7 @@ YErrorCode YDiskOperator::moveFile(std::vector<std::string>& rSrcPathArr, std::v
 			folderMoveHelper(pFile, rDstPathArr[index], rPredicate, rHistorySet);
 		}
 	}
-	return YErrorCode();
+	return Y_OPERAT_SUCCEED;
 }
 
 YErrorCode YDiskOperator::moveFileFromRealDisk(std::vector<std::string>& rSrcPathArr, std::vector<std::string>& rDstPathArr, std::vector<YIFile*>& rCopyResult)
@@ -547,7 +549,6 @@ bool YDiskOperator::isPathExist(const std::string& szPath)
 {
 	return nullptr != m_pDisk->queryFileNode(szPath);
 }
-
 YFile * YDiskOperator::lnkDstFindHelper(const std::string & szPath)
 {
 	YFile* pDstFile = m_pDisk->queryFileNode(szPath);
@@ -712,7 +713,7 @@ YErrorCode YDiskOperator::initializeRootDisk(std::vector<char>& rRootArr)
 	}
 	return Y_OPERAT_SUCCEED;
 }
-
+#include <iostream>
 YErrorCode YDiskOperator::initializeFileTree(int32_t nFileCount, std::fstream & rFileStream)
 {
 	if (0 == nFileCount)
@@ -782,6 +783,10 @@ YErrorCode YDiskOperator::initializeFileTree(int32_t nFileCount, std::fstream & 
 				break;
 			}
 		}
+	}
+	if (rFileStream.eof())
+	{
+		std::cout << "end" << std::endl;
 	}
 	if (nCount + rLnkArr.size() -1!= nFileCount)
 	{
@@ -873,6 +878,7 @@ YErrorCode YDiskOperator::fileMoveHelper(YFile * rSrcRootNode, std::string & szD
 		{
 			return YERROR_POINTER_NULL;
 		}
+		//g_pSymMananger->delSymLnkFile(rSrcRootNode);
 		m_pDisk->takeNode(pSrcParent, rSrcRootNode);
 		m_pDisk->addNode(pParentNode, rSrcRootNode);
 	}
@@ -886,8 +892,10 @@ YErrorCode YDiskOperator::fileMoveHelper(YFile * rSrcRootNode, std::string & szD
 		}
 		if (rPredicate(szSrcPath))
 		{
+			//g_pSymMananger->delSymLnkFile(rSrcRootNode);
+			//g_pSymMananger->changeLnkDst(pDstFileNode, rSrcRootNode);
+			//m_pDisk->destroyFileNode(pDstFileNode);
 			m_pDisk->takeNode(pParentNode, pDstFileNode);
-			m_pDisk->destroyFileNode(pDstFileNode);
 			m_pDisk->takeNode(pSrcParent, rSrcRootNode);
 			m_pDisk->addNode(pParentNode, rSrcRootNode);
 		}

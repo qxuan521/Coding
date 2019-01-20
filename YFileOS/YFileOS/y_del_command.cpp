@@ -59,18 +59,38 @@ bool YDelCommand::checkPathValidation()
 YErrorCode YDelCommand::queryOneLevelFile(std::vector<std::string>& rDelPathArr)
 {
 	YErrorCode rResultCode;
+	std::vector<YIFile*> rtempQueryResult;
 	std::vector<YIFile*> rQueryResult;
 	for (size_t index = 0; index < m_rArgList.size(); index++)
 	{
-		if (equalOrLowerWithCurPath(m_szCurWorkPath, m_rArgList[index]))
+	/*	if (equalOrLowerWithCurPath(m_szCurWorkPath, m_rArgList[index]))
 		{
 			return errorPrint(YERROR_PATH_ILLEGAL);
-		}
-		rResultCode = g_pDiskOperator->queryFileNode(m_rArgList[index], rQueryResult);
+		}*/
+		std::string szPath = m_rArgList[index];
+		rResultCode = g_pDiskOperator->queryFileNode(m_rArgList[index], rtempQueryResult);
 		if (rResultCode != Y_OPERAT_SUCCEED)
 		{
 			errorPrint(rResultCode, m_rArgList[index]);
 		}
+		if (rtempQueryResult.empty())
+		{
+			std::vector<YIFile*> rFolderQueryResult;
+			rResultCode = g_pDiskOperator->queryFolderNode(m_rArgList[index], rFolderQueryResult);
+			if (!rFolderQueryResult.empty())
+			{
+				std::vector<YIFile*> rChildren;
+				g_pDiskOperator->getChildren(rFolderQueryResult[0], rChildren);
+				for (size_t index = 0; index < rChildren.size();++index)
+				{
+					if (rChildren[index]->IsFile())
+					{
+						rtempQueryResult.push_back(rChildren[index]);
+					}
+				}
+			}
+		}
+		rQueryResult.insert(rQueryResult.end(), rtempQueryResult.begin(), rtempQueryResult.end());
 	}
 	for (size_t index = 0; index < rQueryResult.size();++index)
 	{
@@ -117,7 +137,7 @@ YErrorCode YDelCommand::queryAllChildFile(std::vector<std::string>& rDelPathArr)
 			g_pDiskOperator->getChildren(rResult[index], rChildrenReult);
 			for (size_t nLoopCount = 0; nLoopCount < rChildrenReult.size();++nLoopCount)
 			{
-				std::string szChildFullPath = g_pDiskOperator->getFullPath(rChildrenReult[index]);
+				std::string szChildFullPath = g_pDiskOperator->getFullPath(rChildrenReult[nLoopCount]);
 				rDelPathArr.push_back(szChildFullPath);
 			}
 		}

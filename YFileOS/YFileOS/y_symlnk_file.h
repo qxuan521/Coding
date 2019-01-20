@@ -6,7 +6,7 @@ class YSymlnkFile : public YFile
 {
 public:
 	YSymlnkFile(YFile* pDstFile);
-	~YSymlnkFile();
+	virtual ~YSymlnkFile();
 	virtual bool IsFile();
 	virtual bool IsFolder();
 

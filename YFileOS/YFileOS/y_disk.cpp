@@ -214,6 +214,8 @@ YFile * YDisk::queryFileHelper(YFile * pParent, std::vector<std::string>& rNameA
 	std::vector<YFile*>& rChildren = pParent->getChildren();
 	for (size_t index = 0; index < rChildren.size();++index)
 	{
+		if(rChildren[index] == nullptr)
+			continue;
 		if (rNameArr[nPathindex] == rChildren[index]->getName())
 		{
 			if (nPathindex + 1 == rNameArr.size())
@@ -235,19 +237,26 @@ void YDisk::destroyHelper(YFile *& pFile)
 		return;
 	if (pFile->IsRealFolder())
 	{
-		std::vector<YFile*> rChildren = pFile->getChildren();
+		std::vector<YFile*>& rChildren = pFile->getChildren();
 		if (!rChildren.empty())
 		{
 			for (size_t index = 0; index < rChildren.size(); ++index)
 			{
-				destroyHelper(rChildren[index]);
+				if (rChildren[index] != nullptr)
+				{
+					destroyHelper(rChildren[index]);
+				}
 			}
 		}
+	}
+	YFile* pParent =(YFile*)pFile->getParent();
+	if (nullptr != pParent)
+	{
+		pParent->delChild(pFile);
 	}
 	delete pFile;
 	pFile = nullptr;
 }
-
 void YDisk::fullPathHelper(YFile * pFile, std::string & subPath)
 {
 	if (nullptr == pFile->getUseParent())

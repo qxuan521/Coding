@@ -156,7 +156,7 @@ YErrorCode YCopyCommand::handleSrcToNoWildCard(const std::string & szSrc)
 			g_pDiskOperator->getChildren(rQueryResult[0], rChildren);
 			for (size_t index = 0; index < rChildren.size(); index++)
 			{
-				if (rQueryResult[index]->IsFile())
+				if (rChildren[index]->IsFile())
 				{
 					m_rSrcArgList.push_back(g_pDiskOperator->getFullPath(rChildren[index]));
 				}
