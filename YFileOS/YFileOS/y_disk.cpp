@@ -3,7 +3,7 @@
 #include "y_file.h"
 #include "y_symlnk_file.h"
 #include <time.h>
-
+#include "y_link_manager.h"
 
 YDisk::YDisk()
 {
@@ -253,6 +253,14 @@ void YDisk::destroyHelper(YFile *& pFile)
 	if (nullptr != pParent)
 	{
 		pParent->delChild(pFile);
+	}
+	if (pFile->IsRealSymLnk())
+	{
+		g_pSymMananger->delSymLnkFile(pFile);
+	}
+	else
+	{
+		g_pSymMananger->delDstFile(pFile);
 	}
 	delete pFile;
 	pFile = nullptr;

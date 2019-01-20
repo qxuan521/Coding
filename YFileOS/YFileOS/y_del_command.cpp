@@ -37,7 +37,7 @@ YErrorCode YDelCommand::excultCommand(YCommandInfo & rCommandInfo)
 	}
 	if (rDelPathArr.empty())
 	{
-		return errorPrint(YERROR_FILE_IS_EXIST);
+		return errorPrint(YERROR_PATH_NOT_EXIST);
 	}
 	for (int index = (int)rDelPathArr.size() -1; index >=0 ;--index)
 	{
@@ -131,7 +131,7 @@ YErrorCode YDelCommand::queryAllChildFile(std::vector<std::string>& rDelPathArr)
 	for (size_t index = 0; index < rResult.size();++index)
 	{
 		std::string szFullPath = g_pDiskOperator->getFullPath(rResult[index]);
-		if (userAsk(szFullPath, " has exist.Do you want to Delete file?<y/n>:"))
+		if (userAsk(szFullPath, " Do you want to Delete file?<y/n>:"))
 		{
 			std::vector<YIFile*> rChildrenReult;
 			g_pDiskOperator->getChildren(rResult[index], rChildrenReult);

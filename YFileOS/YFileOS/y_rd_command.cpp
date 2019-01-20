@@ -37,10 +37,10 @@ YErrorCode YRdCommand::excultCommand(YCommandInfo & rCommandInfo)
 		rResultCode = g_pDiskOperator->queryFolderNode(m_rArgList[index], rQueryResult);
 		if (rQueryResult.empty()|| rQueryResult[index] ==nullptr)
 		{
-			errorPrint(YERROR_POINTER_NULL, g_pDiskOperator->getFullPath(rQueryResult[index]));
+			errorPrint(YERROR_POINTER_NULL, m_rArgList[index]);
 			continue;
 		}
-		if (rQueryResult[index]->getChildrenCount() != 0 && !m_rTypeArg["/s"])
+		if (rQueryResult[index]->getChildrenCount() != 0 && !m_rTypeArg["/s"] && !rQueryResult[index]->IsRealSymLnk())
 		{
 			errorPrint(YERROR_FOLDER_IS_NOT_BE_EMPTY, g_pDiskOperator->getFullPath(rQueryResult[index]));
 			continue;

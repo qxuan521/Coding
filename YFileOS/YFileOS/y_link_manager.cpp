@@ -66,16 +66,19 @@ void YLinkManager::delDstFile(YFile * pDstFile)
 	std::map<YFile*, std::vector<YFile*>>::iterator rIter = rMap.find(pDstFile);
 	if (rIter != rMap.end())
 	{
-		for (size_t index = 0; index < rIter->second.size();++index)
+		std::vector<YFile*> rLnkList = rIter->second;
+		for (std::vector<YFile*>::iterator rVecIter = rLnkList.begin(); rVecIter != rLnkList.end();)
 		{
-			if (nullptr == rMap[pDstFile][index])
+			if (nullptr == *rVecIter)
 			{
 				continue;
 			}
-			std::string szName = g_pDiskOperator->getFullPath(rMap[pDstFile][index]);
+			std::string szName = g_pDiskOperator->getFullPath(*rVecIter);
 			g_pDiskOperator->deleteNode(szName);
+			rVecIter++;
 		}
-		rMap.erase(rIter);
+		if(rMap.find(pDstFile) != rMap.end())
+			rMap.erase(rMap.find(pDstFile));
 	}
 }
 
@@ -93,6 +96,7 @@ void YLinkManager::delSymLnkFile(YFile * pSymLnkFile)
 				if (*rvecIter == pSymLnkFile)
 				{
 					rvecIter = rLnks.erase(rvecIter);
+					rSym2DstMap.erase(rSym2DstMap.find(pSymLnkFile));
 					break;
 				}
 				else
@@ -101,7 +105,6 @@ void YLinkManager::delSymLnkFile(YFile * pSymLnkFile)
 				}
 			}
 		}
-		rSym2DstMap.erase(rSym2DstMap.find(pSymLnkFile));
 	}
 }
 
@@ -114,17 +117,10 @@ void YLinkManager::changeLnkDst(YFile * pOldLnk, YFile * pNewLnk)
 	std::vector<YFile*> rLnkList = rMap[pOldLnk];
 	for (size_t index = 0; index < rLnkList.size(); ++index)
 	{
-		((YSymlnkFile*)rLnkList[index])->setDstFile(pNewLnk);
+		std::string szFullPath = g_pDiskOperator->getFullPath(pNewLnk);
+		YFile* pDstNode = g_pDiskOperator->lnkDstFindHelper(szFullPath);
+		((YSymlnkFile*)rLnkList[index])->setDstFile(pDstNode);
 	}
-// 	if (rMap.count(pNewLnk))
-// 	{
-// 		rMap[pNewLnk] = rLnkList;
-// 	}
-// 	else
-// 	{
-// 		std::pair<YFile*, std::vector<YFile*>> rNewMapPair(pNewLnk,rLnkList);
-// 		rMap.insert(rNewMapPair);
-// 	}
 	rMap.erase(rMap.find(pOldLnk));
 }
 

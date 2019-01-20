@@ -52,8 +52,8 @@ public:
 //Verify
 	bool	isRootName(const std::string& szName);
 	bool	isPathExist(const std::string& szPath);
-private:
 	YFile*	lnkDstFindHelper(const std::string& szPath);
+private:
 	void	queryHelper
 	(
 		std::vector<YFile*>& pParentNodes,

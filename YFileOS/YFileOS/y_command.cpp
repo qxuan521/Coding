@@ -93,7 +93,7 @@ YErrorCode YCommand::toAbsolutePath(const std::vector<std::string>& rOrgrinalArg
 			return YERROR_PATH_ILLEGAL;
 		}
 		transform(szPathOrgrinal.begin(), szPathOrgrinal.end(), szPathOrgrinal.begin(), ::tolower);
-		std::vector<std::string> tempStrArr = splitStrByCharacter(rOrgrinalArgList[index], '/');
+		std::vector<std::string> tempStrArr = splitStrByCharacter(szPathOrgrinal, '/');
 		std::string AbsString = m_szCurWorkPath;
 		for (int LoopCount = 0; LoopCount < (int)tempStrArr.size(); ++LoopCount)
 		{

@@ -5,15 +5,14 @@ YSymlnkFile::YSymlnkFile(YFile* pDstFile)
 	: YFile(Y_SymLnk)
 	, m_pDstFile(pDstFile)
 {
-	if (nullptr != pDstFile)
-	{
-		g_pSymMananger->addMapped(pDstFile, this);
-	}
+ 	if (nullptr != pDstFile)
+ 	{
+ 		g_pSymMananger->addMapped(pDstFile, this);
+ 	}
 }
 
 YSymlnkFile::~YSymlnkFile()
 {
-	g_pSymMananger->delSymLnkFile(this);
 }
 
 bool YSymlnkFile::IsFile()

@@ -16,10 +16,14 @@ YFile::YFile(YFileType rFileType)
 
 YFile::~YFile()
 {
-	if (!IsRealSymLnk())
-	{
-		g_pSymMananger->delDstFile(this);
-	}
+// 	if (!IsRealSymLnk())
+// 	{
+// 		g_pSymMananger->delDstFile(this);
+// 	}
+// 	else
+// 	{
+// 		g_pSymMananger->delSymLnkFile(this);
+// 	}
 }
 
 const std::int8_t * YFile::getFileData()

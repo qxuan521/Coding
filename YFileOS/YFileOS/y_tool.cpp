@@ -124,11 +124,15 @@ std::regex makeRepaceRegexByPath(const std::string& szPath, std::string& szRepac
 	}
 	return std::regex(szRegexStr);
 }
-
 std::string makeStringFromBuffer(std::vector<char>& rBuffer, int size)
 {
 	std::string szPath;
-	for (size_t index = 0; index < rBuffer.size();++index)
+// 	int asdasd = 0;
+// 	if (rBuffer.size() > size)
+// 	{
+// 		rBuffer[size] = '\0';
+// 	}
+	for (size_t index = 0 , asdasd = index;index < size && index < rBuffer.size();++index)
 	{
 		szPath += rBuffer[index];
 	}

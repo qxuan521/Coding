@@ -226,7 +226,7 @@ YErrorCode YMoveCommand::handleDstToNoWildCard(const std::string & szDst)
 		else
 		{//目标路径存在
 			pDstFile = rQueryResult[0];
-			if (pDstFile->IsFolder())
+			if (pDstFile->IsRealFolder())
 			{//如果目标路径时一个文件夹 可以拷贝多个文件代表把源文件拷贝到当前文件夹下以源文件名命名
 				m_rDstArgList.resize(m_rSrcArgList.size());
 				for (size_t index = 0; index < m_rSrcArgList.size(); index++)
@@ -237,6 +237,21 @@ YErrorCode YMoveCommand::handleDstToNoWildCard(const std::string & szDst)
 						return YERROR_PATH_ILLEGAL;
 					}
 					m_rDstArgList[index].append(szDst);
+					m_rDstArgList[index].append("/");
+					m_rDstArgList[index].append(szSrcName);
+				}
+			}
+			else if (pDstFile->IsFolder())
+			{
+				m_rDstArgList.resize(m_rSrcArgList.size());
+				for (size_t index = 0; index < m_rSrcArgList.size(); index++)
+				{
+					std::string szSrcName = getNameFromFullPath(m_rSrcArgList[index]);
+					if (szSrcName.empty())
+					{
+						return YERROR_PATH_ILLEGAL;
+					}
+					m_rDstArgList[index].append(pDstFile->getShowName());
 					m_rDstArgList[index].append("/");
 					m_rDstArgList[index].append(szSrcName);
 				}

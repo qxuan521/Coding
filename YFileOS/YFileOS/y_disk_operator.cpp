@@ -284,9 +284,13 @@ YErrorCode YDiskOperator::copyFileNode(std::vector<std::string>& rSrcPathArr, st
 			YFile* pNewFile = nullptr;
 			m_pDisk->takeNode(pDstParent, pDstFile);
 			copyFIleHelper(pSrcFile, pNewFile, szDstName);
-			g_pSymMananger->changeLnkDst(pDstFile, pNewFile);
-			m_pDisk->destroyFileNode(pDstFile);
 			m_pDisk->addNode(pDstParent, pNewFile);
+			if (!pSrcFile->IsRealSymLnk())
+			{
+				g_pSymMananger->changeLnkDst(pDstFile, pNewFile);
+				g_pSymMananger->delDstFile(pDstParent);
+			}
+			m_pDisk->destroyFileNode(pDstFile);
 		}
 	}
 	return Y_COPY_SUCCEED;
@@ -352,12 +356,12 @@ YErrorCode YDiskOperator::deleteNode(const std::string & szPath)
 	{
 		return YERROR_POINTER_NULL;
 	}
-	YErrorCode rResultCode;
-	rResultCode = m_pDisk->takeNode(pParent, pFile);
-	if (Y_OPERAT_SUCCEED != rResultCode)
-	{
-		return rResultCode;
-	}
+// 	YErrorCode rResultCode;
+// 	rResultCode = m_pDisk->takeNode(pParent, pFile);
+// 	if (Y_OPERAT_SUCCEED != rResultCode)
+// 	{
+// 		return rResultCode;
+// 	}
 	return m_pDisk->destroyAllChildFileNode(pFile);
 }
 
@@ -580,22 +584,30 @@ void YDiskOperator::queryHelper
 	{
 		if (rHistorySet.find(pParentNodes[index]) == rHistorySet.end())
 		{
-			if (rPredicate(pParentNodes[index], nPathindex))
+			if (nullptr == pParentNodes[index])
 			{
-				if (rFinishPredicate(nPathindex))
+				continue;
+			}
+			else
+			{
+				if (rPredicate(pParentNodes[index], nPathindex))
 				{
-					rResult.push_back(pParentNodes[index]);
-				}
-				else
-				{
-					std::vector<YFile*> rChildren = pParentNodes[index]->getChildren();
-					if (!rChildren.empty())
+					if (rFinishPredicate(nPathindex))
 					{
-						queryHelper(rChildren, nPathindex + 1, rPredicate, rFinishPredicate, rResult, rHistorySet);
+						rResult.push_back(pParentNodes[index]);
+					}
+					else
+					{
+						std::vector<YFile*> rChildren = pParentNodes[index]->getChildren();
+						if (!rChildren.empty())
+						{
+							queryHelper(rChildren, nPathindex + 1, rPredicate, rFinishPredicate, rResult, rHistorySet);
+						}
 					}
 				}
+				rHistorySet.insert(pParentNodes[index]);
 			}
-			rHistorySet.insert(pParentNodes[index]);
+			
 		}
 	}
 }
@@ -654,8 +666,8 @@ void YDiskOperator::saveDataHelper(YFile * pParentNode, std::fstream & rFile, in
 			rFileHeader.nFileDataSize =(int) ((YSymlnkFile*)rChildren[index])->getShowName().size();
 			memcpy(rFileHeader.rModifyDate,rChildren[index]->getModifyDate().c_str(), 25);
 			rFile.write((char*)(&rFileHeader), sizeof(rFileHeader));
-			rFile.write(this->getFullPath(rChildren[index]).c_str(), this->getFullPath(rChildren[index]).size());
-			rFile.write(((YSymlnkFile*)rChildren[index])->getShowName().c_str(), ((YSymlnkFile*)rChildren[index])->getShowName().size());
+			rFile.write(this->getFullPath(rChildren[index]).c_str(), rFileHeader.nFilePathSize);
+			rFile.write(((YSymlnkFile*)rChildren[index])->getShowName().c_str(), rFileHeader.nFileDataSize);
 			++nFileCount;
 		}
 		else 
@@ -713,7 +725,7 @@ YErrorCode YDiskOperator::initializeRootDisk(std::vector<char>& rRootArr)
 	}
 	return Y_OPERAT_SUCCEED;
 }
-#include <iostream>
+
 YErrorCode YDiskOperator::initializeFileTree(int32_t nFileCount, std::fstream & rFileStream)
 {
 	if (0 == nFileCount)
@@ -737,10 +749,10 @@ YErrorCode YDiskOperator::initializeFileTree(int32_t nFileCount, std::fstream & 
 			bufferResetByDataSize(rBuffer, rHeader.nFileDataSize);
 			rFileStream.read(&rBuffer[0], rHeader.nFileDataSize);
 			rLnkData.DstPath = makeStringFromBuffer(rBuffer, rHeader.nFileDataSize);
-			bufferResetByDataSize(rBuffer, rHeader.nFileDataSize);
-			rFileStream.read(&rBuffer[0], 25);
-			rLnkData.ModifyDate = makeStringFromBuffer(rBuffer, 25);
+			rHeader.rModifyDate[24] = '\0';
+			rLnkData.ModifyDate = rHeader.rModifyDate;
 			rLnkArr.push_back(rLnkData);
+
 		}
 		else
 		{//普通文件文件夹
@@ -770,7 +782,7 @@ YErrorCode YDiskOperator::initializeFileTree(int32_t nFileCount, std::fstream & 
 				bufferResetByDataSize(rBuffer, rHeader.nFilePathSize);
 				rFileStream.read(&rBuffer[0], rHeader.nFilePathSize);
 				szFilePath = makeStringFromBuffer(rBuffer, rHeader.nFilePathSize);
-				 createNewFolder(szFilePath, pFile);
+				createNewFolder(szFilePath, pFile);
 				
 			}
 			if (nullptr != pFile)
@@ -784,11 +796,8 @@ YErrorCode YDiskOperator::initializeFileTree(int32_t nFileCount, std::fstream & 
 			}
 		}
 	}
-	if (rFileStream.eof())
-	{
-		std::cout << "end" << std::endl;
-	}
-	if (nCount + rLnkArr.size() -1!= nFileCount)
+
+	if (nCount  -1!= nFileCount)
 	{
 		formatDisk();
 		return TERROR_DISK_ERROR;
@@ -832,8 +841,10 @@ YErrorCode YDiskOperator::folderMoveHelper(YFile * rSrcRootNode, std::string & s
 		{
 			return YERROR_POINTER_NULL;
 		}
+		g_pSymMananger->delDstFile(rSrcRootNode);
 		m_pDisk->takeNode(pSrcParent, rSrcRootNode);
 		m_pDisk->addNode(pParentNode, rSrcRootNode);
+		g_pSymMananger->changeLnkDst(pDstFileNode, rSrcRootNode);
 	}
 	else
 	{//存在重名 hebing 
@@ -854,9 +865,10 @@ YErrorCode YDiskOperator::folderMoveHelper(YFile * rSrcRootNode, std::string & s
 				return TERROR_DISK_ERROR;
 			}
 			YFile* pResult = rChildren[0];
+			m_pDisk->takeNode(pResultParent, pResult);
 			m_pDisk->takeNode(pParentNode, pDstFileNode);
-			m_pDisk->destroyAllChildFileNode(pDstFileNode);
 			m_pDisk->addNode(pParentNode,pResult);
+			m_pDisk->destroyAllChildFileNode(pDstFileNode);
 		}
 	}
 	return Y_OPERAT_SUCCEED;
@@ -866,6 +878,7 @@ YErrorCode YDiskOperator::fileMoveHelper(YFile * rSrcRootNode, std::string & szD
 {
 	YFile* pDstFileNode = m_pDisk->queryFileNode(szDstPath);
 	YFile* pParentNode = m_pDisk->queryFileNode(getParentPath(szDstPath));
+	std::string szName = getNameFromFullPath(szDstPath);
 	if (nullptr == pParentNode)
 	{
 		return YERROR_POINTER_NULL;
@@ -878,7 +891,7 @@ YErrorCode YDiskOperator::fileMoveHelper(YFile * rSrcRootNode, std::string & szD
 		{
 			return YERROR_POINTER_NULL;
 		}
-		//g_pSymMananger->delSymLnkFile(rSrcRootNode);
+		g_pSymMananger->delDstFile(rSrcRootNode);
 		m_pDisk->takeNode(pSrcParent, rSrcRootNode);
 		m_pDisk->addNode(pParentNode, rSrcRootNode);
 	}
@@ -892,14 +905,15 @@ YErrorCode YDiskOperator::fileMoveHelper(YFile * rSrcRootNode, std::string & szD
 		}
 		if (rPredicate(szSrcPath))
 		{
-			//g_pSymMananger->delSymLnkFile(rSrcRootNode);
-			//g_pSymMananger->changeLnkDst(pDstFileNode, rSrcRootNode);
-			//m_pDisk->destroyFileNode(pDstFileNode);
+			g_pSymMananger->delDstFile(rSrcRootNode);
+			g_pSymMananger->changeLnkDst(pDstFileNode, rSrcRootNode);
 			m_pDisk->takeNode(pParentNode, pDstFileNode);
 			m_pDisk->takeNode(pSrcParent, rSrcRootNode);
 			m_pDisk->addNode(pParentNode, rSrcRootNode);
+			m_pDisk->destroyFileNode(pDstFileNode);
 		}
 	}
+	rSrcRootNode->setName(szName);
 	return Y_OPERAT_SUCCEED;
 }
 
@@ -919,6 +933,7 @@ YErrorCode YDiskOperator::FolderMoveCoverHelper(
 	std::string szNamePart = getNameFromFullPath(szSrcPath);
 	if (nullptr == pDstRootNode)
 	{
+		g_pSymMananger->delDstFile(pSrcRootNode);
 		m_pDisk->takeNode(pSrcParentNode, pSrcRootNode);
 		m_pDisk->addNode(pResultRoot, pSrcRootNode);
 	}
@@ -931,6 +946,7 @@ YErrorCode YDiskOperator::FolderMoveCoverHelper(
 				YFile* pCopyFolder = nullptr;
 				copyFIleHelper(pSrcRootNode, pCopyFolder, szNamePart);
 				m_pDisk->addNode(pResultRoot, pCopyFolder);
+				g_pSymMananger->changeLnkDst(pDstRootNode, pCopyFolder);
 				std::vector<YFile*> rChildren = pSrcRootNode->getChildren();
 				for (size_t index = 0; index < rChildren.size();++index)
 				{
@@ -942,7 +958,7 @@ YErrorCode YDiskOperator::FolderMoveCoverHelper(
 				if (0 == pSrcRootNode->getChildrenCount())
 				{
 					m_pDisk->takeNode(pSrcParentNode, pSrcRootNode);
-					m_pDisk->destroyFileNode(pSrcRootNode);
+					m_pDisk->destroyAllChildFileNode(pSrcRootNode);
 				}
 			}
 		}
@@ -950,8 +966,11 @@ YErrorCode YDiskOperator::FolderMoveCoverHelper(
 		{
 			if (rPredicate(szSrcPath))
 			{
+				m_pDisk->takeNode(pDstParentNode, pDstRootNode);
 				m_pDisk->takeNode(pSrcParentNode, pSrcRootNode);
 				m_pDisk->addNode(pResultRoot, pSrcRootNode);
+				g_pSymMananger->delDstFile(pSrcRootNode);
+				g_pSymMananger->changeLnkDst(pDstRootNode, pSrcRootNode);
 			}
 		}
 	}
