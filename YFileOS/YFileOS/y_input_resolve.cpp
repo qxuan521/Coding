@@ -38,7 +38,7 @@ YCommandInfo YInputResolve::resolve(const std::string & szInput)
 				}
 				else
 				{
-					if (rResult.rPathList.empty() && !bMustBepath && !szSubArg.empty() && '/' == szSubArg[0])
+					if (!bMustBepath && !szSubArg.empty() && '/' == szSubArg[0])
 					{
 						rResult.rArgList.push_back(szSubArg);
 						szSubArg.clear();
@@ -84,7 +84,7 @@ YCommandInfo YInputResolve::resolve(const std::string & szInput)
 	}
 	else
 	{
-		if (rResult.rPathList.empty() && !bMustBepath && !szSubArg.empty() && '/' == szSubArg[0])
+		if (!bMustBepath && !szSubArg.empty() && '/' == szSubArg[0])
 		{
 			rResult.rArgList.push_back(szSubArg);
 			szSubArg.clear();
