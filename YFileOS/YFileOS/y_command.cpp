@@ -29,7 +29,7 @@ enum YErrorCode
 */
 const std::string rErrorStringArr[] =
 {
-	" surprise!!!!",
+	/*" surprise!!!!"*/"",
 	" Operated Faild.",
 	" Pointer is null.",
 	" Query file is not existed.",
@@ -61,6 +61,10 @@ void YCommand::setCurWoringPath(const std::string & szCurPath)
 
 YErrorCode YCommand::errorPrint(YErrorCode rErrorType, std::string szPath)
 {
+	if (rErrorType == Y_OPERAT_SUCCEED)
+	{
+		return Y_OPERAT_SUCCEED;
+	}
 	std::string szOutput;
 	if (!szPath.empty())
 	{

@@ -64,6 +64,10 @@ YCommandInfo YInputResolve::resolve(const std::string & szInput)
 				{
 					bMustBepath = true;
 				}
+				else
+				{
+					bMustBepath = false;
+				}
 			}
 		}
 		else
