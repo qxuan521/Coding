@@ -132,7 +132,7 @@ std::string makeStringFromBuffer(std::vector<char>& rBuffer, int size)
 // 	{
 // 		rBuffer[size] = '\0';
 // 	}
-	for (size_t index = 0 , asdasd = index;index < size && index < rBuffer.size();++index)
+	for (size_t index = 0 , asdasd = index;(int)index < size && index < rBuffer.size();++index)
 	{
 		szPath += rBuffer[index];
 	}
