@@ -375,14 +375,14 @@ YErrorCode YCopyCommand::checkSrcReal()
 			{
 				return YERROR_PATH_ILLEGAL;
 			}
-			bool isCover = userAsk(m_rDstArgList[0], " has exist.Do you want to overWrite file?<y/n>:");
-			if (isCover)
-			{
-				return Y_OPERAT_SUCCEED;
-			}
-			else {
-				return Y_OPERAT_FAILD;
-			}
+// 			bool isCover = userAsk(m_rDstArgList[0], " has exist.Do you want to overWrite file?<y/n>:");
+// 			if (isCover)
+// 			{
+// 				return Y_OPERAT_SUCCEED;
+// 			}
+// 			else {
+// 				return Y_OPERAT_FAILD;
+// 			}
 		}
 	}
 	return Y_OPERAT_SUCCEED;
