@@ -310,6 +310,7 @@ YErrorCode YDiskOperator::copyFileFromRealDisk(std::vector<std::string>& rSrcPat
 		YFile* pFileRef = (YFile*)pfile;
 		m_pDisk->takeNode(pDstParent, pFileRef);
 		m_pDisk->destroyFileNode(pFileRef);
+		rFileReader.close();
 		pfile = nullptr;
 	}
 	createNewFile(rDstPathArr[0], pfile);
@@ -317,11 +318,18 @@ YErrorCode YDiskOperator::copyFileFromRealDisk(std::vector<std::string>& rSrcPat
 	std::vector<int8_t> rBuffer;
 	rFileReader.seekg(0, std::ios::end);
 	long fileSize = (long)rFileReader.tellg();
-	rBuffer.resize(fileSize);
-	int8_t* DataBuffer = &rBuffer[0];
-	rFileReader.seekg(0, std::ios::beg);
-	rFileReader.read((char*)DataBuffer, fileSize);
-	((YFile*)pfile)->setFileData(&rBuffer[0], fileSize);
+	if (0 == fileSize)
+	{
+		rBuffer.resize(fileSize);
+		int8_t* DataBuffer = &rBuffer[0];
+		rFileReader.seekg(0, std::ios::beg);
+		rFileReader.read((char*)DataBuffer, fileSize);
+		((YFile*)pfile)->setFileData(&rBuffer[0], fileSize);
+	}
+	else
+	{
+
+	}
 	rFileReader.close();
 	return 	Y_OPERAT_SUCCEED;
 }
@@ -336,6 +344,7 @@ YErrorCode YDiskOperator::copyFileToRealDisk(std::vector<std::string>& rSrcPathA
 	YFile* pSrcFile = m_pDisk->queryFileNode(rSrcPathArr[0]);
 	if (nullptr == pSrcFile)
 	{
+		rFileReader.close();
 		return YERROR_POINTER_NULL;
 	}
 
