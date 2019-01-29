@@ -30,11 +30,15 @@ namespace NameAndIDGenerationTool
                 while ((strReadline = rReader.ReadLine()) != null)
                 {
                     string[] szStrArr = strReadline.Split(',');
-                    if(0 != szStrArr.Length || 2 != szStrArr.Length)
+                    if(2 == szStrArr.Length)
                     {
                         string szIDwithPre = szStrArr[0];
                         string szName = szStrArr[1];
                         rSaveFunc(szIDwithPre, szName);
+                    }
+                    else
+                    {
+                        rInfoOutput.AppendText(strReadline + '\n');
                     }
                 }
                 rReader.Close();
@@ -90,6 +94,16 @@ namespace NameAndIDGenerationTool
                 /*ExcelClose(szPath, excel, rWbk);*/
             }
             return true;
+        }
+
+        public static void write_temp_file(ref Dictionary<string,string> rMap)
+        {
+            FileStream rFile = new FileStream("bbbbb.csv", FileMode.OpenOrCreate, FileAccess.Write);
+            StreamWriter rReader = new StreamWriter(rFile, Encoding.Default);
+            foreach (var temp in rMap)
+            {
+                rReader.WriteLine(temp.Key + " , " + temp.Value);
+            }
         }
     }
 }
