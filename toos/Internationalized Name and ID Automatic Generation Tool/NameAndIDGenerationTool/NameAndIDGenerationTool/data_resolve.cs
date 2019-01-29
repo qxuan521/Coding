@@ -45,7 +45,7 @@ namespace NameAndIDGenerationTool
             for(int index = 0; index < this.m_rFileNameArr.Length; ++index)
             {//读取标准表文件
                 string szAbsPath = szSrcFolder + @"\" + m_rFileNameArr[index];
-                ExcelOperator.read_file_N_append_data(szAbsPath, rSaveFunc, ref rInfoOutPut);
+                ExcelOperator.csv_reader(szAbsPath, rSaveFunc, ref rInfoOutPut);
             }
         }
         // function SaveFuncDef:
@@ -102,6 +102,7 @@ namespace NameAndIDGenerationTool
 
         public void testFunc(ref System.Windows.Forms.RichTextBox rOutput)
         {
+            rOutput.SelectionColor = Color.Black;
             rOutput.AppendText(" ID:");
             foreach (var temp in this.m_rID2NameMap)
             {

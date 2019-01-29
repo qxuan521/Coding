@@ -19,6 +19,39 @@ namespace NameAndIDGenerationTool
             return File.Exists(@szFileName);
         }
 
+        public static void csv_reader(string szPath, SaveData rSaveFunc, ref System.Windows.Forms.RichTextBox rInfoOutput)
+        {
+            string szExcelFilePath = szPath.Trim();
+            FileStream rFile = new FileStream(szExcelFilePath, FileMode.Open, FileAccess.Read);
+            StreamReader rReader = new StreamReader(rFile, Encoding.Default);
+            try
+            {//每个工作表都查 索引从1开始
+                string strReadline;
+                while ((strReadline = rReader.ReadLine()) != null)
+                {
+                    string[] szStrArr = strReadline.Split(',');
+                    if(0 != szStrArr.Length || 2 != szStrArr.Length)
+                    {
+                        string szIDwithPre = szStrArr[0];
+                        string szName = szStrArr[1];
+                        rSaveFunc(szIDwithPre, szName);
+                    }
+                }
+                rReader.Close();
+                rFile.Close();
+            }
+            catch (Exception ex)
+            {
+                rInfoOutput.SelectionColor = Color.Red;
+                rInfoOutput.AppendText(ex.ToString());
+            }
+            finally
+            {
+                /*ExcelClose(szPath, excel, rWbk);*/
+            }
+            return ;
+        }
+
         public static bool read_file_N_append_data(string szPath, SaveData rSaveFunc,ref System.Windows.Forms.RichTextBox rInfoOutput)
         {
             string szExcelFilePath = szPath.Trim();
