@@ -61,7 +61,8 @@ namespace PersistenceResolve
                 rFile.Read(rBuffer, 0, 4);
                 int nSize = BitConverter.ToInt32(rBuffer, 0);
                 rBuffer = new byte[nSize];
-                string szResult = BitConverter.ToString(rBuffer);
+                rFile.Read(rBuffer, 0, nSize);
+                string szResult = Encoding.UTF8.GetString(rBuffer);
                 rFile.Close();
                 return szResult;
             }

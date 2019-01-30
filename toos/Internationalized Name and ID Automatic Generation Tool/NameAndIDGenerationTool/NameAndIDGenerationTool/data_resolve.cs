@@ -114,6 +114,22 @@ namespace NameAndIDGenerationTool
             return false;
         }
 
+        public void completionData(string szWorkFileFullPath, string szResultFileFolder, ref System.Windows.Forms.RichTextBox rInfoOutPut)
+        {
+            //打开第一个文件，
+            OperatorFunc rOperator = new OperatorFunc(writeData);
+        }
+        private bool writeData(ref string szName,ref string szID,bool isMale)
+        {//不允许 名字ID同时为空 不允许 名字ID同时不为空的传进来
+            if(szName == "")
+            {
+                return findSuitableName(ref szName, ref szID, isMale);
+            }
+            else
+            {
+                return findSuitableID(ref szName, ref szID, isMale);
+            }
+        }
         public void testFunc(ref System.Windows.Forms.RichTextBox rOutput)
         {
             rOutput.SelectionColor = Color.Black;
@@ -125,6 +141,24 @@ namespace NameAndIDGenerationTool
 //                 rOutput.AppendText("  ,  ");
 //                 rOutput.AppendText(temp.Value + "\n");
 //             }
+        }
+        private bool findSuitableID(ref string szName, ref string szID,bool isMale)
+        {
+            if(m_rName2IDMap.ContainsKey(szName))
+            {
+                List<string> rIDlist = m_rName2IDMap[szName];
+
+                return true;
+            }
+            else
+            {//找不到映射
+                return false;
+            }
+        }
+
+        private bool findSuitableName(ref string szName, ref string szID, bool isMale)
+        {
+
         }
     }
 }

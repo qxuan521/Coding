@@ -9,11 +9,21 @@ using System.Diagnostics;
 using System.Drawing;
 
 namespace NameAndIDGenerationTool
-{
+{//ref int nManCol,ref  int nManID,ref  int nWomanCol,ref int nWomanID
     public delegate bool SaveData(string szID,string szName);
-
+    public delegate bool OperatorFunc(ref string szID,ref string szName,bool bIsMale);
+    enum OperatorHead
+    {
+        MaleItem = 0,
+        MaleID = 1,
+        FemaleItem = 2,
+        FemaleID = 3,
+        HeadMax
+    };
     class ExcelOperator
     {
+        // 0：男物品，1：男ID，2：女物品，3：女ID
+        private static string[] rHeadArr = { "男物品", "男ID", "女物品", "女ID" };
         public static bool checkSrcExist(string szFileName)
         {
             return File.Exists(@szFileName);
@@ -109,6 +119,109 @@ namespace NameAndIDGenerationTool
             }
             rReader.Close();
             rFile.Close();
+        }
+
+        private static bool headValidaion(int nManCol,int nManID, int nWomanCol,int nWomanID)
+        {
+            bool bMan = (nManCol != 0 && nManID != 0);
+            bool bWoman = (nWomanCol != 0 && nWomanID != 0);
+            return bMan || bWoman;
+        }
+
+        private static bool checkIsHead(string szContent)
+        {
+            for(int index = 0; index < rHeadArr.Length;++index)
+            {
+                if(szContent == rHeadArr[index])
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        private static void setHeadindex(string szContent,int col, ref int[] nColNum)
+        {
+            for(int index = 0;index < rHeadArr.Length && index < nColNum.Length; ++index)
+            {
+                if(szContent == rHeadArr[index])
+                {
+                    nColNum[index] = col; 
+                }
+            }
+        }
+        private static void clearHeadindexArr(ref int[] rColNum)
+        {
+            for(int index = 0; index < rColNum.Length; ++index)
+            {
+                rColNum[index] = 0;
+            }
+        }
+        public static void excelWrite(string szPath, string szResultPath, OperatorFunc rOperatorFunc)
+        {
+            string szExcelFilePath = szPath.Trim();
+            Excel.Application excel = new Excel.Application();
+            Excel.Workbooks wb = excel.Workbooks;
+            excel.Visible = false;//设置调用引用的 Excel文件是否可见
+            excel.Application.DisplayAlerts = false;
+            //wb = excel.Workbooks.Open(ExcelFilePath);
+            Excel.Workbook rWbk = wb.Add(szExcelFilePath);
+            Excel.Sheets rWorkSheets = rWbk.Worksheets;
+            try
+            {//每个工作表都查 索引从1开始
+                int[] rColNum = new int[(int)OperatorHead.HeadMax];
+                for (int index = 1; index <= rWorkSheets.Count; ++index)
+                {
+                    Excel.Worksheet ws = (Excel.Worksheet)rWorkSheets[index];
+                    int rowCount = 0;//有效行，索引从1开始
+                    rowCount = ws.UsedRange.Rows.Count;//赋值有效行
+                    bool bIsHead = false;
+                    for (int i = 1; i <= rowCount; i++)//
+                    {//将行中数据交给 代理处理
+                        string[] rUseFulContent = new string[(int)OperatorHead.HeadMax];
+                        for (int nLoopCount = 1; nLoopCount < ws.UsedRange.Rows[i].Count; ++nLoopCount)
+                        {//循环一行中的每一列
+                            string szContent = ws.Cells[i, nLoopCount].Value.ToString();
+                            if ( checkIsHead(szContent))
+                            {//代表当前行中存在表头
+                                if(!bIsHead)
+                                {
+                                    bIsHead = true;
+                                    clearHeadindexArr(ref rColNum);
+                                }
+                                //记录行列标记
+                                setHeadindex(szContent, nLoopCount, ref rColNum);
+                            }
+                            string szAddress = ws.Cells[i, nLoopCount].Address;
+                        }
+                        if (!bIsHead && headValidaion(rColNum[0], rColNum[1], rColNum[2], rColNum[3]))
+                        {
+                            for (int nUsefulIndex = 0; nUsefulIndex < rColNum.Length; nUsefulIndex += 2)
+                            {
+                                int nColName = rColNum[nUsefulIndex];
+                                int nColID = rColNum[nUsefulIndex + 1];
+                                if (0 != nColID && 0 != nColName)
+                                {
+                                    string szName = ws.Cells[i, nColName].Value.ToString();
+                                    string szID = ws.Cells[i, nColID].Value.ToString();
+                                    if (rOperatorFunc(ref szName, ref szID, nUsefulIndex > 0 ? false : true))
+                                    {
+                                        ws.Cells[i, nColName] = szName;
+                                        ws.Cells[i, nColID] = szID;
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            finally
+            {
+                /*ExcelClose(szPath, excel, rWbk);*/
+            }
         }
     }
 }
