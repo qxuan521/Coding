@@ -14,12 +14,12 @@ namespace NameAndIDGenerationTool
 
     class ExcelOperator
     {
-        public static bool check_src_file_exist(string szFileName)
+        public static bool checkSrcExist(string szFileName)
         {
             return File.Exists(@szFileName);
         }
 
-        public static void csv_reader(string szPath, SaveData rSaveFunc, ref System.Windows.Forms.RichTextBox rInfoOutput)
+        public static void csvReader(string szPath, SaveData rSaveFunc, ref System.Windows.Forms.RichTextBox rInfoOutput)
         {
             string szExcelFilePath = szPath.Trim();
             FileStream rFile = new FileStream(szExcelFilePath, FileMode.Open, FileAccess.Read);
@@ -27,10 +27,11 @@ namespace NameAndIDGenerationTool
             try
             {//每个工作表都查 索引从1开始
                 string strReadline;
-                while ((strReadline = rReader.ReadLine()) != null)
+                while (!rReader.EndOfStream)
                 {
+                    strReadline = rReader.ReadLine();
                     string[] szStrArr = strReadline.Split(',');
-                    if(2 == szStrArr.Length)
+                    if (2 == szStrArr.Length)
                     {
                         string szIDwithPre = szStrArr[0];
                         string szName = szStrArr[1];
@@ -48,6 +49,8 @@ namespace NameAndIDGenerationTool
             {
                 rInfoOutput.SelectionColor = Color.Red;
                 rInfoOutput.AppendText(ex.ToString());
+                rReader.Close();
+                rFile.Close();
             }
             finally
             {
@@ -56,7 +59,7 @@ namespace NameAndIDGenerationTool
             return ;
         }
 
-        public static bool read_file_N_append_data(string szPath, SaveData rSaveFunc,ref System.Windows.Forms.RichTextBox rInfoOutput)
+        public static bool comReaderNSaveData(string szPath, SaveData rSaveFunc,ref System.Windows.Forms.RichTextBox rInfoOutput)
         {
             string szExcelFilePath = szPath.Trim();
             Excel.Application excel = new Excel.Application();
@@ -98,12 +101,14 @@ namespace NameAndIDGenerationTool
 
         public static void write_temp_file(ref Dictionary<string,string> rMap)
         {
-            FileStream rFile = new FileStream("bbbbb.csv", FileMode.OpenOrCreate, FileAccess.Write);
+            FileStream rFile = new FileStream("aaaaa.csv", FileMode.OpenOrCreate, FileAccess.Write);
             StreamWriter rReader = new StreamWriter(rFile, Encoding.Default);
             foreach (var temp in rMap)
             {
                 rReader.WriteLine(temp.Key + " , " + temp.Value);
             }
+            rReader.Close();
+            rFile.Close();
         }
     }
 }

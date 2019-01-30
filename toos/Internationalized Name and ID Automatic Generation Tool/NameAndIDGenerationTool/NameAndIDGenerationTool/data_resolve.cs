@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using PersistenceResolve;
 
 namespace NameAndIDGenerationTool
 {
@@ -13,11 +14,18 @@ namespace NameAndIDGenerationTool
         string[] m_rIDPreArr = { "str_res_dress_name_", "str_res_item_name_", "str_res_medal_name_" };
         Dictionary<string, string> m_rID2NameMap;
         Dictionary<string, List<string>> m_rName2IDMap;
+        private string m_szSrcPath;
 
         public DataResolve()
         {
             m_rID2NameMap = new Dictionary<string, string>();
             m_rName2IDMap = new Dictionary<string, List<string>>();
+            m_szSrcPath = PersistenceFileStream.dataRead(DataInfileType.Path);
+        }
+
+        public string getSrcPath()
+        {
+            return m_szSrcPath;
         }
 
         public bool checkSrcTable(string szSrcFolder, ref System.Windows.Forms.RichTextBox rInfoOutPut)
@@ -25,7 +33,7 @@ namespace NameAndIDGenerationTool
             bool rResult = true;
             for (int index = 0; index < m_rFileNameArr.Length; ++index)
             {
-                if (!ExcelOperator.check_src_file_exist(szSrcFolder + @"\" + m_rFileNameArr[index]))
+                if (!ExcelOperator.checkSrcExist(szSrcFolder + @"\" + m_rFileNameArr[index]))
                 {
                     rResult = false;
                     rInfoOutPut.SelectionColor = Color.Red;
@@ -41,11 +49,16 @@ namespace NameAndIDGenerationTool
             {
                 return;
             }
+            if (m_szSrcPath != szSrcFolder)
+            {
+                m_szSrcPath = szSrcFolder;
+                PersistenceFileStream.dataWrite(DataInfileType.Path, m_szSrcPath.Length, m_szSrcPath);
+            }
             var rSaveFunc = new SaveData(SaveFuncDef);
             for (int index = 0; index < this.m_rFileNameArr.Length; ++index)
             {//读取标准表文件
                 string szAbsPath = szSrcFolder + @"\" + m_rFileNameArr[index];
-                ExcelOperator.read_file_N_append_data(szAbsPath, rSaveFunc, ref rInfoOutPut);
+                ExcelOperator.csvReader(szAbsPath, rSaveFunc, ref rInfoOutPut);
             }
         }
         // function SaveFuncDef:
@@ -58,10 +71,11 @@ namespace NameAndIDGenerationTool
             {
                 return true;
             }
-            if(string.IsNullOrWhiteSpace(szResultID))
-            {
-                return true;
-            }
+            //这个函数极其之慢 慢的不行
+//             if(string.IsNullOrWhiteSpace(szResultID))
+//             {
+//                 return true;
+//             }
              //创建映射
              //ID2NAMEMAP
             if(this.m_rID2NameMap.ContainsKey(szResultID))
