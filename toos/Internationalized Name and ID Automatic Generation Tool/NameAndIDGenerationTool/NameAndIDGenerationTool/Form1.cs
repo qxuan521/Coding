@@ -39,5 +39,26 @@ namespace NameAndIDGenerationTool
                 this.m_rDataResolve.testFunc(ref this.richTextBox1);
             }
         }
+
+        private void m_rFillIn_btn_Click(object sender, EventArgs e)
+        {
+            this.m_rDataResolve.completionData(m_rWorkTableTextBlock.Text, this.m_rOutPutTextBlock.Text + @"\aaaa.xls" , ref this.richTextBox1);
+        }
+
+        private void m_rWorkTableSelect_btn_Click(object sender, EventArgs e)
+        {
+            if (this.m_rWorkTableSelect_dialog.ShowDialog() == DialogResult.OK)
+            {
+                this.m_rWorkTableTextBlock.Text = m_rWorkTableSelect_dialog.FileName;
+            }
+        }
+
+        private void m_rResultFolderSelect_btn_Click(object sender, EventArgs e)
+        {
+            if (this.m_rResultFolder.ShowDialog() == DialogResult.OK)
+            {
+                this.m_rOutPutTextBlock.Text = this.m_rResultFolder.SelectedPath;
+            }
+        }
     }
 }

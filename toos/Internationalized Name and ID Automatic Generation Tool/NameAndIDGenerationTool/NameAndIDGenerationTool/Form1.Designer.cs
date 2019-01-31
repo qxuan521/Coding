@@ -46,6 +46,7 @@
             this.m_rFillIn_btn = new System.Windows.Forms.Button();
             this.m_rWorkTableSelect_dialog = new System.Windows.Forms.OpenFileDialog();
             this.m_rSrcTableSelect_dialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.m_rResultFolder = new System.Windows.Forms.FolderBrowserDialog();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -95,6 +96,7 @@
             this.m_rResultFolderSelect_btn.TabIndex = 8;
             this.m_rResultFolderSelect_btn.Text = "浏览";
             this.m_rResultFolderSelect_btn.UseVisualStyleBackColor = true;
+            this.m_rResultFolderSelect_btn.Click += new System.EventHandler(this.m_rResultFolderSelect_btn_Click);
             // 
             // m_rWorkTableSelect_btn
             // 
@@ -104,6 +106,7 @@
             this.m_rWorkTableSelect_btn.TabIndex = 7;
             this.m_rWorkTableSelect_btn.Text = "浏览";
             this.m_rWorkTableSelect_btn.UseVisualStyleBackColor = true;
+            this.m_rWorkTableSelect_btn.Click += new System.EventHandler(this.m_rWorkTableSelect_btn_Click);
             // 
             // m_rSrcFolderSelect_btn
             // 
@@ -211,6 +214,7 @@
             this.m_rFillIn_btn.TabIndex = 0;
             this.m_rFillIn_btn.Text = "填写";
             this.m_rFillIn_btn.UseVisualStyleBackColor = true;
+            this.m_rFillIn_btn.Click += new System.EventHandler(this.m_rFillIn_btn_Click);
             // 
             // m_rWorkTableSelect_dialog
             // 
@@ -257,6 +261,7 @@
         private System.Windows.Forms.Button m_rFillIn_btn;
         private System.Windows.Forms.OpenFileDialog m_rWorkTableSelect_dialog;
         private System.Windows.Forms.FolderBrowserDialog m_rSrcTableSelect_dialog;
+        private System.Windows.Forms.FolderBrowserDialog m_rResultFolder;
     }
 }
 

@@ -118,6 +118,7 @@ namespace NameAndIDGenerationTool
         {
             //打开第一个文件，
             OperatorFunc rOperator = new OperatorFunc(writeData);
+            ExcelOperator.excelWrite(szWorkFileFullPath, szResultFileFolder, rOperator,ref rInfoOutPut);
         }
         private bool writeData(ref string szName,ref string szID,bool isMale)
         {//不允许 名字ID同时为空 不允许 名字ID同时不为空的传进来
@@ -147,8 +148,48 @@ namespace NameAndIDGenerationTool
             if(m_rName2IDMap.ContainsKey(szName))
             {
                 List<string> rIDlist = m_rName2IDMap[szName];
-
-                return true;
+                if (rIDlist.Count == 1)
+                {//名字对应一个ID
+                    if(checkIsSuitSex(rIDlist[0],isMale))
+                    {
+                        szID = rIDlist[0];
+                        return true;
+                    }
+                }
+                else
+                {
+                    if(rIDlist.Count <3)
+                    {//名字对应2个ID
+                        string szFirstID = rIDlist[0];
+                        string szSecondID = rIDlist[1];
+                        if(checkIDisSameItemDifSex(szFirstID, szSecondID))
+                        {
+                            if(checkIsSuitSex(szFirstID, isMale))
+                            {
+                                szID = szFirstID;
+                                return true;
+                            }
+                            else if(checkIsSuitSex(szSecondID, isMale))
+                            {
+                                szID = szSecondID;
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            //error
+                        }
+                    }
+                    else
+                    {//名字对应2个以上ID
+                        //错误 
+                    }
+                }
+                return false;
             }
             else
             {//找不到映射
@@ -158,7 +199,67 @@ namespace NameAndIDGenerationTool
 
         private bool findSuitableName(ref string szName, ref string szID, bool isMale)
         {
-
+            if (this.m_rID2NameMap.ContainsKey(szName))
+            {
+                string szResult = m_rID2NameMap[szName];
+                if(szResult == "")
+                {
+                    return false;
+                }
+                if(checkIsSuitSex(szResult, isMale))
+                {
+                    szID = szResult;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        private bool checkIDisSameItemDifSex(string ID , string szID)
+        {
+            char[] ID_1 = ID.ToCharArray();
+            char[] ID_2 = szID.ToCharArray();
+            if(ID_1.Length == ID_2.Length)
+            {
+                string temp_1 = new string(ID_1);
+                char[] ID_2_temp = ID_2;
+                ID_2_temp[1] = ID_1[1];
+                string temp_2 = new string(ID_2_temp);
+                if (temp_2 == temp_1)
+                {
+                    if (ID_2[0] == '1' || ID_2[0] == '7' || ID_2[0] == '4')
+                    {
+                        if((ID_1[1] == 1 || ID_1[1] == 0) && (ID_2[1] == 1 || ID_2[1] == 0))
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        private bool checkIsSuitSex(string szID, bool isMale)
+        {
+            char[] ID_arr = szID.ToCharArray();
+            if (ID_arr[0] == '1' || ID_arr[0] == '7' || ID_arr[0] == '4')
+            {
+                if(isMale )
+                {
+                     return 0 == ID_arr[1];
+                }
+                else
+                {
+                    return 1 == ID_arr[1];
+                }
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 }

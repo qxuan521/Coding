@@ -156,7 +156,7 @@ namespace NameAndIDGenerationTool
                 rColNum[index] = 0;
             }
         }
-        public static void excelWrite(string szPath, string szResultPath, OperatorFunc rOperatorFunc)
+        public static void excelWrite(string szPath, string szResultPath, OperatorFunc rOperatorFunc, ref System.Windows.Forms.RichTextBox rInfoOutput)
         {
             string szExcelFilePath = szPath.Trim();
             Excel.Application excel = new Excel.Application();
@@ -175,12 +175,23 @@ namespace NameAndIDGenerationTool
                     int rowCount = 0;//有效行，索引从1开始
                     rowCount = ws.UsedRange.Rows.Count;//赋值有效行
                     bool bIsHead = false;
+                    bool bIsEnd = true;
                     for (int i = 1; i <= rowCount; i++)//
                     {//将行中数据交给 代理处理
                         string[] rUseFulContent = new string[(int)OperatorHead.HeadMax];
-                        for (int nLoopCount = 1; nLoopCount < ws.UsedRange.Rows[i].Count; ++nLoopCount)
+                        int nColCount = ws.UsedRange.Columns.Count;
+                        for (int nLoopCount = ws.UsedRange.Column; nLoopCount <= nColCount ;  ++nLoopCount)
                         {//循环一行中的每一列
-                            string szContent = ws.Cells[i, nLoopCount].Value.ToString();
+                            if(ws.Cells[i, nLoopCount].Value == null)
+                            {
+                                continue;
+                            }
+                            string szContent = ws.Cells[i, nLoopCount].Value.ToString().Trim();
+                            bIsEnd = bIsEnd && szContent == ""; 
+                            if (szContent == "")
+                            {
+                                continue;
+                            }
                             if ( checkIsHead(szContent))
                             {//代表当前行中存在表头
                                 if(!bIsHead)
@@ -195,6 +206,11 @@ namespace NameAndIDGenerationTool
                         }
                         if (!bIsHead && headValidaion(rColNum[0], rColNum[1], rColNum[2], rColNum[3]))
                         {
+                            if(bIsEnd)
+                            {
+                                clearHeadindexArr(ref rColNum);
+                                continue;
+                            }
                             for (int nUsefulIndex = 0; nUsefulIndex < rColNum.Length; nUsefulIndex += 2)
                             {
                                 int nColName = rColNum[nUsefulIndex];
@@ -208,20 +224,67 @@ namespace NameAndIDGenerationTool
                                         ws.Cells[i, nColName] = szName;
                                         ws.Cells[i, nColID] = szID;
                                     }
-
                                 }
                             }
                         }
+                        bIsHead = false;
                     }
                 }
             }
             catch (Exception ex)
             {
+                rInfoOutput.SelectionColor = Color.Red;
+                rInfoOutput.AppendText(ex.ToString() + '\n');
             }
             finally
             {
-                /*ExcelClose(szPath, excel, rWbk);*/
+                excelSaveClose(szPath, szResultPath, excel, rWbk);
             }
+        }
+
+        private static void excelSaveClose( string szPath, string szResultPath, Excel.Application rExcel, Excel.Workbook rWorkbook)
+        {
+            Process[] localByNameApp = Process.GetProcessesByName(szPath);//获取程序名的所有进程
+            if (localByNameApp.Length > 0)
+            {
+                foreach (var app in localByNameApp)
+                {
+                    //                  if (!app.HasExited)
+                    //                  {
+                    #region
+                    ////设置禁止弹出保存和覆盖的询问提示框   
+                    rExcel.DisplayAlerts = false;
+                    rExcel.AlertBeforeOverwriting = false;
+                    rExcel.Visible = false;
+                    //wb.Saved = true;
+                    ////保存工作簿   
+                    //rExcel.Application.Workbooks.Add(true).Save();
+                    //保存excel文件   
+                    ///excel.Save("E:\\c#_test\\winFormTest\\winFormTest\\hahaha.xls");
+                    //确保Excel进程关闭   
+                    rExcel.Quit();
+                    rExcel = null;
+                    #endregion
+                    app.Kill();//关闭进程  
+                    /*}*/
+                }
+            }
+            if (rWorkbook != null)
+            {
+                rExcel.DisplayAlerts = false;
+                rExcel.AlertBeforeOverwriting = false;
+                rExcel.Visible = false;
+                //rExcel.Application.Workbooks.Add(true).Save();
+                //保存结果
+                rWorkbook.SaveCopyAs(szResultPath);
+                ///*, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Excel.XlSaveAsAccessMode.xlNoChange, Type.Missing, Type.Missing, Type.Missing*/);
+                //wb.Save();
+                rWorkbook.Close(false, szPath, szPath);
+
+            }
+            rExcel.Quit();
+            // 安全回收进程
+            System.GC.GetGeneration(rExcel);
         }
     }
 }
