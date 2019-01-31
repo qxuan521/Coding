@@ -217,8 +217,28 @@ namespace NameAndIDGenerationTool
                                 int nColID = rColNum[nUsefulIndex + 1];
                                 if (0 != nColID && 0 != nColName)
                                 {
-                                    string szName = ws.Cells[i, nColName].Value.ToString();
-                                    string szID = ws.Cells[i, nColID].Value.ToString();
+                                    string szName;
+                                    string szID;
+                                    if (ws.Cells[i, nColName].Value == null)
+                                    {
+                                        szName = "";
+                                    }
+                                    else
+                                    {
+                                        szName = ws.Cells[i, nColName].Value.ToString().Trim();
+                                    }
+                                    if(ws.Cells[i, nColID].Value == null)
+                                    {
+                                        szID = "";
+                                    }
+                                    else
+                                    {
+                                        szID = ws.Cells[i, nColID].Value.ToString().Trim();
+                                    }
+                                    if((szID == "" && szName == "") || (szID != "" && szName != ""))
+                                    {//都不是空，或者都是空都不需要填写
+                                        break;
+                                    }
                                     if (rOperatorFunc(ref szName, ref szID, nUsefulIndex > 0 ? false : true))
                                     {
                                         ws.Cells[i, nColName] = szName;

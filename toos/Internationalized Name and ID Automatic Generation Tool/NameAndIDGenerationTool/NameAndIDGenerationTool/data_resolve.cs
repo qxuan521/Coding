@@ -225,19 +225,12 @@ namespace NameAndIDGenerationTool
         {
             char[] ID_1 = ID.ToCharArray();
             char[] ID_2 = szID.ToCharArray();
-            if(ID_1.Length == ID_2.Length)
+            if (ID_1[0] == ID_2[0])
             {
-                string temp_1 = new string(ID_1);
-                char[] ID_2_temp = ID_2;
-                ID_2_temp[1] = ID_1[1];
-                string temp_2 = new string(ID_2_temp);
-                if (temp_2 == temp_1)
+                if (ID_2[0] == '1' || ID_2[0] == '7' || ID_2[0] == '4')
                 {
-                    if (ID_2[0] == '1' || ID_2[0] == '7' || ID_2[0] == '4')
-                    {
-                        if((ID_1[1] == 1 || ID_1[1] == 0) && (ID_2[1] == 1 || ID_2[1] == 0))
+                    if ((ID_1[1] == '1' && ID_2[1] == '0') || (ID_2[1] == '1' && ID_1[1] == '0'))
                         return true;
-                    }
                 }
             }
             return false;
@@ -249,11 +242,11 @@ namespace NameAndIDGenerationTool
             {
                 if(isMale )
                 {
-                     return 0 == ID_arr[1];
+                     return '0' == ID_arr[1];
                 }
                 else
                 {
-                    return 1 == ID_arr[1];
+                    return '1' == ID_arr[1];
                 }
             }
             else
