@@ -21,11 +21,16 @@ namespace NameAndIDGenerationTool
         private void Form1_Load(object sender, EventArgs e)
         {
             string szSrcPath = m_rDataResolve.getSrcPath();
-            if (szSrcPath != "")
+            string szResultPaht = m_rDataResolve.getResultPath();
+            if (szSrcPath != "" && szSrcPath != null)
             {
                 this.m_rSrcTextBlock.Text = szSrcPath;
                 this.m_rDataResolve.initialize(szSrcPath, ref this.richTextBox1);
                 this.m_rDataResolve.testFunc(ref this.richTextBox1);
+            }
+            if (szResultPaht != "" && szResultPaht != null)
+            {
+                this.m_rOutPutTextBlock.Text = szResultPaht;
             }
         }
 

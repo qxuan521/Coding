@@ -15,17 +15,36 @@ namespace NameAndIDGenerationTool
         Dictionary<string, string> m_rID2NameMap;
         Dictionary<string, List<string>> m_rName2IDMap;
         private string m_szSrcPath;
-
+        private string m_szResultFolderPath;
         public DataResolve()
         {
             m_rID2NameMap = new Dictionary<string, string>();
             m_rName2IDMap = new Dictionary<string, List<string>>();
-            m_szSrcPath = PersistenceFileStream.dataRead(DataInfileType.Path);
+            string [] rPathArr = PersistenceFileStream.dataRead();
+            if(rPathArr.Length == 2)
+            {
+                m_szSrcPath = rPathArr[0];
+                m_szSrcPath = rPathArr[1];
+            }
         }
-
+        ~DataResolve()
+        {
+            string[] PathArr = new string[2];
+            PathArr[0] = m_szSrcPath;
+            PathArr[1] = m_szResultFolderPath;
+            PersistenceResolve.DataInfileType[] rTypeArr = new PersistenceResolve.DataInfileType[2];
+            rTypeArr[0] = PersistenceResolve.DataInfileType.SrcPath;
+            rTypeArr[1] = PersistenceResolve.DataInfileType.ResultPath;
+            PersistenceFileStream.dataWrite(rTypeArr, PathArr);
+        }
         public string getSrcPath()
         {
             return m_szSrcPath;
+        }
+
+        public string getResultPath()
+        {
+            return m_szResultFolderPath;
         }
 
         public bool checkSrcTable(string szSrcFolder, ref System.Windows.Forms.RichTextBox rInfoOutPut)
@@ -52,7 +71,6 @@ namespace NameAndIDGenerationTool
             if (m_szSrcPath != szSrcFolder)
             {
                 m_szSrcPath = szSrcFolder;
-                PersistenceFileStream.dataWrite(DataInfileType.Path, m_szSrcPath.Length, m_szSrcPath);
             }
             var rSaveFunc = new SaveData(SaveFuncDef);
             for (int index = 0; index < this.m_rFileNameArr.Length; ++index)
@@ -66,6 +84,10 @@ namespace NameAndIDGenerationTool
         public void completionData(string szWorkFileFullPath, string szResultFileFolder, ref System.Windows.Forms.RichTextBox rInfoOutPut)
         {
             //打开第一个文件，
+            if(m_szResultFolderPath != szResultFileFolder)
+            {
+                m_szResultFolderPath = szResultFileFolder;
+            }
             OperatorFunc rOperator = new OperatorFunc(writeData);
             ExcelOperator.excelWrite(szWorkFileFullPath, szResultFileFolder, rOperator,ref rInfoOutPut);
         }

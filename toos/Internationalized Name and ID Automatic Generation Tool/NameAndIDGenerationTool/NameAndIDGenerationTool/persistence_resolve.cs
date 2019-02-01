@@ -9,22 +9,28 @@ namespace PersistenceResolve
 {
     enum DataInfileType
     {
-        Path
+        SrcPath,
+        ResultPath
     };
     static class PersistenceFileStream
     {
         private static string szPersiztenceFilePath =  "PersistenceData.data";
-        public static void dataWrite(DataInfileType eType,int nSize,string szData)
+        public static void dataWrite(DataInfileType[] rTypeArr, string[] szData)
         {
             FileStream rFile = new FileStream(szPersiztenceFilePath, FileMode.OpenOrCreate, FileAccess.Write);
-            byte[] rBuffer = BitConverter.GetBytes((int)eType);
-            rFile.Write(rBuffer,0,4);
-            rBuffer = System.Text.Encoding.UTF8.GetBytes(szData);
-
-            byte[] rSizeBuffer = BitConverter.GetBytes(rBuffer.Length);
-            rFile.Write(rSizeBuffer, 0, 4);
-
-            rFile.Write(rBuffer,0, rBuffer.Length);
+            for (int index = 0; index < szData.Length;++index)
+            {
+                if(szData[index] == null)
+                {
+                    continue;
+                }
+                byte[] rTypebuffer = BitConverter.GetBytes((int)rTypeArr[index]);
+                byte[] rBuffer = System.Text.Encoding.UTF8.GetBytes(szData[index]);
+                byte[] rSizeBuffer = BitConverter.GetBytes(rBuffer.Length);
+                rFile.Write(rTypebuffer, 0, 4);
+                rFile.Write(rSizeBuffer, 0, 4);
+                rFile.Write(rBuffer, 0, rBuffer.Length);
+            }
             rFile.Close();
             //             FileStream rFile = new FileStream(szPersiztenceFilePath, FileMode.Append, FileAccess.Write);
             //             StreamWriter rWriter = new StreamWriter(rFile, Encoding.UTF8);
@@ -46,30 +52,48 @@ namespace PersistenceResolve
             //                 rFile.Write(rBuffer,0,4);
             //             }
         }
-        public static string dataRead(DataInfileType eType)
+        public static string[] dataRead()
         {
+            string[] rResultArr = new string[2];
             if (!NameAndIDGenerationTool.ExcelOperator.checkSrcExist(szPersiztenceFilePath))
             {
-                return "";
+                return rResultArr;
             }
             FileStream rFile = new FileStream(szPersiztenceFilePath, FileMode.Open, FileAccess.Read);
             try
             {
-                byte[] rBuffer = new byte[4];
-                rFile.Read(rBuffer, 0, 4);
-                DataInfileType nType = (DataInfileType)BitConverter.ToInt32(rBuffer, 0);
-                rFile.Read(rBuffer, 0, 4);
-                int nSize = BitConverter.ToInt32(rBuffer, 0);
-                rBuffer = new byte[nSize];
-                rFile.Read(rBuffer, 0, nSize);
-                string szResult = Encoding.UTF8.GetString(rBuffer);
-                rFile.Close();
-                return szResult;
+                //标准文件路径
+                int index = 0;
+                while(true)
+                {
+                    byte[] rBuffer = new byte[4];
+                    rFile.Read(rBuffer, 0, 4);
+                    DataInfileType nType = (DataInfileType)BitConverter.ToInt32(rBuffer, 0);
+                    rFile.Read(rBuffer, 0, 4);
+                    int nSize = BitConverter.ToInt32(rBuffer, 0);
+                    rBuffer = new byte[nSize];
+                    rFile.Read(rBuffer, 0, nSize);
+                    string szResult = Encoding.UTF8.GetString(rBuffer);
+                    if(nType == DataInfileType.SrcPath)
+                    {
+                        rResultArr[0] = szResult;
+                    }
+                    else if(nType == DataInfileType.ResultPath)
+                    {
+                        rResultArr[1] = szResult;
+
+                    }
+                    else
+                    {
+                        rFile.Close();
+                        return rResultArr;
+                    }
+                }
             }
             catch(Exception ex)
             {
                 rFile.Close();
-                return "";
+                return rResultArr;
             }
         }
     }
