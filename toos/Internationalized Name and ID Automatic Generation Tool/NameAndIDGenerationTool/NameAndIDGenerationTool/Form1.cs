@@ -60,5 +60,10 @@ namespace NameAndIDGenerationTool
                 this.m_rOutPutTextBlock.Text = this.m_rResultFolder.SelectedPath;
             }
         }
+
+        private void m_rCheck_btn_Click(object sender, EventArgs e)
+        {
+            this.m_rDataResolve.checkData(m_rWorkTableTextBlock.Text, ref this.richTextBox1);
+        }
     }
 }

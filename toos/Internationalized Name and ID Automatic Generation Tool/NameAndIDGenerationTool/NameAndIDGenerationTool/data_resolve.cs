@@ -61,58 +61,7 @@ namespace NameAndIDGenerationTool
                 ExcelOperator.csvReader(szAbsPath, rSaveFunc, ref rInfoOutPut);
             }
         }
-        // function SaveFuncDef:
-        //当标准表数据中存在重复的ID的时候 返回false 以为源数据有问题（暂定）
-        private bool SaveFuncDef(string szIDWithPre ,string szName)
-        {
-            string szResultID = "";
-            //不符合前缀
-            if (!resolvePreInRule(szIDWithPre,ref szResultID))
-            {
-                return true;
-            }
-            //这个函数极其之慢 慢的不行
-//             if(string.IsNullOrWhiteSpace(szResultID))
-//             {
-//                 return true;
-//             }
-             //创建映射
-             //ID2NAMEMAP
-            if(this.m_rID2NameMap.ContainsKey(szResultID))
-            {
-                return false;
-            }
-            else
-            {
-                m_rID2NameMap.Add(szResultID, szName);
-            }
-            //NAME2IDMAP
-            //讲道理上边验过重这边不应该有重复的ID
-            if (this.m_rName2IDMap.ContainsKey(szName))
-            {
-                this.m_rName2IDMap[szName].Add(szResultID);
-            }
-            else
-            {
-                List<string> rIDlist = new List<string>();
-                rIDlist.Add(szResultID);
-                this.m_rName2IDMap.Add(szName, rIDlist);
-            }
-            return true; 
-        }
-
-        private bool resolvePreInRule(string szIDWithPre,ref string szResultID)
-        {
-            for (int index = 0; index < m_rIDPreArr.Length; ++index)
-            {
-                if(szIDWithPre.StartsWith(m_rIDPreArr[index]))
-                {
-                    szResultID = szIDWithPre.Substring(m_rIDPreArr[index].Length , szIDWithPre.Length - m_rIDPreArr[index].Length);
-                    return true;
-                }
-            }
-            return false;
-        }
+ 
 
         public void completionData(string szWorkFileFullPath, string szResultFileFolder, ref System.Windows.Forms.RichTextBox rInfoOutPut)
         {
@@ -120,16 +69,11 @@ namespace NameAndIDGenerationTool
             OperatorFunc rOperator = new OperatorFunc(writeData);
             ExcelOperator.excelWrite(szWorkFileFullPath, szResultFileFolder, rOperator,ref rInfoOutPut);
         }
-        private bool writeData(ref string szName,ref string szID,bool isMale)
-        {//不允许 名字ID同时为空 不允许 名字ID同时不为空的传进来
-            if(szName == "")
-            {
-                return findSuitableName(ref szName, ref szID, isMale);
-            }
-            else
-            {
-                return findSuitableID(ref szName, ref szID, isMale);
-            }
+       
+        public void checkData(string szWorkFileFullPath, ref System.Windows.Forms.RichTextBox rInfoOutPut)
+        {
+            OperatorCheckFunc rCheckFunc = new OperatorCheckFunc(checkFunc);
+            ExcelOperator.excelReadNCheck(szWorkFileFullPath, rCheckFunc,ref rInfoOutPut);
         }
         public void testFunc(ref System.Windows.Forms.RichTextBox rOutput)
         {
@@ -143,6 +87,7 @@ namespace NameAndIDGenerationTool
 //                 rOutput.AppendText(temp.Value + "\n");
 //             }
         }
+
         private bool findSuitableID(ref string szName, ref string szID,bool isMale)
         {
             if(m_rName2IDMap.ContainsKey(szName))
@@ -196,6 +141,17 @@ namespace NameAndIDGenerationTool
                 return false;
             }
         }
+        private bool writeData(ref string szName, ref string szID, bool isMale)
+        {//不允许 名字ID同时为空 不允许 名字ID同时不为空的传进来
+            if (szName == "")
+            {
+                return findSuitableName(ref szName, ref szID, isMale);
+            }
+            else
+            {
+                return findSuitableID(ref szName, ref szID, isMale);
+            }
+        }
 
         private bool findSuitableName(ref string szName, ref string szID, bool isMale)
         {
@@ -221,6 +177,7 @@ namespace NameAndIDGenerationTool
                 return false;
             }
         }
+
         private bool checkIDisSameItemDifSex(string ID , string szID)
         {
             char[] ID_1 = ID.ToCharArray();
@@ -235,6 +192,7 @@ namespace NameAndIDGenerationTool
             }
             return false;
         }
+
         private bool checkIsSuitSex(string szID, bool isMale)
         {
             char[] ID_arr = szID.ToCharArray();
@@ -248,6 +206,91 @@ namespace NameAndIDGenerationTool
                 {
                     return '1' == ID_arr[1];
                 }
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        // function SaveFuncDef:
+        //当标准表数据中存在重复的ID的时候 返回false 以为源数据有问题（暂定）
+        private bool SaveFuncDef(string szIDWithPre, string szName)
+        {
+            string szResultID = "";
+            //不符合前缀
+            if (!resolvePreInRule(szIDWithPre, ref szResultID))
+            {
+                return true;
+            }
+            //这个函数极其之慢 慢的不行
+            //             if(string.IsNullOrWhiteSpace(szResultID))
+            //             {
+            //                 return true;
+            //             }
+            //创建映射
+            //ID2NAMEMAP
+            if (this.m_rID2NameMap.ContainsKey(szResultID))
+            {
+                return false;
+            }
+            else
+            {
+                m_rID2NameMap.Add(szResultID, szName);
+            }
+            //NAME2IDMAP
+            //讲道理上边验过重这边不应该有重复的ID
+            if (this.m_rName2IDMap.ContainsKey(szName))
+            {
+                this.m_rName2IDMap[szName].Add(szResultID);
+            }
+            else
+            {
+                List<string> rIDlist = new List<string>();
+                rIDlist.Add(szResultID);
+                this.m_rName2IDMap.Add(szName, rIDlist);
+            }
+            return true;
+        }
+
+        private bool resolvePreInRule(string szIDWithPre, ref string szResultID)
+        {
+            for (int index = 0; index < m_rIDPreArr.Length; ++index)
+            {
+                if (szIDWithPre.StartsWith(m_rIDPreArr[index]))
+                {
+                    szResultID = szIDWithPre.Substring(m_rIDPreArr[index].Length, szIDWithPre.Length - m_rIDPreArr[index].Length);
+                    return true;
+                }
+            }
+            return false;
+        }
+        private bool checkFunc(ref string szID, ref string szName, bool bIsMale, string address, ref System.Windows.Forms.RichTextBox rInfoOutput)
+        {
+            if(szID == "" || szName == "")
+            {//漏填
+                rInfoOutput.SelectionColor = Color.Red;
+                rInfoOutput.AppendText(address + "\n");
+                return false;
+            }
+            else if(!this.m_rID2NameMap.ContainsKey(szID))
+            {//ID不存在
+                rInfoOutput.SelectionColor = Color.Red;
+                rInfoOutput.AppendText(address + "\n");
+                return false;
+            }
+            else if(this.m_rID2NameMap[szID] != szName)
+            {//ID 名字 不对应
+                rInfoOutput.SelectionColor = Color.Red;
+                rInfoOutput.AppendText(address + "\n");
+                return false;
+
+            }
+            else if(!checkIsSuitSex( szID,bIsMale))
+            {//性别不对
+                rInfoOutput.SelectionColor = Color.Red;
+                rInfoOutput.AppendText(address + "\n");
+                return false;
             }
             else
             {

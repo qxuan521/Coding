@@ -205,6 +205,7 @@
             this.m_rCheck_btn.TabIndex = 1;
             this.m_rCheck_btn.Text = "检查";
             this.m_rCheck_btn.UseVisualStyleBackColor = true;
+            this.m_rCheck_btn.Click += new System.EventHandler(this.m_rCheck_btn_Click);
             // 
             // m_rFillIn_btn
             // 
