@@ -127,10 +127,13 @@
             // 
             // m_rWorkTableTextBlock
             // 
+            this.m_rWorkTableTextBlock.AllowDrop = true;
             this.m_rWorkTableTextBlock.Location = new System.Drawing.Point(115, 58);
             this.m_rWorkTableTextBlock.Name = "m_rWorkTableTextBlock";
             this.m_rWorkTableTextBlock.Size = new System.Drawing.Size(582, 21);
             this.m_rWorkTableTextBlock.TabIndex = 4;
+            this.m_rWorkTableTextBlock.DragDrop += new System.Windows.Forms.DragEventHandler(this.m_rWorkTableTextBlock_DragDrop);
+            this.m_rWorkTableTextBlock.DragEnter += new System.Windows.Forms.DragEventHandler(this.m_rWorkTableTextBlock_DragEnter);
             // 
             // m_rSrcTextBlock
             // 

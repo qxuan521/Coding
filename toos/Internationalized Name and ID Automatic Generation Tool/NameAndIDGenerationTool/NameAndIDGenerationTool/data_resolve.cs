@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using PersistenceResolve;
-
+using Global;
 namespace NameAndIDGenerationTool
 {
     class DataResolve
@@ -23,8 +23,14 @@ namespace NameAndIDGenerationTool
             string [] rPathArr = PersistenceFileStream.dataRead();
             if(rPathArr.Length == 2)
             {
-                m_szSrcPath = rPathArr[0];
-                m_szSrcPath = rPathArr[1];
+                if(null != rPathArr[0])
+                {
+                    m_szSrcPath = rPathArr[0];
+                }
+                if (null != rPathArr[0])
+                {
+                    m_szResultFolderPath = rPathArr[1];
+                }
             }
         }
         ~DataResolve()
@@ -89,7 +95,8 @@ namespace NameAndIDGenerationTool
                 m_szResultFolderPath = szResultFileFolder;
             }
             OperatorFunc rOperator = new OperatorFunc(writeData);
-            ExcelOperator.excelWrite(szWorkFileFullPath, szResultFileFolder, rOperator,ref rInfoOutPut);
+            string szName = Global.Tools.getNameFromFullPath(szWorkFileFullPath);
+            ExcelOperator.excelWrite(szWorkFileFullPath, szResultFileFolder + szName, rOperator,ref rInfoOutPut);
         }
        
         public void checkData(string szWorkFileFullPath, ref System.Windows.Forms.RichTextBox rInfoOutPut)

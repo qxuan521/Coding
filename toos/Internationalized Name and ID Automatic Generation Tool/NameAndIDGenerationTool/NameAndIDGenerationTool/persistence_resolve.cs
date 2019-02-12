@@ -9,6 +9,7 @@ namespace PersistenceResolve
 {
     enum DataInfileType
     {
+        NullType,
         SrcPath,
         ResultPath
     };
@@ -32,25 +33,6 @@ namespace PersistenceResolve
                 rFile.Write(rBuffer, 0, rBuffer.Length);
             }
             rFile.Close();
-            //             FileStream rFile = new FileStream(szPersiztenceFilePath, FileMode.Append, FileAccess.Write);
-            //             StreamWriter rWriter = new StreamWriter(rFile, Encoding.UTF8);
-            //             int nFileCount = 0;
-            // 
-            //             if (0 == rFile.Seek(0,SeekOrigin.Begin))
-            //             {
-            //                 nFileCount = 0;
-            //             }
-            //             else
-            //             {
-            //                 byte[] rBuffer = new byte[4];
-            //                 rFile.Read(rBuffer, 0, 4);
-            //                 nFileCount = BitConverter.ToInt32(rBuffer,0);
-            //             }
-            //             {//填写有效数据个数
-            //                 ++nFileCount;
-            //                 byte[] rBuffer = BitConverter.GetBytes(nFileCount);
-            //                 rFile.Write(rBuffer,0,4);
-            //             }
         }
         public static string[] dataRead()
         {
@@ -74,20 +56,24 @@ namespace PersistenceResolve
                     rBuffer = new byte[nSize];
                     rFile.Read(rBuffer, 0, nSize);
                     string szResult = Encoding.UTF8.GetString(rBuffer);
-                    if(nType == DataInfileType.SrcPath)
+                    if(index < 2)
                     {
-                        rResultArr[0] = szResult;
-                    }
-                    else if(nType == DataInfileType.ResultPath)
-                    {
-                        rResultArr[1] = szResult;
+                        if (nType == DataInfileType.SrcPath)
+                        {
+                            rResultArr[0] = szResult;
+                        }
+                        else if (nType == DataInfileType.ResultPath)
+                        {
+                            rResultArr[1] = szResult;
 
+                        }
                     }
                     else
                     {
                         rFile.Close();
                         return rResultArr;
                     }
+                    ++index;
                 }
             }
             catch(Exception ex)

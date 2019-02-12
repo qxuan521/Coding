@@ -47,7 +47,7 @@ namespace NameAndIDGenerationTool
 
         private void m_rFillIn_btn_Click(object sender, EventArgs e)
         {
-            this.m_rDataResolve.completionData(m_rWorkTableTextBlock.Text, this.m_rOutPutTextBlock.Text + @"\aaaa.xls" , ref this.richTextBox1);
+            this.m_rDataResolve.completionData(m_rWorkTableTextBlock.Text, this.m_rOutPutTextBlock.Text, ref this.richTextBox1);
         }
 
         private void m_rWorkTableSelect_btn_Click(object sender, EventArgs e)
@@ -69,6 +69,24 @@ namespace NameAndIDGenerationTool
         private void m_rCheck_btn_Click(object sender, EventArgs e)
         {
             this.m_rDataResolve.checkData(m_rWorkTableTextBlock.Text, ref this.richTextBox1);
+        }
+
+        private void m_rWorkTableTextBlock_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Link;
+            } 
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        private void m_rWorkTableTextBlock_DragDrop(object sender, DragEventArgs e)
+        {
+            string path = ((System.Array)e.Data.GetData(DataFormats.FileDrop)).GetValue(0).ToString();
+            m_rWorkTableTextBlock.Text = path;
         }
     }
 }
