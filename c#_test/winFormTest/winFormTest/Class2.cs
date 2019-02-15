@@ -22,6 +22,39 @@ namespace winFormTest
             readChild(xml,ref rOutput, 0);
 
         }
+        public static void outPutNewFile(string xmlName)
+        {
+            XmlDocument xml = new XmlDocument();
+            //xml.Load(xmlName);
+            string szCOntent = FormatXml(xmlName);
+            StreamWriter rFile = new StreamWriter("szCOntent.xml");
+            rFile.Write(szCOntent);
+            rFile.Close();
+            //xml.Save(XmlWriter.Create("testXml.xml"));
+
+        }
+        private static string FormatXml(string sUnformattedXml)
+        {
+            XmlDocument xd = new XmlDocument();
+            xd.Load(sUnformattedXml);
+            StringBuilder sb = new StringBuilder();
+            StringWriter sw = new StringWriter(sb);
+            XmlTextWriter xtw = null;
+            try
+            {
+                xtw = new XmlTextWriter(sw);
+                //xtw.Formatting = Formatting.Indented;
+                xtw.Indentation = 1;
+                xtw.IndentChar = '\t';
+                xd.WriteTo(xtw);
+            }
+            finally
+            {
+                if (xtw != null)
+                    xtw.Close();
+            }
+            return sb.ToString();
+        }
         public static void readXmlToGrid(string xmlName,ref Dictionary<string, exchangeType> rDic)
         {
             //通过代码创建XML文档

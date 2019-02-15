@@ -20,5 +20,10 @@ namespace winFormTest
         {
             xmlOperator.CreateXML("clothset_handbook_config.xml", ref this.textBox1);
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            xmlOperator.outPutNewFile("clothset_handbook_config.xml");
+        }
     }
 }
