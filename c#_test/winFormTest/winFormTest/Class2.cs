@@ -17,20 +17,51 @@ namespace winFormTest
             //2、创建一个 xml 文档
             XmlDocument xml = new XmlDocument();
             //3、创建一行声明信息，并添加到 xml 文档顶部
+            StreamReader rRead = new StreamReader(xmlName, Encoding.GetEncoding("GB2312"));
+            string szContent = rRead.ReadToEnd();
+            
+            //rOutput.AppendText(szContent);
             xml.Load(xmlName);
-
-            readChild(xml,ref rOutput, 0);
-
+            //xml.LoadXml(szContent);
+            //readChild(xml,ref rOutput, 0);
+            StringBuilder rStringBuilder = new StringBuilder();
+            writeHead(xml, ref rStringBuilder);
+            StreamWriter rFile = new StreamWriter("szCOntent.xml", false, Encoding.GetEncoding("GB2312"));
+            string szResult = rStringBuilder.ToString();
+            rFile.Write(rStringBuilder.ToString());
+            rFile.Close();
+        }
+        private static void writeHead(XmlNode xmlDoc, ref StringBuilder rOutput)
+        {
+            var x = xmlDoc.ChildNodes;
+            if (x.Count <= 0)
+            {
+                return;
+            }
+            for (int i = 0; i < x.Count; i++)
+            {
+                if(x[i].Name == "SeriesClothsetDynamic")
+                {
+                    rOutput.Append("<SeriesClothsetDynamic>\r\n");
+                    writeChild(x[i], ref rOutput,1,true);
+                    rOutput.Append("</SeriesClothsetDynamic>");
+                }
+                else
+                {
+                    rOutput.Append(x[i].OuterXml);
+                    rOutput.AppendLine("");
+                }
+            }
         }
         public static void outPutNewFile(string xmlName)
         {
             XmlDocument xml = new XmlDocument();
-            //xml.Load(xmlName);
+           // xml.Load(xmlName);
             string szCOntent = FormatXml(xmlName);
-            StreamWriter rFile = new StreamWriter("szCOntent.xml");
+            StreamWriter rFile = new StreamWriter("szCOntent.xml", false,Encoding.GetEncoding("GB2312"));
             rFile.Write(szCOntent);
             rFile.Close();
-            //xml.Save(XmlWriter.Create("testXml.xml"));
+            //xml.Save("szCOntent.xml");
 
         }
         private static string FormatXml(string sUnformattedXml)
@@ -40,12 +71,14 @@ namespace winFormTest
             StringBuilder sb = new StringBuilder();
             StringWriter sw = new StringWriter(sb);
             XmlTextWriter xtw = null;
+            //string szResult = 
             try
             {
                 xtw = new XmlTextWriter(sw);
-                //xtw.Formatting = Formatting.Indented;
+                xtw.Formatting = Formatting.Indented;
                 xtw.Indentation = 1;
                 xtw.IndentChar = '\t';
+                //xtw = new XmlTextWriter("szCOntent.xml", Encoding.GetEncoding("GB2312"));
                 xd.WriteTo(xtw);
             }
             finally
@@ -55,6 +88,29 @@ namespace winFormTest
             }
             return sb.ToString();
         }
+        //private static string FormatXml(string sUnformattedXml)
+        //{
+        //    XmlDocument xd = new XmlDocument();
+        //    xd.Load(sUnformattedXml);
+        //    StringBuilder sb = new StringBuilder();
+        //    StringWriter sw = new StringWriter(sb);
+        //    XmlTextWriter xtw = null;
+        //    try
+        //    {
+        //        xtw = new XmlTextWriter(sw);
+        //        xtw.Formatting = Formatting.Indented;
+        //        xtw.Indentation = 1;
+        //        xtw.IndentChar = '\t';
+        //        //xtw = new XmlTextWriter("szCOntent.xml", Encoding.GetEncoding("GB2312"));
+        //        xd.WriteTo(xtw);
+        //    }
+        //    finally
+        //    {
+        //        if (xtw != null)
+        //            xtw.Close();
+        //    }
+        //    return sb.ToString();
+        //}
         public static void readXmlToGrid(string xmlName,ref Dictionary<string, exchangeType> rDic)
         {
             //通过代码创建XML文档
@@ -138,7 +194,15 @@ namespace winFormTest
                 {
                     rOutput.AppendText(" "); 
                 }
-                if("#comment" == x[i].Name)
+                if(x[i].Value != null)
+                {
+                    rOutput.AppendText("node value: " + x[i].Value);
+                }
+                else
+                {
+                    rOutput.AppendText("node value: null");
+                }
+                if ("#comment" == x[i].Name)
                 {
                     rOutput.AppendText("type:" + x[i].Name + " ");
                     rOutput.AppendText("value: " + x[i].Value);
@@ -160,6 +224,93 @@ namespace winFormTest
                 readChild(x[i],ref rOutput, level + 1);
             }
             return true;
+        }
+        private static string getNodePre(XmlNode xmlNode)
+        {
+            StringBuilder rBuilder = new StringBuilder();
+            rBuilder.Append("<");
+            rBuilder.Append(xmlNode.Name);
+            if(xmlNode.Attributes != null)
+            {
+                for(int index = 0; index < xmlNode.Attributes.Count;++index)
+                {
+                    rBuilder.Append(" " + xmlNode.Attributes[index].Name);
+                    rBuilder.Append("=\"" + xmlNode.Attributes[index].Value + "\"");
+                }
+            }
+            rBuilder.Append(">");
+            return rBuilder.ToString();
+        }
+        private static string getNodeEnd(XmlNode xmlNode)
+        {
+            StringBuilder rBuilder = new StringBuilder();
+            rBuilder.Append("</");
+            rBuilder.Append(xmlNode.Name);
+            rBuilder.Append(">");
+            return rBuilder.ToString();
+        }
+        private static void writeChild(XmlNode xmlDoc, ref StringBuilder rOutput, int level,bool isFirstSpace)
+        {
+            var x = xmlDoc.ChildNodes;
+            if (x.Count <= 0)
+            {
+                return;
+            }
+           
+            for (int i = 0; i < x.Count; i++)
+            {
+                if(x[i].HasChildNodes)
+                {//has child
+                    if(!(i == 0 && !isFirstSpace))
+                    {
+                        AppendSpace(ref rOutput, level);
+                    }
+                    if(specialNode(x[i]))
+                    {
+                        rOutput.Append(getNodePre(x[i]));
+                        writeChild(x[i], ref rOutput, level + 1, false);
+                    }
+                    else
+                    {
+                        rOutput.Append(getNodePre(x[i]) + "\r\n");
+                        writeChild(x[i], ref rOutput, level + 1, true);
+                    }
+                    AppendSpace(ref rOutput, level);
+                    rOutput.Append(getNodeEnd(x[i]) + "\r\n");
+                }
+                else
+                {
+                    if (!(i == 0 && !isFirstSpace))
+                    {
+                        AppendSpace(ref rOutput, level);
+                    }
+                    rOutput.Append(x[i].OuterXml);
+                    if ("text" == x[i].Name)
+                    {
+                        if (i + 1 < x.Count &&
+                            "#comment" == x[i + 1].Name)
+                        {
+                            rOutput.Append(x[i + 1].OuterXml);
+                            rOutput.AppendLine("");
+                            //rOutput.Append("\r\n");
+                            ++i;
+                            continue;
+                        }
+                    }
+                    rOutput.AppendLine("");
+                }
+            }
+        }
+        private static bool specialNode(XmlNode rNodex)
+        {
+            return ("text" == rNodex.Name || "ExtraRewards" == rNodex.Name);
+        }
+        private static void AppendSpace(ref StringBuilder rBuilder, int level)
+        {
+            for (int j = 0; j < level; ++j)
+            {
+                rBuilder.Append("  ");
+            }
         }
         public static void appendXml(string xmlName)
         {
