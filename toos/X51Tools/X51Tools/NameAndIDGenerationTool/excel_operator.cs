@@ -29,11 +29,12 @@ namespace X51Tools.NameAndIDGenerationTool
         {
             rHeadArr = headarr;
         }
+        
         public static bool checkSrcExist(string szFileName)
         {
             return File.Exists(@szFileName);
         }
-
+        //read csv table
         public static void csvReader(string szPath, SaveData rSaveFunc, ref System.Windows.Forms.RichTextBox rInfoOutput)
         {
             string szExcelFilePath = szPath.Trim();
@@ -54,7 +55,6 @@ namespace X51Tools.NameAndIDGenerationTool
                     }
                     else
                     {
-                        //rInfoOutput.AppendText(strReadline + '\n');
                     }
                 }
              
@@ -71,7 +71,6 @@ namespace X51Tools.NameAndIDGenerationTool
             }
             return ;
         }
-
         public static bool comReaderNSaveData(string szPath, SaveData rSaveFunc,ref System.Windows.Forms.RichTextBox rInfoOutput)
         {
             string szExcelFilePath = szPath.Trim();
@@ -111,40 +110,141 @@ namespace X51Tools.NameAndIDGenerationTool
             }
             return true;
         }
-
-        private static bool headValidaion(int nManCol,int nManID, int nWomanCol,int nWomanID)
+        public static void excelReadNCheck(string szPath, OperatorCheckFunc checkFunc, ref System.Windows.Forms.RichTextBox rInfoOutput)
         {
-            bool bMan = (nManCol != 0 && nManID != 0);
-            bool bWoman = (nWomanCol != 0 && nWomanID != 0);
-            return bMan || bWoman;
-        }
-
-        private static bool checkIsHead(string szContent)
-        {
-            for(int index = 0; index < rHeadArr.Length;++index)
-            {
-                if(szContent == rHeadArr[index])
+            string szExcelFilePath = szPath.Trim();
+            Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
+            Workbooks wb = excel.Workbooks;
+            excel.Visible = false;//设置调用引用的 Excel文件是否可见
+            excel.Application.DisplayAlerts = false;
+            //wb = excel.Workbooks.Open(ExcelFilePath);
+            Workbook rWbk = wb.Add(szExcelFilePath);
+            Sheets rWorkSheets = rWbk.Worksheets;
+            try
+            {//每个工作表都查 索引从1开始
+                int[] rColNum = new int[(int)OperatorHead.HeadMax];
+                bool isResultSucced = true;
+                for (int index = 1; index <= rWorkSheets.Count; ++index)
                 {
-                    return true;
+                    Worksheet ws = (Worksheet)rWorkSheets[index];
+                    int rowCount = 0;//有效行，索引从1开始
+                    rowCount = ws.UsedRange.Rows.Count;//赋值有效行
+                    bool bIsHead = false;
+                    bool bIsEnd = true;
+                    for (int i = 1; i <= rowCount; i++)//
+                    {//将行中数据交给 代理处理
+                        string[] rUseFulContent = new string[(int)OperatorHead.HeadMax];
+                        int nColCount = ws.UsedRange.Columns.Count;
+                        for (int nLoopCount = ws.UsedRange.Column; nLoopCount <= nColCount; ++nLoopCount)
+                        {//循环一行中的每一列
+                            if (ws.Cells[i, nLoopCount].Value == null)
+                            {
+                                if (nLoopCount == 1)
+                                {
+                                    bIsEnd = true;
+                                }
+                                else
+                                {
+                                    bIsEnd = bIsEnd && true;
+                                }
+                                continue;
+                            }
+                            else
+                            {
+                                if (nLoopCount == 1)
+                                {
+                                    bIsEnd = false;
+                                }
+                                else
+                                {
+                                    bIsEnd = bIsEnd && false;
+                                }
+                            }
+                            string szContent = ws.Cells[i, nLoopCount].Value.ToString().Trim();
+                            bIsEnd = bIsEnd && szContent == "";
+                            if (szContent == "")
+                            {
+                                continue;
+                            }
+                            if (checkIsHead(szContent))
+                            {//代表当前行中存在表头
+                                if (!bIsHead)
+                                {
+                                    bIsHead = true;
+                                    clearHeadindexArr(ref rColNum);
+                                }
+                                //记录行列标记
+                                setHeadindex(szContent, nLoopCount, ref rColNum);
+                            }
+                            string szAddress = ws.Cells[i, nLoopCount].Address;
+                        }
+                        if (bIsEnd)
+                        {
+                            clearHeadindexArr(ref rColNum);
+                            continue;
+                        }
+                        if (!bIsHead && headValidaion(rColNum[0], rColNum[1], rColNum[2], rColNum[3]))
+                        {
+                            for (int nUsefulIndex = 0; nUsefulIndex < rColNum.Length; nUsefulIndex += 2)
+                            {
+                                int nColName = rColNum[nUsefulIndex];
+                                int nColID = rColNum[nUsefulIndex + 1];
+                                if (0 != nColID && 0 != nColName)
+                                {
+                                    string szName;
+                                    string szID;
+                                    if (ws.Cells[i, nColName].Value == null)
+                                    {
+                                        szName = "";
+                                    }
+                                    else
+                                    {
+                                        szName = ws.Cells[i, nColName].Value.ToString().Trim();
+                                    }
+                                    if (ws.Cells[i, nColID].Value == null)
+                                    {
+                                        szID = "";
+                                    }
+                                    else
+                                    {
+                                        szID = ws.Cells[i, nColID].Value.ToString().Trim();
+                                    }
+                                    if ((szID == "" && szName == ""))
+                                    {//都是空都不需要填写
+                                        break;
+                                    }
+                                    string szAddress = getAddressStr(ws.Cells[i, nColName].Address);
+                                    if (checkFunc(ref szID, ref szName, nUsefulIndex > 0 ? false : true, szAddress, ref rInfoOutput))
+                                    {
+                                        ws.Cells[i, nColName].Interior.ColorIndex = 0;
+                                        ws.Cells[i, nColID].Interior.ColorIndex = 0;
+                                    }
+                                    else
+                                    {//标黄
+                                        ws.Cells[i, nColName].Interior.Color = Color.FromArgb(255, 255, 0);
+                                        ws.Cells[i, nColID].Interior.Color = Color.FromArgb(255, 255, 0);
+                                        isResultSucced = false;
+                                    }
+                                }
+                            }
+                        }
+                        bIsHead = false;
+                    }
+                }
+                if (isResultSucced)
+                {
+                    rInfoOutput.SelectionColor = Color.Green;
+                    rInfoOutput.AppendText("检查通过 ！！！\n");
                 }
             }
-            return false;
-        }
-        private static void setHeadindex(string szContent,int col, ref int[] nColNum)
-        {
-            for(int index = 0;index < rHeadArr.Length && index < nColNum.Length; ++index)
+            catch (Exception ex)
             {
-                if(szContent == rHeadArr[index])
-                {
-                    nColNum[index] = col; 
-                }
+                rInfoOutput.SelectionColor = Color.Red;
+                rInfoOutput.AppendText(ex.ToString() + '\n');
             }
-        }
-        private static void clearHeadindexArr(ref int[] rColNum)
-        {
-            for(int index = 0; index < rColNum.Length; ++index)
+            finally
             {
-                rColNum[index] = 0;
+                excelCoverClose(szPath, excel, rWbk, ref rInfoOutput);
             }
         }
         public static void excelWrite(string szPath,  OperatorFunc rOperatorFunc, ref System.Windows.Forms.RichTextBox rInfoOutput)
@@ -276,6 +376,7 @@ namespace X51Tools.NameAndIDGenerationTool
             }
         }
 
+      
         private static void excelSaveClose( string szPath, Application rExcel,Workbook rWorkbook, ref System.Windows.Forms.RichTextBox rInfoOutput)
         {
             if (rWorkbook != null)
@@ -291,147 +392,12 @@ namespace X51Tools.NameAndIDGenerationTool
                     rInfoOutput.SelectionColor = Color.Red;
                     rInfoOutput.AppendText(ex.ToString() + '\n');
                 }
-            }
-            rExcel.Quit();
-            // 安全回收进程
-            System.GC.GetGeneration(rExcel);
-        }
-
-        public static void excelReadNCheck(string szPath, OperatorCheckFunc checkFunc,  ref System.Windows.Forms.RichTextBox rInfoOutput)
-        {
-            string szExcelFilePath = szPath.Trim();
-            Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
-            Workbooks wb = excel.Workbooks;
-            excel.Visible = false;//设置调用引用的 Excel文件是否可见
-            excel.Application.DisplayAlerts = false;
-            //wb = excel.Workbooks.Open(ExcelFilePath);
-            Workbook rWbk = wb.Add(szExcelFilePath);
-            Sheets rWorkSheets = rWbk.Worksheets;
-            try
-            {//每个工作表都查 索引从1开始
-                int[] rColNum = new int[(int)OperatorHead.HeadMax];
-                bool isResultSucced = true;
-                for (int index = 1; index <= rWorkSheets.Count; ++index)
+                finally
                 {
-                    Worksheet ws = (Worksheet)rWorkSheets[index];
-                    int rowCount = 0;//有效行，索引从1开始
-                    rowCount = ws.UsedRange.Rows.Count;//赋值有效行
-                    bool bIsHead = false;
-                    bool bIsEnd = true;
-                    for (int i = 1; i <= rowCount; i++)//
-                    {//将行中数据交给 代理处理
-                        string[] rUseFulContent = new string[(int)OperatorHead.HeadMax];
-                        int nColCount = ws.UsedRange.Columns.Count;
-                        for (int nLoopCount = ws.UsedRange.Column; nLoopCount <= nColCount; ++nLoopCount)
-                        {//循环一行中的每一列
-                            if (ws.Cells[i, nLoopCount].Value == null)
-                            {
-                                if (nLoopCount == 1)
-                                {
-                                    bIsEnd = true;
-                                }
-                                else
-                                {
-                                    bIsEnd = bIsEnd && true;
-                                }
-                                continue;
-                            }
-                            else
-                            {
-                                if (nLoopCount == 1)
-                                {
-                                    bIsEnd = false;
-                                }
-                                else
-                                {
-                                    bIsEnd = bIsEnd && false;
-                                }
-                            }
-                            string szContent = ws.Cells[i, nLoopCount].Value.ToString().Trim();
-                            bIsEnd = bIsEnd && szContent == "";
-                            if (szContent == "")
-                            {
-                                continue;
-                            }
-                            if (checkIsHead(szContent))
-                            {//代表当前行中存在表头
-                                if (!bIsHead)
-                                {
-                                    bIsHead = true;
-                                    clearHeadindexArr(ref rColNum);
-                                }
-                                //记录行列标记
-                                setHeadindex(szContent, nLoopCount, ref rColNum);
-                            }
-                            string szAddress = ws.Cells[i, nLoopCount].Address;
-                        }
-                        if (bIsEnd)
-                        {
-                            clearHeadindexArr(ref rColNum);
-                            continue;
-                        }
-                        if (!bIsHead && headValidaion(rColNum[0], rColNum[1], rColNum[2], rColNum[3]))
-                        {
-                            for (int nUsefulIndex = 0; nUsefulIndex < rColNum.Length; nUsefulIndex += 2)
-                            {
-                                int nColName = rColNum[nUsefulIndex];
-                                int nColID = rColNum[nUsefulIndex + 1];
-                                if (0 != nColID && 0 != nColName)
-                                {
-                                    string szName;
-                                    string szID;
-                                    if (ws.Cells[i, nColName].Value == null)
-                                    {
-                                        szName = "";
-                                    }
-                                    else
-                                    {
-                                        szName = ws.Cells[i, nColName].Value.ToString().Trim();
-                                    }
-                                    if (ws.Cells[i, nColID].Value == null)
-                                    {
-                                        szID = "";
-                                    }
-                                    else
-                                    {
-                                        szID = ws.Cells[i, nColID].Value.ToString().Trim();
-                                    }
-                                    if ((szID == "" && szName == "") )
-                                    {//都是空都不需要填写
-                                        break;
-                                    }
-                                    string szAddress = getAddressStr(ws.Cells[i, nColName].Address);
-                                    if (checkFunc(ref szID, ref szName, nUsefulIndex > 0 ? false : true, szAddress, ref rInfoOutput))
-                                    {
-                                        ws.Cells[i, nColName].Interior.ColorIndex = 0;
-                                        ws.Cells[i, nColID].Interior.ColorIndex = 0;
-                                    }
-                                    else
-                                    {//标黄
-                                        ws.Cells[i, nColName].Interior.Color = Color.FromArgb(255, 255, 0);
-                                        ws.Cells[i, nColID].Interior.Color = Color.FromArgb(255, 255, 0);
-                                        isResultSucced = false;
-                                    }
-                                }
-                            }
-                        }
-                        bIsHead = false;
-                    }
+                    rExcel.Quit();
+                    // 安全回收进程
+                    System.GC.GetGeneration(rExcel);
                 }
-                if(isResultSucced)
-                {
-                    rInfoOutput.SelectionColor = Color.Green;
-                    rInfoOutput.AppendText("检查通过 ！！！\n");
-                }
-            }
-            catch (Exception ex)
-            {
-                rInfoOutput.SelectionColor = Color.Red;
-                rInfoOutput.AppendText(ex.ToString() + '\n');
-            }
-            finally
-            {
-                excelCoverClose(szPath, excel, rWbk, ref rInfoOutput);
             }
         }
         private static void excelCoverClose(string szPath, Microsoft.Office.Interop.Excel.Application rExcel, Workbook rWorkbook,ref System.Windows.Forms.RichTextBox rInfoOutput)
@@ -501,6 +467,40 @@ namespace X51Tools.NameAndIDGenerationTool
                 }
             }
             return szResult;
+        }
+        private static bool checkIsHead(string szContent)
+        {
+            for (int index = 0; index < rHeadArr.Length; ++index)
+            {
+                if (szContent == rHeadArr[index])
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        private static void setHeadindex(string szContent, int col, ref int[] nColNum)
+        {
+            for (int index = 0; index < rHeadArr.Length && index < nColNum.Length; ++index)
+            {
+                if (szContent == rHeadArr[index])
+                {
+                    nColNum[index] = col;
+                }
+            }
+        }
+        private static void clearHeadindexArr(ref int[] rColNum)
+        {
+            for (int index = 0; index < rColNum.Length; ++index)
+            {
+                rColNum[index] = 0;
+            }
+        }
+        private static bool headValidaion(int nManCol, int nManID, int nWomanCol, int nWomanID)
+        {
+            bool bMan = (nManCol != 0 && nManID != 0);
+            bool bWoman = (nWomanCol != 0 && nWomanID != 0);
+            return bMan || bWoman;
         }
     }
 }

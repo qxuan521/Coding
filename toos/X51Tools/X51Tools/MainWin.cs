@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using X51Tools.TopicPictureDemandGenerationTool;
 namespace X51Tools
 {
     public partial class MainWin : Form
@@ -20,6 +20,12 @@ namespace X51Tools
         private void m_NameAndIDGenerationTool_Btn_Click(object sender, EventArgs e)
         {
             X51Tools.NameAndIdGenerationMainWin rTool = new NameAndIdGenerationMainWin();
+            rTool.Show();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            TopicPictureDemandGenerationToolMainWin rTool = new TopicPictureDemandGenerationToolMainWin();
             rTool.Show();
         }
     }
