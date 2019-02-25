@@ -73,6 +73,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Global\international_named_and_ID_map.cs" />
+    <Compile Include="TopicPictureDemandGenerationTool\sale_change.cs" />
     <Compile Include="TopicPictureDemandGenerationTool\TableCoverStrInput.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -186,10 +186,19 @@ namespace X51Tools.TopicPictureDemandGenerationTool
                             }
                             else
                             {
-                                if (!rSearchList.ContainsKey(rWs.Cells[nRowNum, 1].Value))
+                                string szData = rWs.Cells[nRowNum, 1].Value.ToString();
+                                if (rSearchList.Count == 0)
                                 {
-                                    rSearchList.Add(rWs.Cells[nRowNum, 1].Value.ToString(), false);
+                                    rSearchList.Add(szData, false);
                                 }
+                                else
+                                {
+                                    if (!rSearchList.ContainsKey(szData))
+                                    {
+                                        rSearchList.Add(szData, false);
+                                    }
+                                }
+                                
                             }
                         }
                         if(!bCol2Over)
@@ -200,7 +209,7 @@ namespace X51Tools.TopicPictureDemandGenerationTool
                             }
                             else
                             {
-                                if (!rNosale.ContainsKey(rWs.Cells[nRowNum, 2].Value))
+                                if (!rNosale.ContainsKey(rWs.Cells[nRowNum, 2].Value.ToString()))
                                 {
                                     rNosale.Add(rWs.Cells[nRowNum, 2].Value.ToString(), false);
                                 }
@@ -216,6 +225,7 @@ namespace X51Tools.TopicPictureDemandGenerationTool
             }
             catch (Exception ex)
             {
+                string szError = ex.ToString();
             }
             finally
             {

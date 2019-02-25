@@ -35,6 +35,7 @@ namespace X51Tools.TopicPictureDemandGenerationTool
             m_rMatherIDLast = new Dictionary<int, int>();
             m_rPartsSourceExsitMap = new Dictionary<string, int>();
             m_rPiecesSourceExsitMap = new Dictionary<string, int>();
+            m_rClothsetMap = new Dictionary<string, XmlNode>();
         }
 
         public void build(string szPath)
@@ -53,7 +54,7 @@ namespace X51Tools.TopicPictureDemandGenerationTool
             m_rPartSouceParent = null;
             m_rPieceSourceParent = null;
             m_rPiecesSourceExsitMap.Clear();
-            m_rPiecesSourceExsitMap.Clear();
+            m_rPartsSourceExsitMap.Clear();
             m_rClothsetMap.Clear();
             calcMatherIDMap();
         }
@@ -246,16 +247,130 @@ namespace X51Tools.TopicPictureDemandGenerationTool
             {
                 return ExchangeState.Sale;
             }
-            else if(isNormalExchange())
-
+            else if(isNormalExchange(rClothNode, rNoSaleID))
+            {
+                return ExchangeState.Normal;
+            }
+            else
+            {
+                return ExchangeState.Error;
+            }
+        }
+        //
+        //设置状态
+        //
+        public void setClothSaleState(string szID, ExchangeState eState, Dictionary<string, bool> rNoSaleID)
+        {
+            XmlNode rClothNode = m_rClothsetMap[szID];
+            switch (eState)
+            {
+                case ExchangeState.Normal:
+                    setNormalExchange(rClothNode, rNoSaleID);
+                    break;
+                case ExchangeState.Close:
+                    setCloseExchange(rClothNode, rNoSaleID);
+                    break;
+                case ExchangeState.Sale:
+                    setSaleExchange(rClothNode, rNoSaleID);
+                    break;
+                default:
+                    break;
+            }
         }
         //-------------------------private_function-------------------------------------------------------------
+        //
+        //设置兑换状态
+        //
+        private void setCloseExchange(XmlNode rClothNode, Dictionary<string, bool> rNoSaleID)
+        {
+            //去掉offer_enable字段
+            if(rClothNode.Attributes["offer_enable"] != null)
+            {
+                rClothNode.Attributes.Remove(rClothNode.Attributes["offer_enable"]);
+            }
+            var rChildren = rClothNode.ChildNodes;
+            for (int index = 0; index < rChildren.Count;++index)
+            {
+                if(rChildren[index].Name == "Part")
+                {
+                    //去掉part offer_cost字段
+                    if(rChildren[index].Attributes["offer_cost"] != null)
+                    {
+                        rChildren[index].Attributes.Remove(rChildren[index].Attributes["offer_cost"]);
+                    }
+                    //去掉cost = “-1”
+                    if(rChildren[index].Attributes["cost"] != null)
+                    {
+                        rChildren[index].Attributes["cost"].Value = "-1";
+                    }
+                }
+            }
+        }
+        private void setNormalExchange(XmlNode rClothNode, Dictionary<string, bool> rNoSaleID)
+        {
+            //去掉offer_enable字段
+            if (rClothNode.Attributes["offer_enable"] != null)
+            {
+                rClothNode.Attributes.Remove(rClothNode.Attributes["offer_enable"]);
+            }
+            var rChildren = rClothNode.ChildNodes;
+            for (int index = 0; index < rChildren.Count; ++index)
+            {
+                if (rChildren[index].Name == "Part")
+                {
+                    //去掉cost = “-1”
+                    if (rChildren[index].Attributes["cost"] != null && null != rChildren[index].Attributes["score"])
+                    {
+                        int nCost = X51Math.X51round( int.Parse(rChildren[index].Attributes["score"].Value) * 7.5);
+                        rChildren[index].Attributes["cost"].Value = nCost.ToString();
+                    }
+                }
+            }
+        }
+        private void setSaleExchange(XmlNode rClothNode, Dictionary<string, bool> rNoSaleID)
+        {
+            //去掉offer_enable字段
+            if (rClothNode.Attributes["offer_enable"] != null)
+            {
+                rClothNode.Attributes["offer_enable"].Value = "1";
+            }
+            else
+            {
+                XmlAttribute rNewAttribute = getDoc().CreateAttribute("offer_enable");
+                rNewAttribute.Value = "1";
+                rClothNode.Attributes.Append(rNewAttribute);
+            }
+            var rChildren = rClothNode.ChildNodes;
+            for (int index = 0; index < rChildren.Count; ++index)
+            {
+                if (rChildren[index].Name == "Part")
+                {
+                    //去掉cost = “-1”
+                    if (rChildren[index].Attributes["cost"] != null && null != rChildren[index].Attributes["score"])
+                    {
+                        int nCost = X51Math.X51round(int.Parse(rChildren[index].Attributes["score"].Value) * 7.5);
+                        int nOfferCost = X51Math.X51round(int.Parse(rChildren[index].Attributes["score"].Value) * 6);
+                        rChildren[index].Attributes["cost"].Value = nCost.ToString();
+                        if(null == rChildren[index].Attributes["offer_cost"])
+                        {
+                            XmlAttribute rNewAttribute = getDoc().CreateAttribute("offer_cost");
+                            rNewAttribute.Value = nOfferCost.ToString();
+                            rChildren[index].Attributes.Append(rNewAttribute); 
+                        }
+                        else
+                        {
+                            rChildren[index].Attributes["offer_cost"].Value = nOfferCost.ToString();
+                        }
+                    }
+                }
+            }
+        }
         private bool isCloseExchange(XmlNode rClothNode, Dictionary<string, bool> rNoSaleID)
         {
             var rChildren = rClothNode.ChildNodes;
             for (int index = 0; index < rChildren.Count; ++index)
             {
-                if(rChildren[index].Name == "part")
+                if(rChildren[index].Name == "Part")
                 {
                     if (rNoSaleID.ContainsKey(rChildren[index].Attributes["female_id"].Value)
                         || rNoSaleID.ContainsKey(rChildren[index].Attributes["male_id"].Value))
@@ -284,7 +399,7 @@ namespace X51Tools.TopicPictureDemandGenerationTool
             {
                 for (int index = 0; index < rChildren.Count; ++index)
                 {
-                    if (rChildren[index].Name == "part")
+                    if (rChildren[index].Name == "Part")
                     {
                         if (rNoSaleID.ContainsKey(rChildren[index].Attributes["female_id"].Value)
                             || rNoSaleID.ContainsKey(rChildren[index].Attributes["male_id"].Value))
@@ -314,7 +429,7 @@ namespace X51Tools.TopicPictureDemandGenerationTool
             {
                 for (int index = 0; index < rChildren.Count; ++index)
                 {
-                    if (rChildren[index].Name == "part")
+                    if (rChildren[index].Name == "Part")
                     {
                         if (rNoSaleID.ContainsKey(rChildren[index].Attributes["female_id"].Value)
                             || rNoSaleID.ContainsKey(rChildren[index].Attributes["male_id"].Value))
