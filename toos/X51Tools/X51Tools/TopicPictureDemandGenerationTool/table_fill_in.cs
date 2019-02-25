@@ -7,6 +7,7 @@ using X51Tools.Global;
 
 namespace X51Tools.TopicPictureDemandGenerationTool
 {
+    public delegate string getSaveAsPath();
     public partial class TableFillIn
     {
         //brief
@@ -25,12 +26,15 @@ namespace X51Tools.TopicPictureDemandGenerationTool
         private string m_szTempLastSubName = "";
         private Dictionary<string,int> m_rNoSaleList;
         private int m_nTempLastSubID = -1;
+
+        private TableCoverStrInput m_rCoverInput;
         public TableFillIn()
         {
             m_rNameAndIDMap = new InternationalNamedAndIDMap();
             m_rExcelOperator = new TopicExcelOperator();
             m_rXmlOperator = new TopicConfigXmlOperator();
             m_rNoSaleList = new Dictionary<string, int>();
+            m_rCoverInput = new TableCoverStrInput();
         }
 
         public void setInternationalPath(string szPath, ref string szError)
@@ -53,20 +57,88 @@ namespace X51Tools.TopicPictureDemandGenerationTool
             m_szNoSalePath = szPath;
         }
 
-        public void execute(ref System.Windows.Forms.RichTextBox rLog)
+        public void execute(ref System.Windows.Forms.RichTextBox rLog, getSaveAsPath rSavePath)
         {
             string szError = "";
             rLog.Clear();
             //错误提示 null m_szConfigPath m_szInputPath
             m_rXmlOperator.build(m_szConfigPath);
             initNoSale();
-            FillInFinishFunc rFinishFunc = new FillInFinishFunc(() => 
+            m_rExcelOperator.excelFillIn(m_szInputPath, TableRowWriteFunc, ref szError);
+            string szXmlSavePath = rSavePath();
+            if (string.Empty != szXmlSavePath)
             {
-
-            });
-            m_rExcelOperator.excelFillIn(m_szInputPath, TableRowWriteFunc, rFinishFunc, ref szError);
+                generateXmlFile(szXmlSavePath);
+            }
             rLog.AppendText(szError);
-
+            m_rExcelOperator.saveAsNewFile();
+        }
+        //
+        //生成新的配置文件
+        //
+        public void generateXmlFile(string rSavePath)
+        {
+            errorHandle rErrorFunc = new errorHandle((string szError)=> 
+            {
+                //错误处理
+            });
+            //获取途径
+            int nSourceValidDataCount = this.m_rExcelOperator.getValidDataRowCount("系列套装部件产出途径文本预设及系列碎片产出文本");
+            if(-1 != nSourceValidDataCount)
+            {
+                for (int index = 0; index < nSourceValidDataCount; ++index)
+                {
+                    string[] rRowData = new string[4];
+                   if( this.m_rExcelOperator.getExcelRow(ref rRowData,2 + index , "系列套装部件产出途径文本预设及系列碎片产出文本"))
+                    {
+                        this.m_rXmlOperator.appendSource(rRowData, rErrorFunc);
+                    }
+                }
+            }
+            //额外奖励
+            int nRewardsValidDataCount = this.m_rExcelOperator.getValidDataRowCount("额外奖励配置");
+            if (-1 != nRewardsValidDataCount)
+            {
+                for (int index = 0; index < nRewardsValidDataCount; ++index)
+                {
+                    string[] rRowData = new string[6];
+                    if (this.m_rExcelOperator.getExcelRow(ref rRowData, 2 + index, "额外奖励配置"))
+                    {
+                        this.m_rXmlOperator.appendExtraReward(rRowData);
+                    }
+                }
+            }
+            //套装
+            int nClothsValidDataCount = this.m_rExcelOperator.getValidDataRowCount("系列套装配置");
+            if (-1 != nClothsValidDataCount)
+            {
+                string szSetName = "";
+                int nSourceRowNumber = 2;
+                string szCoverString = "";
+                for (int index = 0; index < nClothsValidDataCount; ++index)
+                {
+                    string[] rRowData = new string[15];
+                    if (this.m_rExcelOperator.getExcelRow(ref rRowData, 2 + index, "系列套装配置"))
+                    {
+                        if(szSetName != rRowData[4])
+                        {
+                            if(szSetName != "")
+                            {
+                                ++nSourceRowNumber;
+                            }
+                            szSetName = rRowData[4];
+                            m_rCoverInput.initialize(rRowData[4]);
+                            m_rCoverInput.ShowDialog();
+                            if(m_rCoverInput.getCommit())
+                            {
+                                szCoverString = m_rCoverInput.getCoverInputStr();
+                            }
+                        }
+                        this.m_rXmlOperator.appendClothset(rRowData, nSourceRowNumber, szCoverString);
+                    }
+                }
+            }
+            this.m_rXmlOperator.outputNewXml(rSavePath);
         }
         public bool TableRowWriteFunc(ref string[] rRowData)
         {
@@ -139,8 +211,8 @@ namespace X51Tools.TopicPictureDemandGenerationTool
         private bool fragmentSource(ref string[] rRowData)
         {
             //ID(xml)
-            string szFragmentSource = "碎片获取途径" + this.m_rXmlOperator.getPieceObtainID().ToString();
-            string szPartSource = this.m_rXmlOperator.getClothsetObtainID().ToString();
+            string szFragmentSource = "碎片获取途径" + (this.m_rXmlOperator.getPieceObtainID() + 1).ToString();
+            string szPartSource = (this.m_rXmlOperator.getClothsetObtainID() + 1 ).ToString();
 
             rRowData[0] = szFragmentSource;
             rRowData[2] = szPartSource;

@@ -48,13 +48,36 @@
             this.label4 = new System.Windows.Forms.Label();
             this.panel5 = new System.Windows.Forms.Panel();
             this.m_rDoFillInBtn = new System.Windows.Forms.Button();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.m_rAlterPage = new System.Windows.Forms.TabPage();
             this.m_rOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.m_rFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.panel6 = new System.Windows.Forms.Panel();
             this.label5 = new System.Windows.Forms.Label();
             this.m_rNoSaleTableBlock = new System.Windows.Forms.TextBox();
             this.m_rNoSaleTableBtn = new System.Windows.Forms.Button();
+            this.m_rSaveAsDialog = new System.Windows.Forms.SaveFileDialog();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.panel7 = new System.Windows.Forms.Panel();
+            this.label6 = new System.Windows.Forms.Label();
+            this.m_rSearchListBlk = new System.Windows.Forms.TextBox();
+            this.m_rSearchListBtn = new System.Windows.Forms.Button();
+            this.panel8 = new System.Windows.Forms.Panel();
+            this.label7 = new System.Windows.Forms.Label();
+            this.m_rConfig_func2_block = new System.Windows.Forms.TextBox();
+            this.m_rConfigFunc2Btn = new System.Windows.Forms.Button();
+            this.panel9 = new System.Windows.Forms.Panel();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.panel10 = new System.Windows.Forms.Panel();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.button4 = new System.Windows.Forms.Button();
+            this.m_rAllSetOne = new System.Windows.Forms.Button();
+            this.m_rAllSetTwo = new System.Windows.Forms.Button();
+            this.m_rAllSetThree = new System.Windows.Forms.Button();
+            this.panel11 = new System.Windows.Forms.Panel();
+            this.m_rSelectNode = new System.Windows.Forms.Button();
+            this.m_rChangeNode = new System.Windows.Forms.Button();
             this.tabWidget.SuspendLayout();
             this.m_rFillInPage.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -63,13 +86,21 @@
             this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel5.SuspendLayout();
+            this.m_rAlterPage.SuspendLayout();
             this.panel6.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            this.panel7.SuspendLayout();
+            this.panel8.SuspendLayout();
+            this.panel9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.panel10.SuspendLayout();
+            this.panel11.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabWidget
             // 
             this.tabWidget.Controls.Add(this.m_rFillInPage);
-            this.tabWidget.Controls.Add(this.tabPage2);
+            this.tabWidget.Controls.Add(this.m_rAlterPage);
             this.tabWidget.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabWidget.Location = new System.Drawing.Point(0, 0);
             this.tabWidget.Name = "tabWidget";
@@ -290,15 +321,16 @@
             this.m_rDoFillInBtn.UseVisualStyleBackColor = true;
             this.m_rDoFillInBtn.Click += new System.EventHandler(this.m_rDoFillInBtn_Click);
             // 
-            // tabPage2
+            // m_rAlterPage
             // 
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(833, 623);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "tabPage2";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.m_rAlterPage.Controls.Add(this.tableLayoutPanel2);
+            this.m_rAlterPage.Location = new System.Drawing.Point(4, 22);
+            this.m_rAlterPage.Name = "m_rAlterPage";
+            this.m_rAlterPage.Padding = new System.Windows.Forms.Padding(3);
+            this.m_rAlterPage.Size = new System.Drawing.Size(833, 623);
+            this.m_rAlterPage.TabIndex = 1;
+            this.m_rAlterPage.Text = "查询/修改优惠选项";
+            this.m_rAlterPage.UseVisualStyleBackColor = true;
             // 
             // m_rOpenFileDialog
             // 
@@ -347,6 +379,251 @@
             this.m_rNoSaleTableBtn.UseVisualStyleBackColor = true;
             this.m_rNoSaleTableBtn.Click += new System.EventHandler(this.m_rNoSaleTableBtn_Click);
             // 
+            // m_rSaveAsDialog
+            // 
+            this.m_rSaveAsDialog.FileName = "clothset_handbook_config.xml";
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Controls.Add(this.panel7, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.panel8, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.panel9, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.panel10, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.panel11, 0, 4);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 5;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(827, 617);
+            this.tableLayoutPanel2.TabIndex = 0;
+            // 
+            // panel7
+            // 
+            this.panel7.Controls.Add(this.m_rSearchListBtn);
+            this.panel7.Controls.Add(this.m_rSearchListBlk);
+            this.panel7.Controls.Add(this.label6);
+            this.panel7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel7.Location = new System.Drawing.Point(0, 5);
+            this.panel7.Margin = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.panel7.Name = "panel7";
+            this.panel7.Size = new System.Drawing.Size(827, 55);
+            this.panel7.TabIndex = 0;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(14, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(65, 12);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "查询列表：";
+            // 
+            // m_rSearchListBlk
+            // 
+            this.m_rSearchListBlk.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.m_rSearchListBlk.Location = new System.Drawing.Point(16, 19);
+            this.m_rSearchListBlk.Name = "m_rSearchListBlk";
+            this.m_rSearchListBlk.Size = new System.Drawing.Size(667, 29);
+            this.m_rSearchListBlk.TabIndex = 1;
+            this.m_rSearchListBlk.DragDrop += new System.Windows.Forms.DragEventHandler(this.m_rSearchListBlk_DragDrop);
+            this.m_rSearchListBlk.DragEnter += new System.Windows.Forms.DragEventHandler(this.m_rSearchListBlk_DragEnter);
+            // 
+            // m_rSearchListBtn
+            // 
+            this.m_rSearchListBtn.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.m_rSearchListBtn.Location = new System.Drawing.Point(699, 19);
+            this.m_rSearchListBtn.Name = "m_rSearchListBtn";
+            this.m_rSearchListBtn.Size = new System.Drawing.Size(106, 29);
+            this.m_rSearchListBtn.TabIndex = 2;
+            this.m_rSearchListBtn.Text = "浏    览";
+            this.m_rSearchListBtn.UseVisualStyleBackColor = true;
+            this.m_rSearchListBtn.Click += new System.EventHandler(this.m_rSearchListBtn_Click);
+            // 
+            // panel8
+            // 
+            this.panel8.Controls.Add(this.m_rConfigFunc2Btn);
+            this.panel8.Controls.Add(this.m_rConfig_func2_block);
+            this.panel8.Controls.Add(this.label7);
+            this.panel8.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel8.Location = new System.Drawing.Point(0, 65);
+            this.panel8.Margin = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(827, 55);
+            this.panel8.TabIndex = 1;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(14, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(65, 12);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "配置文件：";
+            // 
+            // m_rConfig_func2_block
+            // 
+            this.m_rConfig_func2_block.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.m_rConfig_func2_block.Location = new System.Drawing.Point(16, 18);
+            this.m_rConfig_func2_block.Name = "m_rConfig_func2_block";
+            this.m_rConfig_func2_block.Size = new System.Drawing.Size(667, 29);
+            this.m_rConfig_func2_block.TabIndex = 1;
+            this.m_rConfig_func2_block.DragDrop += new System.Windows.Forms.DragEventHandler(this.m_rConfig_func2_block_DragDrop);
+            this.m_rConfig_func2_block.DragEnter += new System.Windows.Forms.DragEventHandler(this.m_rConfig_func2_block_DragEnter);
+            // 
+            // m_rConfigFunc2Btn
+            // 
+            this.m_rConfigFunc2Btn.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.m_rConfigFunc2Btn.Location = new System.Drawing.Point(699, 18);
+            this.m_rConfigFunc2Btn.Name = "m_rConfigFunc2Btn";
+            this.m_rConfigFunc2Btn.Size = new System.Drawing.Size(106, 29);
+            this.m_rConfigFunc2Btn.TabIndex = 2;
+            this.m_rConfigFunc2Btn.Text = "浏    览";
+            this.m_rConfigFunc2Btn.UseVisualStyleBackColor = true;
+            this.m_rConfigFunc2Btn.Click += new System.EventHandler(this.m_rConfigFunc2Btn_Click);
+            // 
+            // panel9
+            // 
+            this.panel9.Controls.Add(this.dataGridView1);
+            this.panel9.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel9.Location = new System.Drawing.Point(0, 160);
+            this.panel9.Margin = new System.Windows.Forms.Padding(0);
+            this.panel9.Name = "panel9";
+            this.panel9.Size = new System.Drawing.Size(827, 397);
+            this.panel9.TabIndex = 2;
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.AllowUserToResizeColumns = false;
+            this.dataGridView1.AllowUserToResizeRows = false;
+            this.dataGridView1.BackgroundColor = System.Drawing.Color.White;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Column1,
+            this.Column2});
+            this.dataGridView1.GridColor = System.Drawing.Color.White;
+            this.dataGridView1.Location = new System.Drawing.Point(16, 3);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.ReadOnly = true;
+            this.dataGridView1.RowHeadersVisible = false;
+            this.dataGridView1.RowTemplate.Height = 23;
+            this.dataGridView1.Size = new System.Drawing.Size(789, 391);
+            this.dataGridView1.TabIndex = 0;
+            this.dataGridView1.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseClick);
+            this.dataGridView1.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.dataGridView1_CellPainting);
+            // 
+            // Column1
+            // 
+            this.Column1.FillWeight = 200F;
+            this.Column1.HeaderText = "子系列ID";
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
+            this.Column1.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Column1.Width = 200;
+            // 
+            // Column2
+            // 
+            this.Column2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Column2.HeaderText = "选项";
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            // 
+            // panel10
+            // 
+            this.panel10.Controls.Add(this.m_rAllSetThree);
+            this.panel10.Controls.Add(this.m_rAllSetTwo);
+            this.panel10.Controls.Add(this.m_rAllSetOne);
+            this.panel10.Controls.Add(this.button4);
+            this.panel10.Controls.Add(this.textBox3);
+            this.panel10.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel10.Location = new System.Drawing.Point(0, 120);
+            this.panel10.Margin = new System.Windows.Forms.Padding(0);
+            this.panel10.Name = "panel10";
+            this.panel10.Size = new System.Drawing.Size(827, 40);
+            this.panel10.TabIndex = 3;
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(16, 16);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(167, 21);
+            this.textBox3.TabIndex = 0;
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(189, 15);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(24, 23);
+            this.button4.TabIndex = 1;
+            this.button4.Text = "button4";
+            this.button4.UseVisualStyleBackColor = true;
+            // 
+            // m_rAllSetOne
+            // 
+            this.m_rAllSetOne.Location = new System.Drawing.Point(237, 14);
+            this.m_rAllSetOne.Name = "m_rAllSetOne";
+            this.m_rAllSetOne.Size = new System.Drawing.Size(75, 23);
+            this.m_rAllSetOne.TabIndex = 2;
+            this.m_rAllSetOne.Text = "button5";
+            this.m_rAllSetOne.UseVisualStyleBackColor = true;
+            // 
+            // m_rAllSetTwo
+            // 
+            this.m_rAllSetTwo.Location = new System.Drawing.Point(424, 14);
+            this.m_rAllSetTwo.Name = "m_rAllSetTwo";
+            this.m_rAllSetTwo.Size = new System.Drawing.Size(75, 23);
+            this.m_rAllSetTwo.TabIndex = 3;
+            this.m_rAllSetTwo.Text = "button6";
+            this.m_rAllSetTwo.UseVisualStyleBackColor = true;
+            // 
+            // m_rAllSetThree
+            // 
+            this.m_rAllSetThree.Location = new System.Drawing.Point(626, 14);
+            this.m_rAllSetThree.Name = "m_rAllSetThree";
+            this.m_rAllSetThree.Size = new System.Drawing.Size(75, 23);
+            this.m_rAllSetThree.TabIndex = 4;
+            this.m_rAllSetThree.Text = "button7";
+            this.m_rAllSetThree.UseVisualStyleBackColor = true;
+            // 
+            // panel11
+            // 
+            this.panel11.Controls.Add(this.m_rChangeNode);
+            this.panel11.Controls.Add(this.m_rSelectNode);
+            this.panel11.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel11.Location = new System.Drawing.Point(3, 560);
+            this.panel11.Name = "panel11";
+            this.panel11.Size = new System.Drawing.Size(821, 54);
+            this.panel11.TabIndex = 4;
+            // 
+            // m_rSelectNode
+            // 
+            this.m_rSelectNode.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.m_rSelectNode.Location = new System.Drawing.Point(549, 18);
+            this.m_rSelectNode.Name = "m_rSelectNode";
+            this.m_rSelectNode.Size = new System.Drawing.Size(112, 28);
+            this.m_rSelectNode.TabIndex = 0;
+            this.m_rSelectNode.Text = "查    询";
+            this.m_rSelectNode.UseVisualStyleBackColor = true;
+            // 
+            // m_rChangeNode
+            // 
+            this.m_rChangeNode.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.m_rChangeNode.Location = new System.Drawing.Point(696, 18);
+            this.m_rChangeNode.Name = "m_rChangeNode";
+            this.m_rChangeNode.Size = new System.Drawing.Size(106, 28);
+            this.m_rChangeNode.TabIndex = 1;
+            this.m_rChangeNode.Text = "button6";
+            this.m_rChangeNode.UseVisualStyleBackColor = true;
+            // 
             // TopicPictureDemandGenerationToolMainWin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -369,8 +646,19 @@
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
             this.panel5.ResumeLayout(false);
+            this.m_rAlterPage.ResumeLayout(false);
             this.panel6.ResumeLayout(false);
             this.panel6.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.panel7.ResumeLayout(false);
+            this.panel7.PerformLayout();
+            this.panel8.ResumeLayout(false);
+            this.panel8.PerformLayout();
+            this.panel9.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.panel10.ResumeLayout(false);
+            this.panel10.PerformLayout();
+            this.panel11.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -379,7 +667,7 @@
 
         private System.Windows.Forms.TabControl tabWidget;
         private System.Windows.Forms.TabPage m_rFillInPage;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage m_rAlterPage;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label1;
@@ -404,5 +692,28 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button m_rNoSaleTableBtn;
         private System.Windows.Forms.TextBox m_rNoSaleTableBlock;
+        private System.Windows.Forms.SaveFileDialog m_rSaveAsDialog;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.Panel panel7;
+        private System.Windows.Forms.Button m_rSearchListBtn;
+        private System.Windows.Forms.TextBox m_rSearchListBlk;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Panel panel8;
+        private System.Windows.Forms.Button m_rConfigFunc2Btn;
+        private System.Windows.Forms.TextBox m_rConfig_func2_block;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Panel panel9;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.Panel panel10;
+        private System.Windows.Forms.Button m_rAllSetThree;
+        private System.Windows.Forms.Button m_rAllSetTwo;
+        private System.Windows.Forms.Button m_rAllSetOne;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Panel panel11;
+        private System.Windows.Forms.Button m_rChangeNode;
+        private System.Windows.Forms.Button m_rSelectNode;
     }
 }

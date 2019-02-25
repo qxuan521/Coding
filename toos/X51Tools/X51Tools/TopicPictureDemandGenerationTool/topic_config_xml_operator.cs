@@ -10,30 +10,65 @@ using X51Tools.Global;
 
 namespace X51Tools.TopicPictureDemandGenerationTool 
 {
+    public delegate void errorHandle(string szError);
     class TopicConfigXmlOperator : X51Tools.Global.XmlOperator
     {
         //brief
         //配置文件操作类
         //property
         Dictionary<int, int> m_rMatherIDLast;
-        XmlNode m_rPieceObtainNode = null;
-        XmlNode m_rClothsetObtainText = null;
         XmlNode m_rRoot = null;
         XmlNode m_rLastClothsetNode = null;
+        XmlNode m_rLastRewardsNode = null;
+        XmlNode m_rPartSouceParent = null;
+        XmlNode m_rPieceSourceParent = null;
+
+        Dictionary<string, int> m_rPartsSourceExsitMap;
+        Dictionary<string, int> m_rPiecesSourceExsitMap;
+        Dictionary<string,XmlNode> m_rClothsetMap;
+
 
         private delegate bool ForeachOperator(XmlNode rNode);
 
         public TopicConfigXmlOperator()
         {
             m_rMatherIDLast = new Dictionary<int, int>();
+            m_rPartsSourceExsitMap = new Dictionary<string, int>();
+            m_rPiecesSourceExsitMap = new Dictionary<string, int>();
         }
 
         public void build(string szPath)
         {
             openXml(szPath);
-            m_rRoot = getDoc();
+            var rChild = getDoc().ChildNodes;
+            for (int index = 0; index < rChild.Count; ++ index)
+            {
+                if(rChild[index].Name == "SeriesClothsetDynamic")
+                {
+                    m_rRoot = rChild[index];
+                }
+            }
             m_rLastClothsetNode = null;
+            m_rLastRewardsNode = null;
+            m_rPartSouceParent = null;
+            m_rPieceSourceParent = null;
+            m_rPiecesSourceExsitMap.Clear();
+            m_rPiecesSourceExsitMap.Clear();
+            m_rClothsetMap.Clear();
             calcMatherIDMap();
+        }
+
+        //
+        //输出新文件
+        //
+        public void outputNewXml(string szPath)
+        {
+            StringBuilder rStringBuilder = new StringBuilder();
+            fomatXml(ref rStringBuilder);
+            StreamWriter rFile = new StreamWriter(szPath, false, Encoding.GetEncoding("GB2312"));
+            string szResult = rStringBuilder.ToString();
+            rFile.Write(rStringBuilder.ToString());
+            rFile.Close();
         }
         //
         //获得子ID
@@ -52,16 +87,380 @@ namespace X51Tools.TopicPictureDemandGenerationTool
         //
         public int getPieceObtainID()
         {
-            return int.Parse(m_rPieceObtainNode.LastChild.Value);
+            return int.Parse(m_rPieceSourceParent.LastChild.Value);
         }
         //
         //部件获取途径ID
         //
         public int getClothsetObtainID()
         {
-            return int.Parse(m_rClothsetObtainText.LastChild.Attributes["obtain_id"].Value);
+            return int.Parse(m_rPartSouceParent.LastChild.Attributes["obtain_id"].Value);
         }
-        //private
+        //
+        //追加新子系列
+        //
+        public void appendClothset(string[] rRowData, int rSourceID, string szCoverStr)
+        {
+            if (null == m_rLastClothsetNode)
+            {
+                return;
+            }
+            if (m_rLastClothsetNode.Attributes["set_name"].Value != rRowData[4])
+            {
+                XmlElement subElement = getDoc().CreateElement("Clothset");
+                subElement.SetAttribute("series_id", rRowData[0]);
+                subElement.SetAttribute("set_id", rRowData[1]);
+                subElement.SetAttribute("set_name", rRowData[4]);
+                subElement.SetAttribute("cover", szCoverStr);
+                subElement.SetAttribute("score_factor", rRowData[14]);
+                subElement.SetAttribute("complete_score", rRowData[3]);
+                subElement.SetAttribute("on_shelf_time", rRowData[2]);
+                string szNodeValue = "Part 部件配置\r\n      male_id 男性玩家ID\r\n      female_id 女性玩家ID\r\n      cost 兑换部件需要的碎片个数\r\n      score 收集部件需要的分数，需支持小数配置\r\n    ";
+                XmlComment node_1 = getDoc().CreateComment(szNodeValue);
+                subElement.AppendChild(node_1);
+                m_rRoot.InsertBefore(subElement, m_rLastClothsetNode);
+                m_rLastClothsetNode = subElement;
+            }
+            XmlElement partElement = getDoc().CreateElement("Part");
+            partElement.SetAttribute("male_id", rRowData[5]);
+            partElement.SetAttribute("female_id", rRowData[7]);
+            partElement.SetAttribute("cost", rRowData[10]);
+            partElement.SetAttribute("score", rRowData[13]);
+            m_rLastClothsetNode.AppendChild(partElement);
+            XmlComment partElement_1 = getDoc().CreateComment("");
+            if (rRowData[6] != rRowData[8])
+            {
+                partElement_1.Value = rRowData[6] + "/" + rRowData[8];
+            }
+            else
+            {
+                partElement_1.Value = rRowData[6];
+            }
+            partElement.AppendChild(partElement_1);
+            XmlElement partElement_2 = getDoc().CreateElement("Obtain");//<obtain id = "1">
+            partElement_2.SetAttribute("id", "1");
+            partElement.AppendChild(partElement_2);
+
+            XmlComment partElement_3 = getDoc().CreateComment("Obtain  部件获取途径配置    id  获取途径的ID");
+            partElement.AppendChild(partElement_3);
+
+            XmlElement partElement_4 = getDoc().CreateElement("Obtain");
+            partElement_4.SetAttribute("id", rSourceID.ToString());
+            partElement.AppendChild(partElement_4);
+
+        }
+        //
+        //追加获取途径
+        //
+        public void appendSource(string[] rRowData, errorHandle rErrorFunc)
+        {
+            if (null != m_rPartSouceParent)
+            {
+                if (m_rPartsSourceExsitMap.ContainsKey(rRowData[2]))
+                {
+                    rErrorFunc("error: " + rRowData[2] + "has exist");
+                }
+                else
+                {
+                    XmlElement partElement = getDoc().CreateElement("text");
+                    m_rPartSouceParent.AppendChild(partElement);
+                    partElement.SetAttribute("obtain_id", rRowData[2]);
+                    partElement.SetAttribute("context", rRowData[3]);
+                }
+            }
+            if (null != this.m_rPieceSourceParent)
+            {
+                if (m_rPiecesSourceExsitMap.ContainsKey(rRowData[1]))
+                {
+                    rErrorFunc("error: " + rRowData[1] + "has exist");
+
+                }
+                else
+                {
+                    XmlElement partElement = getDoc().CreateElement("text");
+                    m_rPieceSourceParent.AppendChild(partElement);
+                    partElement.SetAttribute("context", rRowData[1]);
+                    XmlComment commentElement = getDoc().CreateComment(rRowData[0]);
+                    m_rPieceSourceParent.AppendChild(commentElement);
+                }
+            }
+        }
+
+        // 
+        //追加额外奖励 
+        // 
+        public void appendExtraReward(string[] rRowData)
+        {
+            if (null == m_rLastRewardsNode)
+            {
+                return;
+            }
+            XmlElement subElement = getDoc().CreateElement("ExtraRewards");
+            int nID = int.Parse(m_rLastRewardsNode.Attributes["rewards_id"].Value);
+            subElement.SetAttribute("rewards_id", (nID + 1).ToString());
+            XmlComment node_1 = getDoc().CreateComment(rRowData[0]);
+            subElement.AppendChild(node_1);
+            m_rRoot.InsertBefore(subElement, m_rLastRewardsNode);
+            m_rLastRewardsNode = subElement;
+            //
+            XmlElement rRewardItemsNode = getDoc().CreateElement("RewardItems");
+            subElement.AppendChild(rRewardItemsNode);
+            XmlElement rRewardItemNode = getDoc().CreateElement("RewardItem");
+            //处理type的字符串
+            int rNoValidIndex = rRowData[1].IndexOf('(');
+            string szTypestring = string.Empty;
+            if (rNoValidIndex != -1)
+            {
+                szTypestring = rRowData[1].Substring(rNoValidIndex);
+            }
+            else
+            {
+                szTypestring = rRowData[1];
+            }
+            rRewardItemNode.SetAttribute("type", szTypestring);
+            rRewardItemNode.SetAttribute("para1", rRowData[3]);
+            rRewardItemNode.SetAttribute("para2", rRowData[4]);
+            rRewardItemNode.SetAttribute("para3", getTimeLimitHelper(rRowData[5]));
+            //
+            rRewardItemsNode.AppendChild(rRewardItemNode);
+        }
+        //
+        //获取子系列的节点是否存在
+        //
+        public bool isClothsetExist(string szID)
+        {
+            return m_rClothsetMap.ContainsKey(szID);
+        }
+        
+        //
+        //获取节点优惠状态
+        //
+        public ExchangeState getClothSaleState(string szID, Dictionary<string,bool> rNoSaleID)
+        {
+           XmlNode rClothNode = m_rClothsetMap[szID];
+           if(isCloseExchange(rClothNode, rNoSaleID))
+           {
+                return ExchangeState.Close;
+           }
+           else if(isSaleExchange(rClothNode,rNoSaleID))
+            {
+                return ExchangeState.Sale;
+            }
+            else if(isNormalExchange())
+
+        }
+        //-------------------------private_function-------------------------------------------------------------
+        private bool isCloseExchange(XmlNode rClothNode, Dictionary<string, bool> rNoSaleID)
+        {
+            var rChildren = rClothNode.ChildNodes;
+            for (int index = 0; index < rChildren.Count; ++index)
+            {
+                if(rChildren[index].Name == "part")
+                {
+                    if (rNoSaleID.ContainsKey(rChildren[index].Attributes["female_id"].Value)
+                        || rNoSaleID.ContainsKey(rChildren[index].Attributes["male_id"].Value))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        if (rChildren[index].Attributes["cost"].Value == "-1")
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        private bool isSaleExchange(XmlNode rClothNode , Dictionary<string, bool> rNoSaleID)
+        {
+            var rChildren = rClothNode.ChildNodes;
+            if(rClothNode.Attributes["offer_enable"] != null && rClothNode.Attributes["offer_enable"].Value == "1")
+            {
+                for (int index = 0; index < rChildren.Count; ++index)
+                {
+                    if (rChildren[index].Name == "part")
+                    {
+                        if (rNoSaleID.ContainsKey(rChildren[index].Attributes["female_id"].Value)
+                            || rNoSaleID.ContainsKey(rChildren[index].Attributes["male_id"].Value))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            if (rChildren[index].Attributes["cost"].Value != "-1")
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        private bool isNormalExchange(XmlNode rClothNode, Dictionary<string, bool> rNoSaleID)
+        {
+            var rChildren = rClothNode.ChildNodes;
+            if (rClothNode.Attributes["offer_enable"] == null)
+            {
+                for (int index = 0; index < rChildren.Count; ++index)
+                {
+                    if (rChildren[index].Name == "part")
+                    {
+                        if (rNoSaleID.ContainsKey(rChildren[index].Attributes["female_id"].Value)
+                            || rNoSaleID.ContainsKey(rChildren[index].Attributes["male_id"].Value))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            if (rChildren[index].Attributes["cost"].Value != "-1")
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        //
+        //格式化输出
+        //
+        private void fomatXml(ref StringBuilder rOutput)
+        {
+            var x = getDoc().ChildNodes;
+            if (x.Count <= 0)
+            {
+                return;
+            }
+            for (int i = 0; i < x.Count; i++)
+            {
+                if (x[i].Name == "SeriesClothsetDynamic")
+                {
+                    rOutput.Append("<SeriesClothsetDynamic>\r\n");
+                    fomatXmlHelper(x[i], ref rOutput, 1, true);
+                    rOutput.Append("</SeriesClothsetDynamic>");
+                }
+                else
+                {
+                    rOutput.Append(x[i].OuterXml);
+                    rOutput.AppendLine("");
+                }
+            }
+        }
+        private void fomatXmlHelper(XmlNode xmlNode, ref StringBuilder rOutput, int level, bool isFirstSpace)
+        {
+            var x = xmlNode.ChildNodes;
+            if (x.Count <= 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < x.Count; i++)
+            {
+                if (x[i].HasChildNodes)
+                {//has child
+                    if (!(i == 0 && !isFirstSpace))
+                    {
+                        AppendSpace(ref rOutput, level);
+                    }
+                    if (specialNode(x[i]))
+                    {
+                        rOutput.Append(getNodePre(x[i]));
+                        fomatXmlHelper(x[i], ref rOutput, level + 1, false);
+                    }
+                    else
+                    {
+                        rOutput.Append(getNodePre(x[i]) + "\r\n");
+                        fomatXmlHelper(x[i], ref rOutput, level + 1, true);
+                    }
+                    AppendSpace(ref rOutput, level);
+                    rOutput.Append(getNodeEnd(x[i]) + "\r\n");
+                }
+                else
+                {
+                    if (!(i == 0 && !isFirstSpace))
+                    {
+                        AppendSpace(ref rOutput, level);
+                    }
+                    rOutput.Append(x[i].OuterXml);
+                    if ("text" == x[i].Name)
+                    {
+                        if (i + 1 < x.Count &&
+                            "#comment" == x[i + 1].Name)
+                        {
+                            rOutput.Append(x[i + 1].OuterXml);
+                            rOutput.AppendLine("");
+                            //rOutput.Append("\r\n");
+                            ++i;
+                            continue;
+                        }
+                    }
+                    rOutput.AppendLine("");
+                }
+            }
+        }
+        //
+        //区别格式特别的节点
+        //
+        private bool specialNode(XmlNode rNodex)
+        {
+            return ("text" == rNodex.Name || "ExtraRewards" == rNodex.Name);
+        }
+        //
+        //添加空格
+        //
+        private void AppendSpace(ref StringBuilder rBuilder, int level)
+        {
+            for (int j = 0; j < level; ++j)
+            {
+                rBuilder.Append("  ");
+            }
+        }
+        //
+        //获得 节点的开始部分
+        //
+        private string getNodePre(XmlNode xmlNode)
+        {
+            StringBuilder rBuilder = new StringBuilder();
+            rBuilder.Append("<");
+            rBuilder.Append(xmlNode.Name);
+            if (xmlNode.Attributes != null)
+            {
+                for (int index = 0; index < xmlNode.Attributes.Count; ++index)
+                {
+                    rBuilder.Append(" " + xmlNode.Attributes[index].Name);
+                    rBuilder.Append("=\"" + xmlNode.Attributes[index].Value + "\"");
+                }
+            }
+            rBuilder.Append(">");
+            return rBuilder.ToString();
+        }
+        //
+        //获得节点的结束部分
+        //
+        private string getNodeEnd(XmlNode xmlNode)
+        {
+            StringBuilder rBuilder = new StringBuilder();
+            rBuilder.Append("</");
+            rBuilder.Append(xmlNode.Name);
+            rBuilder.Append(">");
+            return rBuilder.ToString();
+        }
         //
         //计算套装各个母系列的最后一个子ID
         //
@@ -85,6 +484,10 @@ namespace X51Tools.TopicPictureDemandGenerationTool
                         {
                             m_rMatherIDLast.Add(nMather, nSubID);
                         }
+                        if(!m_rClothsetMap.ContainsKey(nSubID.ToString()))
+                        {
+                            m_rClothsetMap.Add(nSubID.ToString(), rNode);
+                        }
                         return false;
                     }
                 }
@@ -92,69 +495,50 @@ namespace X51Tools.TopicPictureDemandGenerationTool
                 {
                     if (rNode.Name == "PieceObtainText")
                     {
-                        m_rPieceObtainNode = rNode;
+                   
+
+                        for (int index = 0; index < rNode.ChildNodes.Count; ++index)
+                        {
+                            if(rNode.ChildNodes[index].Name == "#comment")
+                            m_rPiecesSourceExsitMap.Add(rNode.ChildNodes[index].Value, 1);
+                        }
+                        m_rPieceSourceParent = rNode;
                     }
                     else if (rNode.Name == "ClothsetObtainText")
                     {
-                        m_rClothsetObtainText = rNode;
+                        for (int index = 0; index < rNode.ChildNodes.Count; ++index)
+                        {
+                            m_rPartsSourceExsitMap.Add(rNode.ChildNodes[index].Attributes["obtain_id"].Value, 1);
+                        }
+                        this.m_rPartSouceParent = rNode;
+                    }
+                    else if(rNode.Name == "ExtraRewards")
+                    {
+                        m_rLastRewardsNode = rNode;
                     }
                 }
                 return true;
             });
             foreachNode(rOperator);
         }
+    
         //
-        //追加新子系列
+        //时效获取帮助函数
         //
-        private void appendClothset(string[] rRowData, int rSourceID)
+        private string getTimeLimitHelper(string szContent)
         {
-            if(null == m_rLastClothsetNode)
+            if(szContent == "永久")
             {
-                return;
-            }
-            if(m_rLastClothsetNode.Attributes["set_name"].Value != rRowData[4])
-            {
-                XmlElement subElement = getDoc().CreateElement("Clothset");
-                subElement.SetAttribute("series_id", rRowData[0]);
-                subElement.SetAttribute("set_id", rRowData[1]);
-                subElement.SetAttribute("set_name", rRowData[4]);
-                subElement.SetAttribute("score_factor", rRowData[14]);
-                subElement.SetAttribute("complete_score", rRowData[3]);
-                subElement.SetAttribute("on_shelf_time", rRowData[2]);
-                XmlElement node_1 = getDoc().CreateElement("#comment");
-                node_1.Value = "Part 部件配置\r\nmale_id 男性玩家ID\r\nfemale_id 女性玩家ID\r\ncost 兑换部件需要的碎片个数\r\nscore 收集部件需要的分数，需支持小数配置\r\n";
-                subElement.AppendChild(node_1);
-                m_rRoot.InsertBefore(subElement, m_rLastClothsetNode);
-                m_rLastClothsetNode = subElement;
-            }
-            XmlElement partElement = getDoc().CreateElement("Part");
-            partElement.SetAttribute("male_id", rRowData[5]);
-            partElement.SetAttribute("female_id", rRowData[7]);
-            partElement.SetAttribute("cost", rRowData[10]);
-            partElement.SetAttribute("score", rRowData[13]);
-            m_rLastClothsetNode.AppendChild(partElement);
-            XmlElement partElement_1 = getDoc().CreateElement("#comment");
-            if(rRowData[6] != rRowData[8])
-            {
-                partElement_1.Value = rRowData[6] + "/" + rRowData[8];
+                return 0.ToString();
             }
             else
             {
-                partElement_1.Value = rRowData[6];
+                int indexDay = szContent.IndexOf("天");
+                string szDays = szContent.Substring(0, indexDay);
+                int indexCount = szContent.IndexOf("个");
+                string szCounts = szContent.Substring(indexDay + 1, indexCount - indexDay - 1);
+                return szDays + "/" + szCounts;
             }
-            partElement.AppendChild(partElement_1);
-            XmlElement partElement_2 = getDoc().CreateElement("obtain");//<obtain id = "1">
-            partElement_2.SetAttribute("id", "1");
-            partElement.AppendChild(partElement_2);
-
-            XmlElement partElement_3 = getDoc().CreateElement("#comment");
-            partElement_3.Value = "<!--Obtain  部件获取途径配置    id  获取途径的ID-->";
-            partElement.AppendChild(partElement_3);
-
-            XmlElement partElement_4 = getDoc().CreateElement("#comment");
-            partElement_4.SetAttribute("id", rSourceID.ToString());
-            partElement.AppendChild(partElement_4);
-
         }
         //
         //通用节点遍历方法

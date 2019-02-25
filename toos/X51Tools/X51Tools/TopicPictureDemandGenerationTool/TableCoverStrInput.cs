@@ -41,11 +41,13 @@ namespace X51Tools.TopicPictureDemandGenerationTool
 
         private void m_rCommitBtn_Click(object sender, EventArgs e)
         {
+            m_bIsCommit = true;
             this.Close();
         }
 
         private void m_rRejectBtn_Click(object sender, EventArgs e)
         {
+            m_bIsCommit = false;
             this.Close();
         }
 
