@@ -234,6 +234,102 @@ namespace X51Tools.TopicPictureDemandGenerationTool
             }
         }
         //
+        //读取历史ID列表
+        //
+        public void readHistoryIDList(string szPath, ref List<string> rSearchList,ref Dictionary<string,bool> rNoSale)
+        {
+            openExcel(szPath);
+            Workbook rWorkbook = getWorkbook();
+            Sheets rWorkSheets = rWorkbook.Worksheets;
+            try
+            {//每个工作表都查 索引从1开始
+                bool bCol1Over = false;
+                bool bCol2Over = false;
+               
+                Worksheet rWs = (Worksheet)rWorkSheets[1];
+                for (int nRowNum = 1; nRowNum <= rWs.UsedRange.Rows.Count; ++nRowNum)
+                {
+                    if (!bCol1Over)
+                    {
+                        if (rWs.Cells[nRowNum, 1].Value == null)
+                        {
+                            bCol1Over = true;
+                        }
+                        else
+                        {
+                            string szData = rWs.Cells[nRowNum, 1].Value.ToString();
+                            rSearchList.Add(szData);
+                        }
+                    }
+                    if (!bCol2Over)
+                    {
+                        if (rWs.Cells[nRowNum, 2].Value == null)
+                        {
+                            bCol2Over = true;
+                        }
+                        else
+                        {
+                            if (!rNoSale.ContainsKey(rWs.Cells[nRowNum, 2].Value.ToString()))
+                            {
+                                rNoSale.Add(rWs.Cells[nRowNum, 2].Value.ToString(), false);
+                            }
+                        }
+                    }
+                    if (bCol2Over && bCol1Over)
+                    {
+                        return;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string szError = ex.ToString();
+            }
+            finally
+            {
+                //关闭excel
+                closeExcel();
+            }
+        }
+
+        //
+        //历史信息表生成
+        //
+        public void generateHistoryInfoTable(List<string[]> rDataList,string[] rHeader)
+        {
+            createNewExcel();
+            Workbook rWorkbook = getWorkbook();
+            Sheets rWorkSheets = rWorkbook.Worksheets;
+            try
+            {//每个工作表都查 索引从1开始
+                Worksheet rWs = (Worksheet)rWorkSheets[1];
+                //header
+                for(int index = 0; index < rHeader.Length;++index)
+                {
+                    rWs.Cells[1, index + 1].Value = rHeader[index];
+                }
+                rWs.Rows[1].RowHeight = 60;
+                //content
+                rWs.Columns[3].ColumnWidth = 20;
+                for (int index = 0; index <= rDataList.Count; ++index)
+                {
+                    for (int nLoopCount = 0; nLoopCount < rDataList[index].Length; ++nLoopCount)
+                    {
+                        rWs.Cells[index + 2, nLoopCount + 1].Value = rDataList[index][nLoopCount];
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string szError = ex.ToString();
+            }
+            finally
+            {
+                //关闭excel
+                saveAsNewFile();
+            }
+        }
+        //
         //private func
         //
 

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using X51Tools.Global;
+using System.IO;
+
 
 namespace X51Tools.TopicPictureDemandGenerationTool
 {
@@ -71,7 +73,19 @@ namespace X51Tools.TopicPictureDemandGenerationTool
                 generateXmlFile(szXmlSavePath);
             }
             rLog.AppendText(szError);
+            writeLopFile(szError);
             m_rExcelOperator.saveAsNewFile();
+        }
+        //
+        //书写dump
+        //
+        private void writeLopFile(string szString)
+        {
+            FileStream rFile = new FileStream("error.txt", FileMode.Truncate, FileAccess.Write);
+            StreamWriter rWriter = new StreamWriter(rFile);
+            rWriter.Write(szString);
+            rWriter.Close();
+            rFile.Close();
         }
         //
         //生成新的配置文件

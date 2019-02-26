@@ -33,6 +33,15 @@ namespace X51Tools.Global
             m_rWorkBook = m_rExcel.Workbooks.Add(szExcelFilePath);
             m_szFilePath = szExcelFilePath;
         }
+        public void createNewExcel()
+        {
+            m_isDismiss = false;
+            m_rExcel = new Microsoft.Office.Interop.Excel.Application();
+            m_rExcel.Visible = false;//设置调用引用的 Excel文件是否可见
+            m_rExcel.Application.DisplayAlerts = false;
+            //wb = excel.Workbooks.Open(ExcelFilePath);
+            m_rWorkBook = m_rExcel.Workbooks.Add(true);
+        }
         //覆盖保存
         public void saveCover()
         {

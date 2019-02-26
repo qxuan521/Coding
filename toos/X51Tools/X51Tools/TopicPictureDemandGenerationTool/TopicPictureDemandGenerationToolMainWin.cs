@@ -426,5 +426,67 @@ namespace X51Tools.TopicPictureDemandGenerationTool
         {
 
         }
+        //-------------------------------------func3-----------------------------------------------------
+        GetHistoryData m_rGetHistoryData = new GetHistoryData();
+        private void m_rConfigFunc3Block_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Link;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        private void m_rConfigFunc3Block_DragDrop(object sender, DragEventArgs e)
+        {
+            string path = ((System.Array)e.Data.GetData(DataFormats.FileDrop)).GetValue(0).ToString();
+            this.m_rConfigFunc3Block.Text = path;
+        }
+
+        private void m_rIDListBlock_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Link;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        private void m_rIDListBlock_DragDrop(object sender, DragEventArgs e)
+        {
+            string path = ((System.Array)e.Data.GetData(DataFormats.FileDrop)).GetValue(0).ToString();
+            this.m_rIDListBlock.Text = path;
+        }
+
+        private void m_rIDListBtn_Click(object sender, EventArgs e)
+        {
+            if (this.m_rOpenFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string szPath = m_rOpenFileDialog.FileName;
+                this.m_rIDListBlock.Text = szPath;
+            }
+        }
+
+        private void m_rConfigFunc3Btn_Click(object sender, EventArgs e)
+        {
+            if (this.m_rOpenFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string szPath = m_rOpenFileDialog.FileName;
+                this.m_rIDListBlock.Text = szPath;
+            }
+        }
+
+        private void m_rOutputHistory_Click(object sender, EventArgs e)
+        {
+            this.m_rGetHistoryData.setConfigPath(this.m_rConfigFunc3Block.Text.Trim());
+            this.m_rGetHistoryData.setSearchList(this.m_rIDListBlock.Text.Trim());
+            this.m_rGetHistoryData.excute();
+        }
     }
 }

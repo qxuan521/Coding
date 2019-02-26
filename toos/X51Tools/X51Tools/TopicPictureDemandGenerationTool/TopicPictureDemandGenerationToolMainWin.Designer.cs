@@ -78,6 +78,20 @@
             this.m_rOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.m_rFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.m_rSaveAsDialog = new System.Windows.Forms.SaveFileDialog();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.panel12 = new System.Windows.Forms.Panel();
+            this.panel13 = new System.Windows.Forms.Panel();
+            this.panel14 = new System.Windows.Forms.Panel();
+            this.panel15 = new System.Windows.Forms.Panel();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.m_rIDListBlock = new System.Windows.Forms.TextBox();
+            this.m_rConfigFunc3Block = new System.Windows.Forms.TextBox();
+            this.m_rIDListBtn = new System.Windows.Forms.Button();
+            this.m_rConfigFunc3Btn = new System.Windows.Forms.Button();
+            this.m_rFunc3Log = new System.Windows.Forms.RichTextBox();
+            this.m_rOutputHistory = new System.Windows.Forms.Button();
             this.tabWidget.SuspendLayout();
             this.m_rFillInPage.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -95,12 +109,19 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel10.SuspendLayout();
             this.panel11.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
+            this.panel12.SuspendLayout();
+            this.panel13.SuspendLayout();
+            this.panel14.SuspendLayout();
+            this.panel15.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabWidget
             // 
             this.tabWidget.Controls.Add(this.m_rFillInPage);
             this.tabWidget.Controls.Add(this.m_rAlterPage);
+            this.tabWidget.Controls.Add(this.tabPage1);
             this.tabWidget.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabWidget.Location = new System.Drawing.Point(0, 0);
             this.tabWidget.Name = "tabWidget";
@@ -633,6 +654,165 @@
             // 
             this.m_rSaveAsDialog.FileName = "clothset_handbook_config.xml";
             // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.tableLayoutPanel3);
+            this.tabPage1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(833, 623);
+            this.tabPage1.TabIndex = 2;
+            this.tabPage1.Text = "历史配置信息导出";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.ColumnCount = 1;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.Controls.Add(this.panel12, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.panel13, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.panel14, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.panel15, 0, 3);
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 4;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(827, 617);
+            this.tableLayoutPanel3.TabIndex = 0;
+            // 
+            // panel12
+            // 
+            this.panel12.Controls.Add(this.m_rIDListBtn);
+            this.panel12.Controls.Add(this.m_rIDListBlock);
+            this.panel12.Controls.Add(this.label8);
+            this.panel12.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel12.Location = new System.Drawing.Point(0, 5);
+            this.panel12.Margin = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.panel12.Name = "panel12";
+            this.panel12.Size = new System.Drawing.Size(827, 55);
+            this.panel12.TabIndex = 0;
+            // 
+            // panel13
+            // 
+            this.panel13.Controls.Add(this.m_rConfigFunc3Btn);
+            this.panel13.Controls.Add(this.m_rConfigFunc3Block);
+            this.panel13.Controls.Add(this.label9);
+            this.panel13.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel13.Location = new System.Drawing.Point(0, 65);
+            this.panel13.Margin = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.panel13.Name = "panel13";
+            this.panel13.Size = new System.Drawing.Size(827, 55);
+            this.panel13.TabIndex = 1;
+            // 
+            // panel14
+            // 
+            this.panel14.Controls.Add(this.m_rFunc3Log);
+            this.panel14.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel14.Location = new System.Drawing.Point(0, 125);
+            this.panel14.Margin = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.panel14.Name = "panel14";
+            this.panel14.Size = new System.Drawing.Size(827, 432);
+            this.panel14.TabIndex = 2;
+            // 
+            // panel15
+            // 
+            this.panel15.Controls.Add(this.m_rOutputHistory);
+            this.panel15.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel15.Location = new System.Drawing.Point(0, 562);
+            this.panel15.Margin = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.panel15.Name = "panel15";
+            this.panel15.Size = new System.Drawing.Size(827, 55);
+            this.panel15.TabIndex = 3;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(16, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(77, 12);
+            this.label8.TabIndex = 0;
+            this.label8.Text = "ID列表文件：";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(16, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(65, 12);
+            this.label9.TabIndex = 0;
+            this.label9.Text = "配置文件：";
+            // 
+            // m_rIDListBlock
+            // 
+            this.m_rIDListBlock.AllowDrop = true;
+            this.m_rIDListBlock.Font = new System.Drawing.Font("微软雅黑", 12F);
+            this.m_rIDListBlock.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.m_rIDListBlock.Location = new System.Drawing.Point(18, 15);
+            this.m_rIDListBlock.Name = "m_rIDListBlock";
+            this.m_rIDListBlock.Size = new System.Drawing.Size(661, 29);
+            this.m_rIDListBlock.TabIndex = 1;
+            this.m_rIDListBlock.DragDrop += new System.Windows.Forms.DragEventHandler(this.m_rIDListBlock_DragDrop);
+            this.m_rIDListBlock.DragEnter += new System.Windows.Forms.DragEventHandler(this.m_rIDListBlock_DragEnter);
+            // 
+            // m_rConfigFunc3Block
+            // 
+            this.m_rConfigFunc3Block.AllowDrop = true;
+            this.m_rConfigFunc3Block.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.m_rConfigFunc3Block.Location = new System.Drawing.Point(18, 16);
+            this.m_rConfigFunc3Block.Name = "m_rConfigFunc3Block";
+            this.m_rConfigFunc3Block.Size = new System.Drawing.Size(661, 29);
+            this.m_rConfigFunc3Block.TabIndex = 1;
+            this.m_rConfigFunc3Block.DragDrop += new System.Windows.Forms.DragEventHandler(this.m_rConfigFunc3Block_DragDrop);
+            this.m_rConfigFunc3Block.DragEnter += new System.Windows.Forms.DragEventHandler(this.m_rConfigFunc3Block_DragEnter);
+            // 
+            // m_rIDListBtn
+            // 
+            this.m_rIDListBtn.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.m_rIDListBtn.Location = new System.Drawing.Point(709, 15);
+            this.m_rIDListBtn.Name = "m_rIDListBtn";
+            this.m_rIDListBtn.Size = new System.Drawing.Size(100, 29);
+            this.m_rIDListBtn.TabIndex = 2;
+            this.m_rIDListBtn.Text = "浏    览";
+            this.m_rIDListBtn.UseVisualStyleBackColor = true;
+            this.m_rIDListBtn.Click += new System.EventHandler(this.m_rIDListBtn_Click);
+            // 
+            // m_rConfigFunc3Btn
+            // 
+            this.m_rConfigFunc3Btn.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.m_rConfigFunc3Btn.Location = new System.Drawing.Point(709, 16);
+            this.m_rConfigFunc3Btn.Name = "m_rConfigFunc3Btn";
+            this.m_rConfigFunc3Btn.Size = new System.Drawing.Size(100, 29);
+            this.m_rConfigFunc3Btn.TabIndex = 2;
+            this.m_rConfigFunc3Btn.Text = "浏    览";
+            this.m_rConfigFunc3Btn.UseVisualStyleBackColor = true;
+            this.m_rConfigFunc3Btn.Click += new System.EventHandler(this.m_rConfigFunc3Btn_Click);
+            // 
+            // m_rFunc3Log
+            // 
+            this.m_rFunc3Log.BackColor = System.Drawing.Color.White;
+            this.m_rFunc3Log.Location = new System.Drawing.Point(18, 4);
+            this.m_rFunc3Log.Name = "m_rFunc3Log";
+            this.m_rFunc3Log.ReadOnly = true;
+            this.m_rFunc3Log.Size = new System.Drawing.Size(791, 428);
+            this.m_rFunc3Log.TabIndex = 0;
+            this.m_rFunc3Log.Text = "";
+            // 
+            // m_rOutputHistory
+            // 
+            this.m_rOutputHistory.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.m_rOutputHistory.Location = new System.Drawing.Point(709, 16);
+            this.m_rOutputHistory.Name = "m_rOutputHistory";
+            this.m_rOutputHistory.Size = new System.Drawing.Size(100, 27);
+            this.m_rOutputHistory.TabIndex = 0;
+            this.m_rOutputHistory.Text = "导    出";
+            this.m_rOutputHistory.UseVisualStyleBackColor = true;
+            this.m_rOutputHistory.Click += new System.EventHandler(this.m_rOutputHistory_Click);
+            // 
             // TopicPictureDemandGenerationToolMainWin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -668,6 +848,14 @@
             this.panel10.ResumeLayout(false);
             this.panel10.PerformLayout();
             this.panel11.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.panel12.ResumeLayout(false);
+            this.panel12.PerformLayout();
+            this.panel13.ResumeLayout(false);
+            this.panel13.PerformLayout();
+            this.panel14.ResumeLayout(false);
+            this.panel15.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -724,5 +912,19 @@
         private System.Windows.Forms.Panel panel11;
         private System.Windows.Forms.Button m_rChangeNode;
         private System.Windows.Forms.Button m_rSelectNode;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.Panel panel12;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Panel panel13;
+        private System.Windows.Forms.Panel panel14;
+        private System.Windows.Forms.Panel panel15;
+        private System.Windows.Forms.Button m_rIDListBtn;
+        private System.Windows.Forms.TextBox m_rIDListBlock;
+        private System.Windows.Forms.Button m_rConfigFunc3Btn;
+        private System.Windows.Forms.TextBox m_rConfigFunc3Block;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.RichTextBox m_rFunc3Log;
+        private System.Windows.Forms.Button m_rOutputHistory;
     }
 }
