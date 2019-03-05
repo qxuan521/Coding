@@ -154,6 +154,7 @@ namespace X51Tools.TopicPictureDemandGenerationTool
             }
             catch (Exception ex)
             {
+                    ex.ToString();
             }
             finally
             {

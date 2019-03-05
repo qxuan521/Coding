@@ -30,6 +30,12 @@ namespace X51Tools.TopicPictureDemandGenerationTool
 
         private void m_rDoFillInBtn_Click(object sender, EventArgs e)
         {
+            if (this.m_rInputTableBlock.Text.Trim() == "" ||
+                this.m_rConfigurationBlock.Text.Trim() == "" ||
+                this.m_rNoSaleTableBlock.Text.Trim() == "")
+            {
+                return;
+            }
             this.m_rFunc1Operator.setInputExcelPath(this.m_rInputTableBlock.Text);
             this.m_rFunc1Operator.setConfigFilePath(this.m_rConfigurationBlock.Text);
             this.m_rFunc1Operator.setNoSalePath(this.m_rNoSaleTableBlock.Text);
@@ -72,7 +78,7 @@ namespace X51Tools.TopicPictureDemandGenerationTool
             if (this.m_rOpenFileDialog.ShowDialog() == DialogResult.OK)
             {
                 string szPath = m_rOpenFileDialog.FileName;
-                this.m_rInputTableBlock.Text = szPath;
+                this.m_rConfigurationBlock.Text = szPath;
             }
         }
 
@@ -314,6 +320,11 @@ namespace X51Tools.TopicPictureDemandGenerationTool
 
         private void m_rSelectNode_Click(object sender, EventArgs e)
         {
+            if (this.m_rConfig_func2_block.Text.Trim() == "" ||
+              this.m_rSearchListBlk.Text.Trim() == "")
+            {
+                return;
+            }
             m_rSaleChange.setConfigPath(this.m_rConfig_func2_block.Text.Trim());
             m_rSaleChange.setSearchlistPath(this.m_rSearchListBlk.Text.Trim());
             m_rSaleChange.search(upDateTable);
@@ -484,6 +495,11 @@ namespace X51Tools.TopicPictureDemandGenerationTool
 
         private void m_rOutputHistory_Click(object sender, EventArgs e)
         {
+            if (this.m_rConfigFunc3Block.Text.Trim() == "" ||
+                this.m_rIDListBlock.Text.Trim() == "")
+            {
+                return;
+            }
             this.m_rGetHistoryData.setConfigPath(this.m_rConfigFunc3Block.Text.Trim());
             this.m_rGetHistoryData.setSearchList(this.m_rIDListBlock.Text.Trim());
             this.m_rGetHistoryData.excute();

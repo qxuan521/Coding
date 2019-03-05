@@ -81,7 +81,7 @@ namespace X51Tools.TopicPictureDemandGenerationTool
         //
         private void writeLopFile(string szString)
         {
-            FileStream rFile = new FileStream("error.txt", FileMode.Truncate, FileAccess.Write);
+            FileStream rFile = new FileStream("error.txt", FileMode.OpenOrCreate, FileAccess.Write);
             StreamWriter rWriter = new StreamWriter(rFile);
             rWriter.Write(szString);
             rWriter.Close();

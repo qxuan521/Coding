@@ -80,7 +80,7 @@ namespace X51Tools.Global
                 }
                 catch (Exception ex)
                 {
-              
+                    ex.ToString();
                 }
                 finally
                 {
@@ -124,7 +124,7 @@ namespace X51Tools.Global
                 }
                 catch (Exception ex)
                 {
-
+                    ex.ToString();
                 }
                 finally
                 {
@@ -150,7 +150,7 @@ namespace X51Tools.Global
                 }
                 catch(Exception ex)
                 {
-                    
+                    ex.ToString();
                 }
                 finally
                 {

@@ -75,23 +75,23 @@
             this.panel11 = new System.Windows.Forms.Panel();
             this.m_rChangeNode = new System.Windows.Forms.Button();
             this.m_rSelectNode = new System.Windows.Forms.Button();
-            this.m_rOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.m_rFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.m_rSaveAsDialog = new System.Windows.Forms.SaveFileDialog();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.panel12 = new System.Windows.Forms.Panel();
-            this.panel13 = new System.Windows.Forms.Panel();
-            this.panel14 = new System.Windows.Forms.Panel();
-            this.panel15 = new System.Windows.Forms.Panel();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.m_rIDListBlock = new System.Windows.Forms.TextBox();
-            this.m_rConfigFunc3Block = new System.Windows.Forms.TextBox();
             this.m_rIDListBtn = new System.Windows.Forms.Button();
+            this.m_rIDListBlock = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.panel13 = new System.Windows.Forms.Panel();
             this.m_rConfigFunc3Btn = new System.Windows.Forms.Button();
+            this.m_rConfigFunc3Block = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.panel14 = new System.Windows.Forms.Panel();
             this.m_rFunc3Log = new System.Windows.Forms.RichTextBox();
+            this.panel15 = new System.Windows.Forms.Panel();
             this.m_rOutputHistory = new System.Windows.Forms.Button();
+            this.m_rOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.m_rFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.m_rSaveAsDialog = new System.Windows.Forms.SaveFileDialog();
             this.tabWidget.SuspendLayout();
             this.m_rFillInPage.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -646,14 +646,6 @@
             this.m_rSelectNode.UseVisualStyleBackColor = true;
             this.m_rSelectNode.Click += new System.EventHandler(this.m_rSelectNode_Click);
             // 
-            // m_rOpenFileDialog
-            // 
-            this.m_rOpenFileDialog.FileName = "打开";
-            // 
-            // m_rSaveAsDialog
-            // 
-            this.m_rSaveAsDialog.FileName = "clothset_handbook_config.xml";
-            // 
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.tableLayoutPanel3);
@@ -697,55 +689,16 @@
             this.panel12.Size = new System.Drawing.Size(827, 55);
             this.panel12.TabIndex = 0;
             // 
-            // panel13
+            // m_rIDListBtn
             // 
-            this.panel13.Controls.Add(this.m_rConfigFunc3Btn);
-            this.panel13.Controls.Add(this.m_rConfigFunc3Block);
-            this.panel13.Controls.Add(this.label9);
-            this.panel13.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel13.Location = new System.Drawing.Point(0, 65);
-            this.panel13.Margin = new System.Windows.Forms.Padding(0, 5, 0, 0);
-            this.panel13.Name = "panel13";
-            this.panel13.Size = new System.Drawing.Size(827, 55);
-            this.panel13.TabIndex = 1;
-            // 
-            // panel14
-            // 
-            this.panel14.Controls.Add(this.m_rFunc3Log);
-            this.panel14.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel14.Location = new System.Drawing.Point(0, 125);
-            this.panel14.Margin = new System.Windows.Forms.Padding(0, 5, 0, 0);
-            this.panel14.Name = "panel14";
-            this.panel14.Size = new System.Drawing.Size(827, 432);
-            this.panel14.TabIndex = 2;
-            // 
-            // panel15
-            // 
-            this.panel15.Controls.Add(this.m_rOutputHistory);
-            this.panel15.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel15.Location = new System.Drawing.Point(0, 562);
-            this.panel15.Margin = new System.Windows.Forms.Padding(0, 5, 0, 0);
-            this.panel15.Name = "panel15";
-            this.panel15.Size = new System.Drawing.Size(827, 55);
-            this.panel15.TabIndex = 3;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(16, 0);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(77, 12);
-            this.label8.TabIndex = 0;
-            this.label8.Text = "ID列表文件：";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(16, 0);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(65, 12);
-            this.label9.TabIndex = 0;
-            this.label9.Text = "配置文件：";
+            this.m_rIDListBtn.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.m_rIDListBtn.Location = new System.Drawing.Point(709, 15);
+            this.m_rIDListBtn.Name = "m_rIDListBtn";
+            this.m_rIDListBtn.Size = new System.Drawing.Size(100, 29);
+            this.m_rIDListBtn.TabIndex = 2;
+            this.m_rIDListBtn.Text = "浏    览";
+            this.m_rIDListBtn.UseVisualStyleBackColor = true;
+            this.m_rIDListBtn.Click += new System.EventHandler(this.m_rIDListBtn_Click);
             // 
             // m_rIDListBlock
             // 
@@ -759,27 +712,26 @@
             this.m_rIDListBlock.DragDrop += new System.Windows.Forms.DragEventHandler(this.m_rIDListBlock_DragDrop);
             this.m_rIDListBlock.DragEnter += new System.Windows.Forms.DragEventHandler(this.m_rIDListBlock_DragEnter);
             // 
-            // m_rConfigFunc3Block
+            // label8
             // 
-            this.m_rConfigFunc3Block.AllowDrop = true;
-            this.m_rConfigFunc3Block.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.m_rConfigFunc3Block.Location = new System.Drawing.Point(18, 16);
-            this.m_rConfigFunc3Block.Name = "m_rConfigFunc3Block";
-            this.m_rConfigFunc3Block.Size = new System.Drawing.Size(661, 29);
-            this.m_rConfigFunc3Block.TabIndex = 1;
-            this.m_rConfigFunc3Block.DragDrop += new System.Windows.Forms.DragEventHandler(this.m_rConfigFunc3Block_DragDrop);
-            this.m_rConfigFunc3Block.DragEnter += new System.Windows.Forms.DragEventHandler(this.m_rConfigFunc3Block_DragEnter);
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(16, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(77, 12);
+            this.label8.TabIndex = 0;
+            this.label8.Text = "ID列表文件：";
             // 
-            // m_rIDListBtn
+            // panel13
             // 
-            this.m_rIDListBtn.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.m_rIDListBtn.Location = new System.Drawing.Point(709, 15);
-            this.m_rIDListBtn.Name = "m_rIDListBtn";
-            this.m_rIDListBtn.Size = new System.Drawing.Size(100, 29);
-            this.m_rIDListBtn.TabIndex = 2;
-            this.m_rIDListBtn.Text = "浏    览";
-            this.m_rIDListBtn.UseVisualStyleBackColor = true;
-            this.m_rIDListBtn.Click += new System.EventHandler(this.m_rIDListBtn_Click);
+            this.panel13.Controls.Add(this.m_rConfigFunc3Btn);
+            this.panel13.Controls.Add(this.m_rConfigFunc3Block);
+            this.panel13.Controls.Add(this.label9);
+            this.panel13.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel13.Location = new System.Drawing.Point(0, 65);
+            this.panel13.Margin = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.panel13.Name = "panel13";
+            this.panel13.Size = new System.Drawing.Size(827, 55);
+            this.panel13.TabIndex = 1;
             // 
             // m_rConfigFunc3Btn
             // 
@@ -792,6 +744,36 @@
             this.m_rConfigFunc3Btn.UseVisualStyleBackColor = true;
             this.m_rConfigFunc3Btn.Click += new System.EventHandler(this.m_rConfigFunc3Btn_Click);
             // 
+            // m_rConfigFunc3Block
+            // 
+            this.m_rConfigFunc3Block.AllowDrop = true;
+            this.m_rConfigFunc3Block.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.m_rConfigFunc3Block.Location = new System.Drawing.Point(18, 16);
+            this.m_rConfigFunc3Block.Name = "m_rConfigFunc3Block";
+            this.m_rConfigFunc3Block.Size = new System.Drawing.Size(661, 29);
+            this.m_rConfigFunc3Block.TabIndex = 1;
+            this.m_rConfigFunc3Block.DragDrop += new System.Windows.Forms.DragEventHandler(this.m_rConfigFunc3Block_DragDrop);
+            this.m_rConfigFunc3Block.DragEnter += new System.Windows.Forms.DragEventHandler(this.m_rConfigFunc3Block_DragEnter);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(16, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(65, 12);
+            this.label9.TabIndex = 0;
+            this.label9.Text = "配置文件：";
+            // 
+            // panel14
+            // 
+            this.panel14.Controls.Add(this.m_rFunc3Log);
+            this.panel14.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel14.Location = new System.Drawing.Point(0, 125);
+            this.panel14.Margin = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.panel14.Name = "panel14";
+            this.panel14.Size = new System.Drawing.Size(827, 432);
+            this.panel14.TabIndex = 2;
+            // 
             // m_rFunc3Log
             // 
             this.m_rFunc3Log.BackColor = System.Drawing.Color.White;
@@ -801,6 +783,16 @@
             this.m_rFunc3Log.Size = new System.Drawing.Size(791, 428);
             this.m_rFunc3Log.TabIndex = 0;
             this.m_rFunc3Log.Text = "";
+            // 
+            // panel15
+            // 
+            this.panel15.Controls.Add(this.m_rOutputHistory);
+            this.panel15.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel15.Location = new System.Drawing.Point(0, 562);
+            this.panel15.Margin = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.panel15.Name = "panel15";
+            this.panel15.Size = new System.Drawing.Size(827, 55);
+            this.panel15.TabIndex = 3;
             // 
             // m_rOutputHistory
             // 
@@ -812,6 +804,15 @@
             this.m_rOutputHistory.Text = "导    出";
             this.m_rOutputHistory.UseVisualStyleBackColor = true;
             this.m_rOutputHistory.Click += new System.EventHandler(this.m_rOutputHistory_Click);
+            // 
+            // m_rOpenFileDialog
+            // 
+            this.m_rOpenFileDialog.FileName = "打开";
+            // 
+            // m_rSaveAsDialog
+            // 
+            this.m_rSaveAsDialog.FileName = "clothset_handbook_config.xml";
+            this.m_rSaveAsDialog.Filter = "“xml文件|*.xml”";
             // 
             // TopicPictureDemandGenerationToolMainWin
             // 

@@ -328,7 +328,14 @@ namespace X51Tools.TopicPictureDemandGenerationTool
                                 int score = int.Parse(rChildren[nLoopCount].Attributes["score"].Value);
                                 temp[9] = (score * 10).ToString();
                                 temp[10] = X51Math.X51round(score * 7.5).ToString();
-                                if(!rNoSale.ContainsKey(temp[5]) && !rNoSale.ContainsKey(temp[7]))
+                                if(rNoSale.Count != 0)
+                                {
+                                    if (!rNoSale.ContainsKey(temp[5]) && !rNoSale.ContainsKey(temp[7]))
+                                    {
+                                        temp[11] = X51Math.X51round(score * 6).ToString();
+                                    }
+                                }
+                                else
                                 {
                                     temp[11] = X51Math.X51round(score * 6).ToString();
                                 }
@@ -382,7 +389,7 @@ namespace X51Tools.TopicPictureDemandGenerationTool
         {
             if(m_rPiecesSourceExsitMap.ContainsKey(szID))
             {
-                return m_rPartsSourceExsitMap[szID];
+                return m_rPiecesSourceExsitMap[szID];
             }
             else
             {
