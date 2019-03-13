@@ -6,7 +6,7 @@
          <Material filePath ="..\data\postprocess\material\LUT.xml" matName="LUT" />
          <Parm Name="MixRatio" Type="float" Value="0.5" />
          <OutPutRT width ="full" height ="full" name="LUTDestRT" format="ARGB8"/>
-         <OutPutDS width ="full" height ="full" name="LUTDestDepthRT" format="D24S8"/>
+         <OutPutDS width ="full" height ="full" name="LUTDestDepthRT" format="D24S8"/> 
    </Step>
    <Step name ="SMAA">  
    <RenderTarget name="LUTDestRT" usage="diffuse"/>
