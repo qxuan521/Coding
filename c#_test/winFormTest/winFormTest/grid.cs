@@ -40,22 +40,27 @@ namespace winFormTest
             //                 xmlOperator.readXmlToGrid(szPath, ref rResult);
             //                 this.dataGridView1.DataSource = new BindingSource(rResult, null);
             //             }
-            List<string> rLIst = new List<string>();
-            rLIst.Add("1");
-            rLIst.Add("1");
-            rLIst.Add("1");
-            rLIst.Add("1");
-            rLIst.Add("1");
-            rLIst.Add("1");
-            this.dataGridView1.Rows.Clear();
-            rSelection.Clear();
-            for (int index = 0; index < rLIst.Count;++index)
-            {
-                int rowsNUm = this.dataGridView1.Rows.Add();
-                this.dataGridView1.Rows[rowsNUm].Cells[0].Value = rowsNUm;
-                rSelection.Add(select.SAT_1);
-            }
+            //             List<string> rLIst = new List<string>();
+            //             rLIst.Add("1");
+            //             rLIst.Add("1");
+            //             rLIst.Add("1");
+            //             rLIst.Add("1");
+            //             rLIst.Add("1");
+            //             rLIst.Add("1");
+            //             this.dataGridView1.Rows.Clear();
+            //             rSelection.Clear();
+            //             for (int index = 0; index < rLIst.Count;++index)
+            //             {
+            //                 int rowsNUm = this.dataGridView1.Rows.Add();
+            //                 this.dataGridView1.Rows[rowsNUm].Cells[0].Value = rowsNUm;
+            //                 rSelection.Add(select.SAT_1);
+            //             }
 
+            string szOldDateStr = "2019/03/01 00:00:00";
+            DateTime rDate = new DateTime();
+            DateTime.TryParse(szOldDateStr, out rDate);
+            string szNewDataString = rDate.ToString("yyyy-MM-dd HH:mm:ss");
+            this.textBox1.Text = szNewDataString;
         }
 
         private void dataGridView1_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
