@@ -34,5 +34,11 @@ namespace winFormTest
             grid r = new grid();
             r.Show();
         }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            DockMain rTestForm = new DockMain();
+            rTestForm.Show();
+        }
     }
 }

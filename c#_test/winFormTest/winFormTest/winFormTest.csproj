@@ -53,6 +53,18 @@
     <Compile Include="Class1.cs" />
     <Compile Include="Class2.cs" />
     <Compile Include="datagridviewbind.cs" />
+    <Compile Include="DockMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DockMain.Designer.cs">
+      <DependentUpon>DockMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DynamicTest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DynamicTest.Designer.cs">
+      <DependentUpon>DynamicTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -71,6 +83,7 @@
     <Compile Include="Form3.Designer.cs">
       <DependentUpon>Form3.cs</DependentUpon>
     </Compile>
+    <Compile Include="generate.cs" />
     <Compile Include="global.cs" />
     <Compile Include="grid.cs">
       <SubType>Form</SubType>
@@ -78,8 +91,17 @@
     <Compile Include="grid.Designer.cs">
       <DependentUpon>grid.cs</DependentUpon>
     </Compile>
+    <Compile Include="MyContral.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="DockMain.resx">
+      <DependentUpon>DockMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DynamicTest.resx">
+      <DependentUpon>DynamicTest.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

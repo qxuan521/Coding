@@ -24,6 +24,7 @@
       <Parm Name="SMAA_PREDICATION_THRESHOLD" Type="float" Value="0.001" />
       <Parm Name="SMAA_PREDICATION_SCALE" Type="float" Value="2.0" />
       <Parm Name="SMAA_PREDICATION_STRENGTH" Type="float" Value="0.4" />
+      <Parm Name="SMAA_PREDICATION_STRENGTH" Type="string" Value="0.4" />
    <OutPutRT width ="full" height ="full" name="SMAADestRT" format="ARGB8"/>
    <OutPutDS width ="full" height ="full" name="SMAADestDepthRT" format="D24S8"/>
    </Step>
