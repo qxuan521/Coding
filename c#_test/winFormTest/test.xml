@@ -1,30 +1,9 @@
 <?xml version="1.0" encoding="GBK" standalone="yes"?>
-<after>
-   <Step name ="LUT">
-         <RenderTarget name="OriginRT" usage="diffuse"/>
-         <Texure filePath="..\resources\media\shaders\LUT1.PNG" usage="DetailDiffuse"/>
-         <Material filePath ="..\data\postprocess\material\LUT.xml" matName="LUT" />
-         <Parm Name="MixRatio" Type="float" Value="0.5" />
-         <OutPutRT width ="full" height ="full" name="LUTDestRT" format="ARGB8"/>
-         <OutPutDS width ="full" height ="full" name="LUTDestDepthRT" format="D24S8"/> 
-   </Step>
-   <Step name ="SMAA">  
-   <RenderTarget name="LUTDestRT" usage="diffuse"/>
-      <Material filePath ="..\data\postprocess\material\SMAA.xml" matName="SMAA" />
-   
-      <Parm Name="SMAA_THRESHOLD" Type="float" Value="0.1" />
-      <Parm Name="SMAA_MAX_SEARCH_STEPS" Type="int" Value="16" />
-      <Parm Name="SMAA_MAX_SEARCH_STEPS_DIAG" Type="int" Value="6" />
-      <Parm Name="SMAA_CORNER_ROUNDING" Type="int" Value="0" />
-   
-      <Parm Name="SMAA_EDGE_DETECTION" Type="float" Value="2" />
-      <Parm Name="SMAA_DIRECTX9_LINEAR_BLEND" Type="int" Value="0" />
-   
-      <Parm Name="SMAA_PREDICATION" Type="int" Value="0" />
-      <Parm Name="SMAA_PREDICATION_THRESHOLD" Type="float" Value="0.001" />
-      <Parm Name="SMAA_PREDICATION_SCALE" Type="float" Value="2.0" />
-      <Parm Name="SMAA_PREDICATION_STRENGTH" Type="float" Value="0.4" />
-   <OutPutRT width ="full" height ="full" name="SMAADestRT" format="ARGB8"/>
-   <OutPutDS width ="full" height ="full" name="SMAADestDepthRT" format="D24S8"/>
-   </Step>
-</after>
+<Step name ="LUT">
+   <RenderTarget name="OriginRT" usage="diffuse"/>
+   <Texure filePath="..\resources\media\shaders\LUT1.PNG" usage="DetailDiffuse"/>
+   <Material filePath ="..\data\postprocess\material\LUT.xml" matName="LUT" />
+   <Parm Name ="MixRatio" TagName = "" Type="float" Value="0.5" />
+   <OutPutRT width ="full" height ="full" name="LUTDestRT" format="ARGB8"/>
+   <OutPutDS width ="full" height ="full" name="LUTDestDepthRT" format="D24S8"/>
+</Step>

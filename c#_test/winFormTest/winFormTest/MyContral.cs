@@ -9,9 +9,9 @@ namespace winFormTest
 {
     public interface  PropertyContral 
     {
-        void  build(string szXml);
-        void setValue(string szValue);
-        Control getControl();
+        void        build(string szXml);
+        void        setValue(string szValue);
+        Control     getControl();
     }
 
     public class IntNumberProperty :   NumericUpDown , PropertyContral
