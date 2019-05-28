@@ -40,5 +40,11 @@ namespace winFormTest
             DockMain rTestForm = new DockMain();
             rTestForm.Show();
         }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            Class3 a = new Class3();
+            a.ExcelOp("E:/Coding/c#_test/winFormTest/winFormTest/1.jpg", "E:/Coding/c#_test/winFormTest/winFormTest/aaa");
+        }
     }
 }

@@ -17,13 +17,13 @@ namespace winFormTest
             Dictionary<string, string> dic = new Dictionary<string, string>();
             dic.Add("物品男", "A");//
             dic.Add("id男", "B");
-            Excel.Application excel = new Excel.Application();
-            Excel.Workbooks wb = excel.Workbooks;
+            Application excel = new Application();
+            Workbooks wb = excel.Workbooks;
             excel.Visible = false;//设置调用引用的 Excel文件是否可见
             excel.Application.DisplayAlerts = false;
             //wb = excel.Workbooks.Open(ExcelFilePath);
-            Excel.Workbook rWbk = wb.Add(szPath);
-            Excel.Worksheet ws = (Excel.Worksheet)rWbk.Worksheets[1]; //索引从1开始 //(Excel.Worksheet)wb.Worksheets["SheetName"];
+            Workbook rWbk = wb.Add(szPath);
+            Worksheet ws = (Worksheet)rWbk.Worksheets[1]; //索引从1开始 //(Excel.Worksheet)wb.Worksheets["SheetName"];
             int rowCount = 0;//有效行，索引从1开始
             try
             {
@@ -58,7 +58,7 @@ namespace winFormTest
                 ExcelClose(szPath, excel, rWbk);
             }
         }
-        public void ExcelClose(string szPath, Excel.Application excel, Excel.Workbook wb)
+        public void ExcelClose(string szPath, Application excel, Workbook wb)
         {
             Process[] localByNameApp = Process.GetProcessesByName(szPath);//获取程序名的所有进程
             if (localByNameApp.Length > 0)
@@ -92,7 +92,7 @@ namespace winFormTest
                 excel.Visible = false;
                 excel.Application.Workbooks.Add(true).Save();
                 //保存结果
-                wb.SaveAs(szPath, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Excel.XlSaveAsAccessMode.xlNoChange,Type.Missing, Type.Missing, Type.Missing);
+                wb.SaveAs(szPath, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Microsoft.Office.Interop.Excel.XlSaveAsAccessMode.xlNoChange,Type.Missing, Type.Missing, Type.Missing);
                 //wb.Save();
                 wb.Close(false, szPath, szPath);
                

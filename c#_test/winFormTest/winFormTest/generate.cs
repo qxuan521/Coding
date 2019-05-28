@@ -53,7 +53,7 @@ namespace winFormTest
 
         private void buildHelper(XmlNode rNode)
         {
-            XmlNodeList rList = rNode.SelectNodes("Parm");
+            XmlNodeList rList = rNode.SelectNodes("Parm"); 
             for (int index = 0; index < rList.Count; ++index)
             {
                 if (m_rPanel.RowCount == 0)
